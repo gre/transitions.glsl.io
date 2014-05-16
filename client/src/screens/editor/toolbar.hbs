@@ -1,0 +1,41 @@
+
+<span class="transition-actions actions">
+  {{#unless env.user}}
+  You must 
+  <a class="github connect" href="/authenticate">
+    Connect with <i class="fa fa-github"></i> Github
+  </a>
+  for creating content.
+  {{/unless}}
+  {{#if isRootOrMyGist}}
+  {{#if env.user}}
+  {{#unless isPublished}}
+  {{#if isMyGist}}
+  <a href="#" class="publish-transition action primary"><i class="if-active fa fa-circle-o-notch fa-spin"></i><i class="if-not-active fa fa-cloud-upload"></i> Publish</a>
+  {{/if}}
+  {{/unless}}
+  <a href="#" class="save-transition action primary"><i class="if-active fa fa-circle-o-notch fa-spin"></i><i class="if-not-active fa fa-cloud-upload"></i>
+    {{#if isRootGist}}Create a new Gist{{else}}Save{{/if}}</a>
+  <span class="save-state status"></span>
+  {{/if}}
+  {{/if}}
+</span>
+
+<span class="gist-infos">
+  {{#if isRootGist}}
+  <em>
+    This is the transition template.
+  </em>
+  {{else}}
+  {{#if isPublished}}
+  <em>{{ gist.name }}</em>
+  {{/if}}
+  by <a target="_blank" href="https://gist.github.com/{{ gist.owner }}">{{ gist.owner }}</a>
+  {{/if}}
+  {{#unless isRootGist}}
+  -
+  <a target="_blank" id="open-gist" href="https://gist.github.com/{{ gist.owner }}/{{ gist.id }}">
+    <i class="fa fa-github"></i> Gist
+  </a>
+  {{/unless}}
+</span>

@@ -1,0 +1,85 @@
+@(version: String, rootGist: String, userName: Option[String])
+
+@import play.api._
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GLSL.io</title>
+  <link rel="stylesheet" href="/assets/bundle.css" />
+  <link rel="stylesheet" href="/assets/vendors/font-awesome-4.1.0/css/font-awesome.min.css" />
+  <link href='/assets/vendors/font-nunito/nunito.css' rel='stylesheet' type='text/css'>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body class="loading">
+  <div id="wrapper">
+    <header id="header">
+      <h1>
+        <a href="/" class="logo" id="logo">
+          <span>GLSL</span><span>.io</span>
+        </a>
+      </h1>
+      <nav>
+        <a class="home" href="/">About</a>
+        <a class="gallery" id="go-to-gallery" href="/gallery">Gallery</a>
+        <a class="editor" id="go-to-root-gist" href="/transition/new">Editor</a>
+      </nav>
+      @userName.map { name =>
+      <span class="github">
+        <a class="logout" href="/logout">logout</a>
+        -
+        <a class="profile" target="_blank" href="https://gist.github.com/@name">
+          <i class="fa fa-github"></i>
+          @name
+        </a>
+      </span>
+      }.getOrElse {
+        <a class="github connect" href="/authenticate">
+          Connect with <i class="fa fa-github"></i> Github
+        </a>
+      }
+    </header>
+    <header id="toolbar" hidden></header>
+    <div id="main">
+      <div id="loading">
+        <h2>
+          <i class="fa fa-cog fa-spin"></i>
+          <span class="logo">
+            <span>GLSL</span><span>.io</span>
+          </span>
+        </h2>
+        <p style="opacity: 0.5; font-size: 0.8em; font-style: italic">
+          a open collection of GLSL Transitions.
+        </p>
+      </div>
+      <div id="screen"></div>
+    </div>
+    <footer id="footer" hidden>
+      GLSL.io
+      -
+      v@{version}
+      -
+      <a href="https://twitter.com/glslio">@@glslio</a>
+      -
+      <a href="mailto:contact@@glsl.io">contact@@glsl.io</a>
+      -
+      <a href="https://github.com/glslio/glsl.io/issues/new">Found a bug?</a>
+    </footer>
+  </div>
+  <script src="/assets/vendors/ace/ace.js"></script>
+  <script src="/assets/vendors/ace/mode-glsl.js"></script>
+  <script>
+  window.ROOT_GIST = "@rootGist";
+  window.CONNECTED_USER = @{userName.map(name => Html(s""""$name"""")).getOrElse("null")};
+  </script>
+  <script src="/assets/bundle.js"></script>
+
+  @if(Play.current.mode == Mode.Dev) {
+  <script src="//localhost:35735/livereload.js"></script>
+  }
+
+</body>
+</html>
+

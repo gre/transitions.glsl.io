@@ -1,0 +1,24 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /authenticate               controllers.Github.authenticate
+GET     /logout                     controllers.Github.logout
+
+GET     /api/home                   controllers.Application.homeContent
+
+GET     /api/gists                  controllers.Gist.all()
+GET     /api/gists/:id              controllers.Gist.get(id)
+
+PUT     /api/gists/:id/star         controllers.Gist.star(id)
+DELETE  /api/gists/:id/star         controllers.Gist.unstar(id)
+
+POST    /api/gists                  controllers.Gist.fork()
+POST    /api/gists/:id              controllers.Gist.save(id)
+
+GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
+
+GET     /                           controllers.Application.index(path = "")
+GET     /*any                       controllers.Application.index(any)

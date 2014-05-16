@@ -1,0 +1,124 @@
+
+html {
+  font-family: Nunito, sans-serif;
+}
+
+html, body {
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+  background: #333;
+  color: #fff;
+
+  min-width: 860px;
+}
+
+* {
+  user-select: none;
+}
+
+header {
+  padding: 0 10px;
+}
+header h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.4em;
+  float: left;
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
+#header {
+  background: #000;
+  color: #fff;
+  height: 40px;
+  line-height: 40px;
+}
+
+#toolbar {
+  background: #444;
+  color: #888;
+  height: 30px;
+  line-height: 30px;
+  a {
+    color: inherit;
+    &:hover {
+      color: #ccc;
+    }
+  }
+  em {
+    color: #ccc;
+  }
+  .action {
+    color: #ccc;
+    background: #111;
+    padding: 1px 8px;
+    border-radius: 5px;
+    &:hover {
+      color: #eee;
+      background: #000;
+    }
+    &.disabled, &.disabled:hover {
+      color: #555;
+      background: #333;
+    }
+  }
+}
+
+#main {
+  box-sizing: border-box;
+  position: relative;
+}
+
+.logo {
+  text-decoration: none;
+  span:first-child {
+    color: #fff;
+  }
+  span:last-child {
+    color: #FC6;
+  }
+}
+a {
+  color: #ccc;
+  text-decoration: none;
+  &:hover {
+    color: #fff;
+  }
+}
+nav {
+  display: inline-block;
+}
+nav a {
+  padding: 0 10px;
+  display: inline-block;
+}
+
+#header .github {
+  display: inline-block;
+  float: right;
+  color: #888;
+}
+
+.current-home nav a.home {
+  color: #000;
+  background: #eee;
+}
+.current-editor nav a.editor,
+.current-gallery nav a.gallery {
+  color: #fff;
+  background: #444;
+}
+
+footer {
+  clear: both;
+  text-align: center;
+  vertical-align: top;
+  margin-top: 20px;
+  border-top: 1px solid #000;
+  padding: 10px 0;
+  background: #222;
+  color: #aaa;
+  font-size: 1em;
+}

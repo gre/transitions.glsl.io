@@ -1,0 +1,38 @@
+{
+  "name": "glsl-transition-editor",
+  "version": "0.0.0",
+  "description": "An editor for glsl-transition",
+  "keywords": [
+    "glsl",
+    "glsl-transition"
+  ],
+  "homepage": "https://github.com/gre/glsl-transition-editor",
+  "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
+  "contributors": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gre/glsl-transition-editor.git"
+  },
+  "license": "GPLv3",
+  "dependencies": {
+    "director": "git://github.com/gre/director.git",
+    "glsl-transition": "0.4.x",
+    "q": "1.0.x",
+    "qajax": "0.2.x",
+    "qdebounce": "0.1.x",
+    "qimage": "1.1.x",
+    "lodash": "2.4.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.6",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-stylus": "0.12.0",
+    "matchdep": "~0.1.2",
+    "grunt-browserify": "1.3.0",
+    "browserify": "3.24.8",
+    "hbsfy": "1.0.0"
+  }
+}

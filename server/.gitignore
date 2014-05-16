@@ -1,0 +1,17 @@
+.DS_Store
+logs
+public/bundle.js
+public/bundle.css
+project/project
+project/target
+target
+tmp
+.history
+dist
+/.idea
+/*.iml
+/out
+/.idea_modules
+/.classpath
+/.project
+/RUNNING_PID
