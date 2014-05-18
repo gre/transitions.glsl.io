@@ -1,6 +1,6 @@
 # GLSL.io
 
-The open platform for [GLSL Transitions](http://github.com/gre/glsl-transition).
+The open platform to build an Open Collection of [GLSL Transitions](http://github.com/gre/glsl-transition).
 
 See [GLSL.io](http://glsl.io/) for more information.
 
@@ -23,6 +23,12 @@ License
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Technologies
+---
+
+- /server: Play Framework (scala), Akka, ReactiveMongo
+- /client: Browserify [+ see NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
 
 Build & Run
 ---
