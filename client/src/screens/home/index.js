@@ -1,6 +1,8 @@
 
 var Qajax = require("qajax");
 var template = require("./screen.hbs");
+var hljs = require('highlight.js');
+var _ = require("lodash");
 
 function show () {
   var elt = document.createElement("div");
@@ -11,10 +13,15 @@ function show () {
     .get("responseText")
     .then(function (html) {
       content.innerHTML = html;
+      return content;
     })
-    .then(function () {
-      return { elt: elt };
-    });
+    .then(function highlightAllCode (node) {
+      _.each(node.querySelectorAll("pre code"), function (code) {
+        code.innerHTML = hljs.highlight("javascript", code.innerHTML).value;
+        code.className += " hljs";
+      });
+    })
+    .thenResolve({ elt: elt });
 }
 
 function init () {

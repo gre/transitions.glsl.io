@@ -21,7 +21,8 @@
     "qajax": "0.2.x",
     "qdebounce": "0.1.x",
     "qimage": "1.1.x",
-    "lodash": "2.4.1"
+    "lodash": "2.4.1",
+    "highlight.js": "8.0.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
