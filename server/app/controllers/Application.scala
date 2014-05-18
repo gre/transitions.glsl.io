@@ -26,27 +26,19 @@ import org.jsoup._
 import collection.JavaConversions._
 import play.api.cache.Cached
 
+import eu.henkelmann.actuarius._
+
 object Application extends Controller with GithubOAuthController {
   val rootGist = Global.rootGist
 
   var version = Play.current.configuration.getString("application.version").get
 
-  def homeContent() = Cached("homeContent", 120) {
+  // OMG I love this code
+  def homeContent = Cached("homeContent", 120) {
     Action.async {
-      Logger.info("Fetching home content...")
-      WS.url("https://gist.github.com/gre/600d8a793ca7901a25f2.json")
-        .get()
-        .map(_.json)
-        .map { json =>
-          (json \ "div").asOpt[String]
-            .flatMap { div =>
-              Jsoup.parse(div).select("article").headOption
-            }
-            .map { element =>
-              element.html
-            }
-        }
-        .flatMap(_.map(Future(_)).getOrElse(Future.failed(new Error("Failed to parse Gist result."))))
+        GistWS.get("600d8a793ca7901a25f2")
+        .map(json => (json \ "files" \ "article.md" \ "content").as[String])
+        .map(new ActuariusTransformer().apply)
         .map(Ok(_))
     }
   }
@@ -85,7 +77,7 @@ object Gist extends Controller with MongoController with GithubOAuthController {
       .find(Json.obj("id" -> id))
       .cursor[JsObject]
       .headOption
-      .map { maybeGist => 
+      .map { maybeGist =>
         maybeGist.map(Ok(_)).getOrElse(NotFound)
       }
   }
@@ -111,7 +103,7 @@ object Gist extends Controller with MongoController with GithubOAuthController {
         case _ => BadRequest
       }
   }
-  
+
   def unstar (id: String) = Authenticated.async { implicit auth =>
       /*
     collection
@@ -151,14 +143,14 @@ object Gist extends Controller with MongoController with GithubOAuthController {
       .find(Json.obj("id" -> id))
       .cursor[JsObject]
       .headOption
-      .flatMap { maybeOldEntry => 
+      .flatMap { maybeOldEntry =>
         auth.body.asJson.map { json =>
           GistWS.save(json, maybeOldEntry)
           .map { result =>
             Global.actorCrawler ! ("userSave", id)
             Ok("{}")
           }
-          .recover { 
+          .recover {
             case e @ GithubError(message, status) =>
               play.Logger.warn(s"github error: $e")
               Status(status)
