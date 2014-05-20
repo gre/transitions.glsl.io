@@ -30,11 +30,29 @@
   &.info {
     color: #666;
   }
-
 }
 
 #toolbar {
+  position: relative;
+  .gist-license {
+    position: absolute;
+    text-align: center;
+    left: 0;
+    top: 0;
+    width: 80px;
+    height: 100%;
+    overflow: hidden;
+    font-size: 0.6em;
+    a {
+      color: #aaa;
+      &:hover {
+        color: #ccc;
+      }
+    }
+  }
   .gist-infos {
+    min-width: 300px;
+    text-align: right;
     float: right;
     .transition-name {
       color: #aaa;

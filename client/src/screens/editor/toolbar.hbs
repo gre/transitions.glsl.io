@@ -1,4 +1,10 @@
 
+<span class="gist-license">
+  <a href="http://opensource.org/licenses/mit-license.html" target="_blank">
+    MIT License
+  </a>
+</span>
+
 <span class="transition-actions actions">
   {{#unless env.user}}
   You must
@@ -22,18 +28,16 @@
 </span>
 
 <span class="gist-infos">
-  {{#if isRootGist}}
-  <em>
-    This is the transition template.
-  </em>
-  {{else}}
   <a class="open-gist transition-name" target="_blank" href="https://gist.github.com/{{ gist.owner }}/{{ gist.id }}">
-    {{#if isPublished}}
+    {{#if isRootGist}}
+    This is the <i class="fa fa-github"></i> transition template.
+    {{else}}{{#if isPublished}}
     <i class="fa fa-github"></i> {{ gist.name }}
     {{else}}
     <i class="fa fa-github"></i> Gist
-    {{/if}}
+    {{/if}}{{/if}}
   </a>
+  {{#unless isRootGist}}
   by <a target="_blank" href="https://gist.github.com/{{ gist.owner }}">{{ gist.owner }}</a>
-  {{/if}}
+  {{/unless}}
 </span>
