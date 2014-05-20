@@ -6,28 +6,27 @@ function TransitionViewer (canvas, Transition) {
   if (!(this instanceof TransitionViewer)) return new TransitionViewer(canvas);
   this.canvas = canvas;
   this.Transition = Transition || GlslTransition(canvas);
+  this.lastHover = 0.4;
 }
 
 TransitionViewer.prototype = {
   setGlsl: function (glsl, uniforms) {
+    if (this.transition) {
+      this.Transition.abort();
+      this.transition.destroy();
+    }
     this.transition = this.Transition(glsl, uniforms||{});
+    if (!this.running) {
+      this.hover(this.lastHover);
+    }
   },
   setUniforms: function (uniforms) {
     this.uniforms = uniforms;
-    var running = this.running;
-    if (running) {
-      this.stop();
-    }
     this.transition.reset();
     _.each(this.getAllUniforms(), function (value, u) {
       this.transition.setUniform(u, value);
     }, this);
-    this.transition.draw();
-    //console.log("RUNNING", running);
-    if (running) {
-      this.start();
-    }
-    else {
+    if (!this.running) {
       this.hover(this.lastHover);
     }
   },
@@ -62,26 +61,29 @@ TransitionViewer.prototype = {
     this.transition.draw();
   },
   start: function (transitionDuration, transitionPause) {
-    //console.log("start()");
     var self = this;
-    (function loop () {
-      self.running = true;
-      // console.log("<- true");
-      Q.fcall(_.bind(self.animate, self, transitionDuration||1500))
-        .delay(transitionPause||500)
+    var args = arguments;
+    this.restart = function () {
+      return self.start.apply(self, args);
+    };
+    this.running = true;
+    return (function loop () {
+      if (!self.running) return;
+      return Q.fcall(_.bind(self.animate, self, transitionDuration||1500))
+        .delay(transitionPause||0)
         .then(function () {
           self.nextFromTo();
         })
         .then(loop)
         .fail(function(){
           // Recover an interrupted animation
-          self.running = false;
-          // console.log("interrupted");
-          // console.log("<- false");
+          // console.log("interrupted", arguments[0]);
+          return loop();
         });
     }());
   },
   stop: function () {
+    this.running = false;
     this.Transition.abort();
   }
 };
