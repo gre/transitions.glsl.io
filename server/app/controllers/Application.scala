@@ -8,14 +8,16 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.libs.iteratee._
+import play.api.cache.Cached
+import play.api.http.HeaderNames._
+import play.api.Play.current
+import play.api.libs.ws._
+import play.api.Logger
 import scala.concurrent.Future
 import scala.util._
 
 import services.github.Github.{Gist => GistWS, User => UserWS, GithubError}
 
-import play.api.Play.current
-import play.api.libs.ws._
-import play.api.Logger
 
 import reactivemongo.api._
 
@@ -24,7 +26,6 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 
 import org.jsoup._
 import collection.JavaConversions._
-import play.api.cache.Cached
 
 import eu.henkelmann.actuarius._
 
@@ -41,6 +42,14 @@ object Application extends Controller with GithubOAuthController {
         .map(new ActuariusTransformer().apply)
         .map(Ok(_))
     }
+  }
+
+  def logout = Action { req =>
+    var redirectUrl =
+      req.headers.get(REFERER)
+      .filter(!_.endsWith("/logout"))
+      .getOrElse("/")
+    Redirect(redirectUrl).withSession()
   }
 
   def index (path: String) = Action.async { implicit request =>
