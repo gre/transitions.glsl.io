@@ -30,11 +30,19 @@
   &.info {
     color: #666;
   }
-  
+
 }
 
-.gist-infos {
-  float: right;
+#toolbar {
+  .gist-infos {
+    float: right;
+    .transition-name {
+      color: #aaa;
+      &:hover {
+        color: #ddd;
+      }
+    }
+  }
 }
 
 #editor-wrapper {
@@ -54,7 +62,7 @@
   top: 0;
 }
 
-#editor { 
+#editor {
   width: 100%;
   height: 400px;
 }
