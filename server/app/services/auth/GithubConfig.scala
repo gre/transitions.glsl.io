@@ -15,7 +15,6 @@ case class OAuth2Infos(
  */
 trait OAuth2Configuration {
   def authenticateCall: Call
-  def authenticatedCall: Call
   def oauth2info: OAuth2Infos
 }
 

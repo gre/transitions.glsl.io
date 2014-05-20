@@ -39,6 +39,9 @@ trait OAuth2Authentication {
   }
 
   def authenticate = Action.async { implicit request =>
+    val redirectUri = request.headers.get(REFERER)
+      .filter(!_.endsWith("/authenticate"))
+      .getOrElse("/")
     request.getQueryString("error") match {
       case Some(error) =>
         Future(displayError(error, request.getQueryString("error_description")))
@@ -49,7 +52,7 @@ trait OAuth2Authentication {
             Future(redirectToLoginPage)
           // Step 2: request Access token
           case (Some(code), Some(csrf), Some(csrfSess)) if csrf == csrfSess =>
-            checkAccessToken(code)
+            checkAccessToken(code, redirectUri)
           // Error: CSRF verification failed
           case (Some(code), csrf, csrfSess) =>
             Future(displayError("Error during authentication",
@@ -58,11 +61,11 @@ trait OAuth2Authentication {
     }
   }
 
-  private def checkAccessToken(code: String)(implicit request: RequestHeader) = {
+  private def checkAccessToken(code: String, redirectUri: String)(implicit request: RequestHeader) = {
     logger.trace(s"AccessCode received: $code")
     requestAccessToken(code).map(result =>
       result.status match {
-        case OK => redirectSuccessful(result)
+        case OK => redirectSuccessful(result, redirectUri)
         case _ => displayError("Unexpected error after requesting token", Some("(%d) %s".format(result.status, result.body)))
       })
   }
@@ -81,13 +84,13 @@ trait OAuth2Authentication {
       .post(params.mapValues(Seq(_)))
   }
 
-  private def redirectSuccessful(response: play.api.libs.ws.Response)(implicit request: RequestHeader) = {
+  private def redirectSuccessful(response: play.api.libs.ws.Response, redirectUri: String)(implicit request: RequestHeader) = {
     response.status match {
       case 200 => {
         logger.trace(s"AccessToken received: ${response.json}")
         val token = response.json.as[OAuth2Token]
         val tokenStr = Json.stringify(Json.toJson(token))
-        Redirect(authenticatedCall)
+        Redirect(redirectUri)
           .withSession(request.session - sessionKeyCsrf + (sessionKeyToken -> tokenStr))
       }
       case _ => displayError("Invalid authentication (%s:%s)".format(response.status, response.body))

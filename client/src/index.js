@@ -12,9 +12,15 @@ var dom = require("./dom");
 ClickButton({
   el: document.body,
   isValidClickEvent: function (e) {
-    return ClickButton.prototype.isValidClickEvent.apply(this, arguments) &&
-      ("href" in e.target) &&
-      e.target.getAttribute("href")[0] === "/";
+    if (!ClickButton.prototype.isValidClickEvent.apply(this, arguments))
+      return false;
+    if (!("href" in e.target))
+      return false;
+    var href = e.target.getAttribute("href");
+    return href[0] === "/" && !(
+      href === "/logout" ||
+      href === "/authenticate"
+    );
   },
   f: function (e) {
     return routes.route(e.target.href);

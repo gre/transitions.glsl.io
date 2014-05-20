@@ -23,7 +23,7 @@ import services.github.Github.{Gist => GistWS, User => UserWS}
 
 // N.B.
 // The current actor model is quite simple and will be refactored.
-// 
+//
 
 case class GistFetched (id: String, gist: JsValue)
 case class GistFetchFailed (id: String, reason: Exception)
@@ -31,20 +31,16 @@ case class GistFetchFailed (id: String, reason: Exception)
 case class GetGist (id: String)
 case class GistResult (id: String, gist: JsValue)
 
-case class FetchGist (id: String, requester: ActorRef)
-case class FetchGistStarCount (id: String, requester: ActorRef)
-case class GistStarsResult (id: String, count: Long)
+case class FetchGist (id: String)
 
 
 class GistActor extends Actor with ActorLogging {
   val timeout = 10 seconds
 
-  lazy val clientId = Play.application.configuration.getString("github.client.id").get
-  lazy val clientSecret = Play.application.configuration.getString("github.client.secret").get
-
   def receive = {
-    case msg @ FetchGist(id, requester) =>
+    case msg @ FetchGist(id) =>
       log.debug(s"Received $msg")
+      val requester = sender
       Await.ready(
         GistWS.get(id)
         .map { gist =>
@@ -52,18 +48,6 @@ class GistActor extends Actor with ActorLogging {
         },
         timeout
       )
-
-      /*
-    case msg @ FetchGistStarCount(id, requester) =>
-      log.debug(s"Received $msg")
-      Await.ready(
-        GistWS.getStarCount(id, timeout)
-        .map { gist =>
-          requester ! GistStarsResult...
-        },
-        timeout
-      )
-      */
   }
 }
 
@@ -82,13 +66,6 @@ class TransitionsIndexer (rootGist: String) extends Actor with ActorLogging {
 
   def receive = {
 
-    case msg @ GistStarsResult(id, count) =>
-      log.debug(s"Received $msg")
-      gists.update(
-        Json.obj("id" -> id),
-        Json.obj("$set" -> Json.obj("stars" -> count))
-      )
-
     case msg @ GistResult(id, gist) =>
       log.debug(s"Received GistResult $id")
 
@@ -102,7 +79,7 @@ class TransitionsIndexer (rootGist: String) extends Actor with ActorLogging {
 
         // FIXME TODO: only refresh if has changed using 'history'
         forkIds foreach { id =>
-          fetcher ! FetchGist(id, self)
+          fetcher ! FetchGist(id)
         }
         /*
         knownForks foreach { id =>
@@ -127,13 +104,13 @@ class TransitionsIndexer (rootGist: String) extends Actor with ActorLogging {
       )
 
     case ("userCreatedFork", id: String) =>
-      fetcher ! FetchGist(id, self)
+      fetcher ! FetchGist(id)
 
     case ("userSave", id: String) =>
-      fetcher ! FetchGist(id, self)
+      fetcher ! FetchGist(id)
 
     case "refreshForks" =>
-      fetcher ! FetchGist(rootGist, self)
+      fetcher ! FetchGist(rootGist)
 
     case "refreshStars" =>
 
