@@ -86,7 +86,7 @@ function show (args) {
       enable: function () {
         this.el.classList.remove("disabled");
         window.onbeforeunload = function () {
-          return "Are you sure to leave the page with unsaved changes?";
+          return "Are you sure you want to leave this page?\n\nUNSAVED CHANGES WILL BE LOST.";
         };
       },
       isEnabled: function () {
