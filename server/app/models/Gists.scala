@@ -114,7 +114,7 @@ class Fetcher extends Actor with ActorLogging {
 }
 
 class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with ActorLogging {
-  log.debug(s"new Gist($id)")
+  log.debug(s"Gist($id) created.")
 
   if (gist == null)
     fetcher ! FetchGist(id)
@@ -139,7 +139,9 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
     case GistForkInfo(info) if gist != null =>
       (gist \ "updated_at", info \ "updated_at") match {
         case (JsString(old), JsString(cur)) if old != cur =>
+          log.debug(s"Gist($id) date has changed. $old -> $cur")
           fetcher ! FetchGist(id)
+        case _ =>
       }
 
     case msg @ GistResult(_, data) =>
@@ -149,6 +151,7 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
       }
       else
         GistsTransitions.onGistUpdated(id, data)
+      log.debug(s"Gist($id) received.")
       gist = data
       fetchWatchers.foreach { watcher =>
         watcher ! gist
