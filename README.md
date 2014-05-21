@@ -52,7 +52,7 @@ sbt -Dglslio.rootGist="$GIST_ROOT_ID" -Dapplication.secret="$APP_SECRET" -Dgithu
 Release Notes
 ---
 
-### Version 1.0
+### Version 1.0 - 19 May 2014
 
 - Github authentification
 - Gist support (read forks on bootstrap, save to gist only)
@@ -62,7 +62,7 @@ Release Notes
 - Save a Transition
 - About page
 
-### Version 1.1
+### Version 1.1 - 21 May 2014
 
 - #4 #5 #34 : **Server refactoring**
   - Track gists changes (if directly editing the gist)
