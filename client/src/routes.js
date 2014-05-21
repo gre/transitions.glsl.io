@@ -19,7 +19,7 @@ function openGist (id) {
   if (id === "new") {
     id = env.rootGist;
   }
-  return Qajax("/api/gists/"+id)
+  return Qajax("/api/transitions/"+id)
     .then(Qajax.filterSuccess)
     .then(Qajax.toJSON)
     .then(function (gist) {
@@ -32,7 +32,7 @@ function openGist (id) {
 }
 
 function getTransitions () {
-  return Qajax("/api/gists")
+  return Qajax("/api/transitions")
     .then(Qajax.filterSuccess)
     .then(Qajax.toJSON)
     .then(function (gists) {

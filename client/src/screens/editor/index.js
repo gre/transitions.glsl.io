@@ -93,42 +93,47 @@ function show (args) {
         return !this.el.classList.contains("disabled");
       },
       isValidClickEvent: function (e) {
-        return ClickButton.prototype.isValidClickEvent.call(this, e) &&
-          this.isEnabled();
+        if (!ClickButton.prototype.isValidClickEvent.call(this, e)) return false;
+        if (this.isEnabled()) {
+          return true;
+        }
+        e.preventDefault();
+        return false;
       },
       f: function (e) {
         var self = this;
-        if (this.isEnabled()) {
-          if (args.isRootGist) {
-            var t = transition.clone();
-            setSaveStatus("Creating...", "INFO");
-            return model.createNewTransition()
-              .delay(1500) // FIXME server is yet ready to receive the save
-              .then(function (id) {
-                t.id = id;
-                return model.saveTransition(t).thenResolve(id);
-              })
-              .then(function (id) {
-                setSaveStatus("Created.", "SUCCESS");
-                return id;
-              })
-              .delay(1500) // FIXME server is yet ready to receive the save
-              .then(function (id) {
-                self.disable();
-                return routes.route("/transition/"+id);
-              });
-          }
-          else {
-            var t = transition.clone();
-            setSaveStatus("Saving...", "INFO");
-            return model.saveTransition(t).then(function () {
+        var t = transition.clone();
+        if (args.isRootGist) {
+          setSaveStatus("Creating...", "INFO");
+          return model.createNewTransition()
+            .then(function (r) {
+              t.id = r.id;
+              return model.saveTransition(t);
+            })
+            .then(function () {
+              setSaveStatus("Created.", "SUCCESS");
+            })
+            .then(function () {
+              self.disable();
+              return routes.route("/transition/"+t.id);
+            })
+            .fail(function (e) {
+              setSaveStatus("Create failed.", "ERROR");
+              throw e;
+            });
+        }
+        else {
+          setSaveStatus("Saving...", "INFO");
+          return model.saveTransition(t)
+            .then(function () {
               lastSavedTransition = t;
               setSaveStatus("Saved.", "SUCCESS");
               self.disable();
-            }, function (e) {
-              setSaveStatus("Saving failed. "+(e.responseText||""), "ERROR");
+            })
+            .fail(function (e) {
+              setSaveStatus("Save failed.", "ERROR");
+              throw e;
             });
-          }
         }
       }
     });

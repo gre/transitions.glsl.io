@@ -6,7 +6,7 @@ module.exports = {
   createNewTransition: function () {
     return Qajax({
       method: "POST",
-      url: "/api/gists",
+      url: "/api/transitions",
       data: {
         fork: env.rootGist
       }
@@ -17,10 +17,10 @@ module.exports = {
   saveTransition: function (transition) {
     return Qajax({
       method: "POST",
-      url: "/api/gists/"+transition.id,
+      url: "/api/transitions/"+transition.id,
       data: transition.toServerData()
     })
       .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON);
+      .thenResolve(undefined);
   }
 };

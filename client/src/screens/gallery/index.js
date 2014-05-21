@@ -79,7 +79,7 @@ function show (transitions) {
       var cursor = document.createElement("span");
       cursor.className = "cursor";
       overlay.appendChild(cursor);
-      
+
       var transitionViewerCache = new TransitionViewerCache(function (p) {
         if (t.reset()) {
           _.each(uniforms, function (value, u) {
@@ -144,7 +144,7 @@ function show (transitions) {
         }
       }).bind();
     });
-    
+
     _.each(_.zip(elements, transitions), function (o) {
       var element = o[0], transition = o[1];
       ClickButton({
@@ -154,7 +154,7 @@ function show (transitions) {
           return Q.fcall(function(){
             if (transition.starred) {
               return Qajax({
-                url: "/api/gists/"+transition.id+"/star",
+                url: "/api/transitions/"+transition.id+"/star",
                 method: "DELETE"
               })
               .then(Qajax.filterSuccess)
@@ -166,7 +166,7 @@ function show (transitions) {
             }
             else {
               return Qajax({
-                url: "/api/gists/"+transition.id+"/star",
+                url: "/api/transitions/"+transition.id+"/star",
                 method: "PUT"
               })
               .then(Qajax.filterSuccess)

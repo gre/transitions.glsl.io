@@ -9,14 +9,10 @@ GET     /authenticate               controllers.Application.authenticate
 GET     /logout                     controllers.Application.logout
 GET     /api/home                   controllers.Application.homeContent
 
-GET     /api/gists                  controllers.Gist.all()
-GET     /api/gists/:id              controllers.Gist.get(id)
-
-PUT     /api/gists/:id/star         controllers.Gist.star(id)
-DELETE  /api/gists/:id/star         controllers.Gist.unstar(id)
-
-POST    /api/gists                  controllers.Gist.fork()
-POST    /api/gists/:id              controllers.Gist.save(id)
+GET     /api/transitions            controllers.Transitions.all()
+GET     /api/transitions/:id        controllers.Transitions.get(id)
+POST    /api/transitions            controllers.Transitions.fork()
+POST    /api/transitions/:id        controllers.Transitions.save(id)
 
 GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
 

@@ -20,7 +20,7 @@ var validationGlslTransitionContext = GlslTransition(document.createElement("can
 
 Transition.prototype = {
   clone: function () {
-    return new Transition(this.id, this.uniforms, this.glsl, this.name, this.stars, this.starred, this.owner);
+    return new Transition(this.id, _.clone(this.uniforms), this.glsl, this.name, this.stars, this.starred, this.owner);
   },
   equals: function (t) {
     return this.id === t.id &&

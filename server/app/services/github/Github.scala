@@ -57,114 +57,16 @@ object Github {
 
   object Gist {
 
-    var uniformsDefaultFile = "uniforms.default.json"
-
-    val string = Reads.of[JsString]
-    val stringOrNull = Reads {
-      case s: JsString => JsSuccess(s)
-      case JsNull => JsSuccess(JsNull)
-      case _ => JsError()
-    }
-    val extractGlslFromFile = 
-      (__ \ "content").json.pick[JsString]
-
-    val extractDefaultUniformsFromFile =
-      (__ \ "content").json.pick[JsString].flatMap { str =>
-        val res = try {
-          JsSuccess(Json.parse(str.value))
-        }
-        catch { case e =>
-          JsError(e.toString)
-        }
-        Reads(_ => res)
-      }
-    
-    val extractDefaultUniformsFromFiles = Reads {
-      json: JsValue => 
-        (json match {
-          case JsObject(fields) =>
-            fields.find(_._1 == uniformsDefaultFile)
-              .map(tuple => JsSuccess(tuple._2))
-              .getOrElse(JsError("Can't find a valid GLSL file"))
-          case _ =>
-            JsError("files must be a JsObject")
-        })
-        .flatMap(extractDefaultUniformsFromFile.reads(_))
-    }
-    
-    val extractGlslNameFromFiles = Reads {
-      json: JsValue => 
-        (json match {
-          case JsObject(fields) =>
-            fields.find(_._1.toLowerCase.endsWith(".glsl"))
-              .map(tuple => JsSuccess(JsString(tuple._1.dropRight(5))))
-              .getOrElse(JsError("Can't find a valid GLSL file"))
-          case _ =>
-            JsError("files must be a JsObject")
-        })
-    }
-
-    val extractGlslFromFiles = Reads {
-      json: JsValue => 
-        (json match {
-          case JsObject(fields) =>
-            fields.find(_._1.toLowerCase.endsWith(".glsl"))
-              .map(tuple => JsSuccess(tuple._2))
-              .getOrElse(JsError("Can't find a valid GLSL file"))
-          case _ =>
-            JsError("files must be a JsObject")
-        })
-        .flatMap(extractGlslFromFile.reads(_))
-    }
-
-    val defaultUniforms = Reads.pure[JsValue](Json.obj())
-
-    val gistToEntry = (
-      (__ \ 'id).json.pickBranch(string) and
-      (__ \ 'created_at).json.pickBranch(string) and
-      (__ \ 'updated_at).json.pickBranch(string) and
-      //(__ \ 'description).json.pickBranch(stringOrNull) and
-      (__ \ 'git_pull_url).json.pickBranch(string) and
-      (__ \ 'html_url).json.pickBranch(string) and
-      (__ \ 'owner).json.copyFrom((__ \ 'owner \ 'login).json.pick(string)) and
-      (__ \ 'name).json.copyFrom((__ \ 'files).json.pick(extractGlslNameFromFiles)) and
-      (__ \ 'glsl).json.copyFrom((__ \ 'files).json.pick(extractGlslFromFiles)) and
-      (__ \ 'defaults).json.copyFrom((__ \ 'files).json.pick(extractDefaultUniformsFromFiles orElse defaultUniforms))
-    ).reduce
-
-
-    def entryToGistPatch (previousEntry: Option[JsValue] = None) = //(
-      //(__ \ 'description).json.pickBranch(stringOrNull) and
-      (__ \ 'files).json.copyFrom((__).json.pick(Reads {
-        json: JsValue => (json \ "glsl", json \ "name", json \ "defaults") match {
-          case (glsl: JsString, JsString(name), defaults: JsObject) =>
-            JsSuccess(
-              JsObject(Seq(
-                previousEntry
-                  .flatMap(oldEntry => (oldEntry \ "name").asOpt[String])
-                  .map { oldName =>
-                  (oldName+".glsl", JsObject(Seq(
-                    ("content", glsl),
-                    ("filename", JsString(name+".glsl"))
-                  )))
-                  }.getOrElse {
-                  (name+".glsl", JsObject(Seq(
-                    ("content", glsl)
-                  )))
-                },
-                (uniformsDefaultFile, JsObject(Seq(
-                  ("content", JsString(defaults.toString))
-                )))
-              ))
-            )
-          case _ => JsError("invalid entry. Must have glsl, name and defaults")
-        }
-      }))
-    //).reduce
-
     def get(id: String) = {
       fetch(s"/gists/$id")
         .get
+        .map { res =>
+          res.header("X-RateLimit-Remaining").map { remaining =>
+            Logger.debug(s"X-RateLimit-Remaining: $remaining")
+          }
+          res
+        }
+        .filter(_.status == 200)
         .map(_.json)
     }
 
@@ -198,40 +100,34 @@ object Github {
         }
       }
     }
-    
+
     def fork(id: String)(implicit token: OAuth2Token) = {
-      fetchWithToken(s"/gists/$id/forks").post("").flatMap(result => result.status match {
-        case 201 => 
-          (result.json \ "id").asOpt[String].map { id =>
-            Future.successful(id)
-          }.getOrElse {
-            Logger.warn(s"No id: ${result.body}")
-            Future.failed(new Error("no id in the result."))
-          }
-        case status =>
-          Logger.warn(s"Failed: ${result.body}")
-          Future.failed(new GithubError("Can't fork on Github", status))
-      })
+      fetchWithToken(s"/gists/$id/forks")
+        .post("")
+        .flatMap(result => result.status match {
+          case 201 =>
+            (result.json \ "id").asOpt[String].map { id =>
+              Future.successful(id)
+            }.getOrElse {
+              Logger.warn(s"No id: ${result.body}")
+              Future.failed(new Error("no id in the result."))
+            }
+          case status =>
+            Logger.warn(s"Failed: ${result.body}")
+            Future.failed(new GithubError("Can't fork on Github", status))
+        })
     }
 
-    def save(json: JsValue, oldEntry: Option[JsValue])(implicit token: OAuth2Token) = {
-      val id = (json \ "id").as[String]
-      json.validate(entryToGistPatch(oldEntry)).fold(
-        err => {
-          Future.failed(new GithubError("Invalid request", 400))
-        },
-        data => {
-          fetchWithToken(s"/gists/$id")
-            .prepare("PATCH", data)
-            .execute
-            .flatMap(result => result.status match {
-              case 200 => Future.successful()
-              case status => 
-                play.Logger.warn(s"Github Error: ${result.body}")
-                Future.failed(new GithubError("Can't save on Github", status))
-            })
-        }
-      )
+    def save(id: String, data: JsValue)(implicit token: OAuth2Token) = {
+      fetchWithToken(s"/gists/$id")
+        .prepare("PATCH", data)
+        .execute
+        .flatMap(result => result.status match {
+          case 200 => Future.successful()
+          case status =>
+            play.Logger.warn(s"Github Error: ${result.body}")
+            Future.failed(new GithubError("Can't save on Github", status))
+        })
     }
 
     def starred(gistId: String)(implicit token: OAuth2Token) = {
