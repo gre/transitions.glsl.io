@@ -48,3 +48,34 @@ GITHUB_CLIENT_SECRET=...
 APP_SECRET=...
 sbt -Dglslio.rootGist="$GIST_ROOT_ID" -Dapplication.secret="$APP_SECRET" -Dgithub.client.id=$GITHUB_CLIENT_ID -Dgithub.client.secret=$GITHUB_CLIENT_SECRET run
 ```
+
+Release Notes
+---
+
+### Version 1.0
+
+- Github authentification
+- Gist support (read forks on bootstrap, save to gist only)
+- Minimal gallery with overview controls
+- Minimal editor: live GLSL editor, uniforms, overview
+- Create a Transition
+- Save a Transition
+- About page
+
+### Version 1.1
+
+- #4 #5 #34 : **Server refactoring**
+  - Track gists changes (if directly editing the gist)
+  - separation of concerns needed for next features
+  - several bugfixes
+- **Editor**
+  - #3 : Bugfix the loop failing to restart after re-compilation (include a bugfix in glsl-transition itself)
+  - #2 : Fix a text overflow in the compilation status bar
+  - #28 : The template also have a Gist Link
+  - Unifying the Transition name with the Gist Link
+  - #27 : Add a "MIT License" mention (hardcoded, the gist ~LICENSE is not read)
+  - #14 : Polishing the warning message of the page reload confirm popup
+  - Bugfix the vector uniforms changes detection
+- **Misc**
+  - #15 : When login/logout, stay on the same URL
+  - #29 : Improve meta data in <head> for social networks
