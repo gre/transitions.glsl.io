@@ -17,7 +17,7 @@
   <meta name="twitter:description" content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software.">
   <meta name="twitter:creator" content="@@glslio">
 
-  <link rel="stylesheet" href="/assets/bundle.css" />
+  <link rel="stylesheet" href="/assets/bundle.css?v=@{version}" />
   <link rel="stylesheet" href="/assets/vendors/font-awesome-4.1.0/css/font-awesome.min.css" />
   <link rel="stylesheet" href="/assets/vendors/highlight.js/solarized_dark.css" />
   <link href='/assets/vendors/font-nunito/nunito.css' rel='stylesheet' type='text/css'>
@@ -83,7 +83,7 @@
   window.ROOT_GIST = "@rootGist";
   window.CONNECTED_USER = @{userName.map(name => Html(s""""$name"""")).getOrElse("null")};
   </script>
-  <script src="/assets/bundle.js"></script>
+  <script src="/assets/bundle.js?v=@{version}"></script>
 
   @if(Play.current.mode == Mode.Dev) {
   <script src="//localhost:35735/livereload.js"></script>
