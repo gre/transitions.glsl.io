@@ -38,7 +38,14 @@ function show (transitions) {
         from: images[0],
         to: images[1]
       });
-      var t = Transition(transition.glsl, uniforms);
+      var t;
+      try {
+        t = Transition(transition.glsl, uniforms);
+      } catch (e) {
+        console.log("Invalid Transition", transition);
+        console.log(e);
+        return;
+      }
 
       // FIXME: refactor this stuff. React?
       var element = document.createElement("div");
@@ -137,6 +144,7 @@ function show (transitions) {
 
     _.each(_.zip(elements, transitions), function (o) {
       var element = o[0], transition = o[1];
+      if (!element) return;
       ClickButton({
         el: element.querySelector(".overlay"),
         f: function () {
@@ -147,6 +155,7 @@ function show (transitions) {
 
     _.each(_.zip(elements, transitions), function (o) {
       var element = o[0], transition = o[1];
+      if (!element) return;
       ClickButton({
         el: element.querySelector(".stars"),
         f: function () {
@@ -186,6 +195,7 @@ function show (transitions) {
 
     $gallery.innerHTML = "";
     _.each(elements, function (element) {
+      if (!element) return;
       $gallery.appendChild(element);
     });
 
