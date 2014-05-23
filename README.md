@@ -38,7 +38,8 @@ Build & Run
 Requires: http://nodejs.org/ installed.
 
 ```bash
-cd client/ && npm install && grunt
+# in ./client/
+npm install && grunt
 ```
 
 **Running the Server:** 
@@ -46,6 +47,7 @@ cd client/ && npm install && grunt
 Requires: http://www.scala-sbt.org/ installed +  a registered Github application
 
 ```bash
+# in ./server/
 GIST_ROOT_ID=...
 GITHUB_CLIENT_ID=...
 GITHUB_CLIENT_SECRET=...
