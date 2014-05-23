@@ -33,13 +33,17 @@ Technologies
 Build & Run
 ---
 
-Building Front End stack:
+**Building Front End stack:**
+
+Requires: http://nodejs.org/ installed.
 
 ```bash
-cd client/ && grunt
+cd client/ && npm install && grunt
 ```
 
-Running the Server (requires a registered Github application):
+**Running the Server:** 
+
+Requires: http://www.scala-sbt.org/ installed +  a registered Github application
 
 ```bash
 GIST_ROOT_ID=...
@@ -48,6 +52,7 @@ GITHUB_CLIENT_SECRET=...
 APP_SECRET=...
 sbt -Dglslio.rootGist="$GIST_ROOT_ID" -Dapplication.secret="$APP_SECRET" -Dgithub.client.id=$GITHUB_CLIENT_ID -Dgithub.client.secret=$GITHUB_CLIENT_SECRET run
 ```
+(you can save this as a script for convenience)
 
 Release Notes
 ---
