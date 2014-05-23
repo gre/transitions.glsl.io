@@ -10,6 +10,18 @@ var model = require("../../model");
 var routes = require("../../routes");
 var env = require("../../env");
 
+function logExceptions (f) {
+  return function () {
+    try {
+      return f.apply(this, arguments);
+    }
+    catch (e) {
+      console.log(e);
+      throw e;
+    }
+  };
+}
+
 function makeStatusSystem (node) {
   var timeout;
   var initialClasses = node.className;
@@ -226,7 +238,8 @@ function show (args) {
 
   var marker;
 
-  session.on("change", _.debounce(function () {
+  session.on("change", _.debounce(logExceptions(function () {
+    console.log("CHANGE...");
     if (marker) {
       session.removeMarker(marker.id);
       marker = null;
@@ -244,7 +257,7 @@ function show (args) {
     var _ref = validator.validate(glsl), ok = _ref[0], line = _ref[1], msg = _ref[2];
     glslCompiled = !!ok;
     if (ok) {
-      view.setTransition(glsl);
+      view.setTransition(glsl).done();
       transition.glsl = glsl;
       return setGlslCompilationStatus('Shader successfully compiled', "SUCCESS");
     } else {
@@ -253,11 +266,11 @@ function show (args) {
       touchSaveState();
       return setGlslCompilationStatus("Line " + line + " : " + msg, "ERROR");
     }
-  }, 100));
+  }), 100));
 
   view.setUniformValues(_.clone(transition.uniforms));
   view.onUniformValues(function (uniforms) {
-    transition.uniforms = _.extend(uniforms);
+    transition.uniforms = _.clone(uniforms);
   });
   session.setValue(transition.glsl);
   return { elt: elt, toolbar: toolbar };

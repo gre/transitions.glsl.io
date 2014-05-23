@@ -27,7 +27,8 @@ TransitionViewer.prototype = {
       this.transition.setUniform(u, value);
     }, this);
     if (!this.running) {
-      this.hover(this.lastHover);
+      this.transition.setUniform("progress", this.lastHover);
+      this.transition.draw();
     }
   },
   setImages: function (images) {

@@ -16,13 +16,119 @@ function getCurrentUniforms (transition) {
   }, {});
 }
 
-function defaultValueForType (t) {
-  if (t === "vec2") return [ 0, 0 ];
-  if (t === "vec3") return [ 0, 0, 0 ];
-  if (t === "vec4") return [ 0, 0, 0, 0 ];
-  return 0;
+
+function arityForType (t) {
+  if (_.contains(t, "vec2")) return 2;
+  if (_.contains(t, "vec3")) return 3;
+  if (_.contains(t, "vec4")) return 4;
+  if (t == "mat2") return 4;
+  if (t == "mat3") return 9;
+  if (t == "mat4") return 16;
+  return 1;
+}
+function componentLinesForType (t) {
+  if (t == "mat2") return 2;
+  if (t == "mat3") return 3;
+  if (t == "mat4") return 4;
+  return 1;
 }
 
+function defaultValueForType (t) {
+  var arity = arityForType(t);
+  if (arity === 1) return 0;
+  var t = [];
+  for (var i=0; i<arity; ++i) {
+    t.push(0);
+  }
+  return t;
+}
+
+var inputPrimitiveTypes = {
+  "float": {
+    type: "number",
+    step: 0.1,
+    value: 0.0,
+    get: function (input) { return parseFloat(input.value, 10); }
+  },
+  "int": {
+    type: "number",
+    step: 1,
+    value: 0,
+    get: function (input) { return parseInt(input.value, 10); }
+  },
+  "bool": {
+    type: "checkbox",
+    checked: false,
+    get: function (input) { return input.checked; }
+  }
+};
+
+function primitiveForType (t) {
+  if (t in inputPrimitiveTypes) return t;
+  if (t[0] == "b") return "bool";
+  if (t[0] == "i") return "int";
+  return "float";
+}
+
+function labelsForType (t) {
+  if (_.contains(t, "vec")) return ["x, r", "y, g", "z, b", "w, a"];
+}
+
+// onChange(value, index/*for vectors and matrixes*/)
+function componentForType (type, id, labelName, value, onChange) {
+  var arity = arityForType(type);
+  var primitive = inputPrimitiveTypes[primitiveForType(type)];
+  var componentLines = componentLinesForType(type);
+  var labels = labelsForType(type);
+
+  var p = document.createElement("p");
+  p.className = "type-"+type;
+  var label = document.createElement("label");
+  label.setAttribute("for", id);
+  label.textContent = labelName;
+  p.appendChild(label);
+
+  _.each(_.range(0, componentLines), function (l) {
+    var inputsPerLine = arity / componentLines;
+    var inputs = document.createElement("div");
+    inputs.className = "inputs inputs-"+inputsPerLine;
+    if (inputsPerLine === 1) {
+      var input = document.createElement("input");
+      input.setAttribute("id", id+"_"+l);
+      input.type = primitive.type;
+      if ("step" in primitive) input.step = primitive.step;
+      if ("checked" in primitive) input.checked = primitive.checked;
+      input.value = value || primitive.value;
+      input.addEventListener("change", function () {
+        onChange(primitive.get(input));
+      }, false);
+      inputs.appendChild(input);
+    }
+    else {
+      _.each(_.range(0, inputsPerLine), function (i) {
+        var index = l * inputsPerLine + i;
+        var lab = document.createElement("label");
+        var inp = document.createElement("input");
+        var span = document.createElement("span");
+        lab.setAttribute("for", id+"_"+index);
+        inp.setAttribute("id" , id+"_"+index);
+        span.textContent = labels && labels[index] || "";
+        inp.type = primitive.type;
+        if ("step" in primitive) inp.step = primitive.step;
+        if ("checked" in primitive) inp.checked = primitive.checked;
+        inp.value = value && value[index] || primitive.value;
+        inp.addEventListener("change", function () {
+          onChange(primitive.get(inp), index);
+        }, false);
+        lab.appendChild(span);
+        lab.appendChild(inp);
+        inputs.appendChild(lab);
+      });
+    }
+    p.appendChild(inputs);
+  });
+  return p;
+}
 
 module.exports = {
   init: function (elt, canvas) {
@@ -45,7 +151,8 @@ module.exports = {
     }
 
     function recomputeUniformsValues (oldUniforms, uniforms) {
-      var values = _.extend({}, currentUniformValues);
+      console.log("recomputeUniformsValues");
+      var values = _.extend({}, withoutInvalidValues(currentUniformValues, uniforms));
       var removed = _.difference(_.difference(_.keys(values), _.keys(uniforms)), ignoredUniforms);
       var missing = _.difference(_.keys(uniforms), _.keys(values));
       _.each(removed, function (u) {
@@ -58,93 +165,37 @@ module.exports = {
       return values;
     }
 
-    var labelsForVector = ["x, r", "y, g", "z, b", "w, a"];
-    function recomputeUniforms (oldUniforms, uniforms) {
-      var els = _.compact(_.map(uniforms, function (type, u) {
-        var id = "uniform_"+u;
-        var p = document.createElement("p");
-        p.className = "type-"+type;
-        var label = document.createElement("label");
-        label.setAttribute("for", id);
-        label.textContent = u;
-        var input;
-        var inputs = document.createElement("div");
-        inputs.className = "inputs inputs-1";
-        if (type === "float") {
-          input = document.createElement("input");
-          input.setAttribute("id", id);
-          input.type = "number";
-          input.step = 0.1;
-          input.value = currentUniformValues[u] || 0.0;
-          input.addEventListener("change", function () {
-            var v = parseFloat(input.value, 10);
-            currentUniformValues[u] = v;
-            onUniformsChange();
-          });
-          inputs.appendChild(input);
-        }
-        else if (type === "int") {
-          input = document.createElement("input");
-          input.setAttribute("id", id);
-          input.type = "number";
-          input.step = 1;
-          input.value = currentUniformValues[u] || 0;
-          input.addEventListener("change", function () {
-            var v = parseInt(input.value, 10);
-            currentUniformValues[u] = v;
-            onUniformsChange();
-          });
-          inputs.appendChild(input);
-        }
-        else if (type === "bool") {
-          input = document.createElement("input");
-          input.setAttribute("id", id);
-          input.type = "checkbox";
-          input.checked = currentUniformValues[u] || false;
-          input.addEventListener("change", function () {
-            currentUniformValues[u] = input.checked;
-            onUniformsChange();
-          });
-          inputs.appendChild(input);
-        }
-        else {
-          var nb = _.contains(["vec2"], type) ? 2 :
-                   _.contains(["vec3"], type) ? 3 :
-                   _.contains(["vec4"], type) ? 4 :
-                  null;
-          if (nb) {
-            inputs.className = "inputs inputs-"+nb;
-            _.each(_.range(0, nb), function (i) {
-              var lab = document.createElement("label");
-              lab.setAttribute("for", id+"_"+i);
-              var inp = document.createElement("input");
-              inp.setAttribute("id", id+"_"+i);
-              var span = document.createElement("span");
-              span.textContent = labelsForVector[i];
-              inp.type = "number";
-              inp.step = 0.1;
-              inp.value = 0.0;
-              inp.value = currentUniformValues[u] && currentUniformValues[u][i] || 0.0;
-              inp.addEventListener("change", function () {
-                var v = parseFloat(inp.value, 10);
-                currentUniformValues[u][i] = v;
-                onUniformsChange();
-              });
-              lab.appendChild(span);
-              lab.appendChild(inp);
-              inputs.appendChild(lab);
-            });
+    function withoutInvalidValues (values, uniforms) {
+      var r = {};
+      for (var key in values) {
+        if (key in uniforms) {
+          var arity = arityForType(uniforms[key]);
+          var isArray = _.isArray(values[key]);
+          if (arity === (!isArray ? 1 : values[key].length)) {
+            r[key] = values[key];
           }
         }
-        p.appendChild(label);
-        p.appendChild(inputs);
-        return p;
+      }
+      return r;
+    }
+
+    function recomputeUniforms (oldUniforms, uniforms) {
+      console.log("recomputeUniforms");
+      var els = _.compact(_.map(uniforms, function (type, u) {
+        return componentForType(type, "uniform_"+u, u, currentUniformValues[u], function (value, i) {
+          console.log("onChange", value, i, _.isArray(currentUniformValues[u]));
+          if (_.isArray(currentUniformValues[u]))
+            currentUniformValues[u][i] = value;
+          else
+            currentUniformValues[u] = value;
+        });
       }));
 
       $properties.innerHTML = "";
       _.each(els, function (el) {
         $properties.appendChild(el);
       });
+      console.log("done");
       return uniforms;
     }
 
@@ -155,6 +206,7 @@ module.exports = {
         transitionViewer.setGlsl(glsl);
         transitionFirstDefinition.resolve();
         var uniforms = getCurrentUniforms(transitionViewer.transition);
+        currentUniformValues = withoutInvalidValues(currentUniformValues, uniforms);
         if (!_.isEqual(currentUniforms, uniforms)) {
           currentUniformValues = recomputeUniformsValues(currentUniforms, uniforms);
           currentUniforms = recomputeUniforms(currentUniforms, uniforms);
