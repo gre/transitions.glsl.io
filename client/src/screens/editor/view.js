@@ -33,14 +33,23 @@ function componentLinesForType (t) {
   return 1;
 }
 
+function primitiveForType (t) {
+  if (t in inputPrimitiveTypes) return t;
+  if (t[0] == "b") return "bool";
+  if (t[0] == "i") return "int";
+  return "float";
+}
+
 function defaultValueForType (t) {
   var arity = arityForType(t);
-  if (arity === 1) return 0;
-  var t = [];
+  var primitive = primitiveForType(t);
+  var v = ({ "bool": false, "int": 0, "float": 0.0 })[primitive];
+  if (arity === 1) return v;
+  var arr = [];
   for (var i=0; i<arity; ++i) {
-    t.push(0);
+    arr.push(v);
   }
-  return t;
+  return arr;
 }
 
 var inputPrimitiveTypes = {
@@ -63,15 +72,32 @@ var inputPrimitiveTypes = {
   }
 };
 
-function primitiveForType (t) {
-  if (t in inputPrimitiveTypes) return t;
-  if (t[0] == "b") return "bool";
-  if (t[0] == "i") return "int";
-  return "float";
-}
-
-function labelsForType (t) {
-  if (_.contains(t, "vec")) return ["x, r", "y, g", "z, b", "w, a"];
+function labelsForType (t, name) {
+  if (_.contains(t, "vec")) {
+    var colorLike = (name||"").toLowerCase().indexOf("color") > -1 && (t[3]==="3" || t[3]==="4");
+    return colorLike ? ["r","g","b","a"] : ["x", "y", "z", "w"];
+  }
+  if (t == "mat2") {
+    return [
+      "[0].x", "[0].y",
+      "[1].x", "[1].y"
+    ];
+  }
+  if (t == "mat3") {
+    return [
+      "[0].x", "[0].y", "[0].z",
+      "[1].x", "[1].y", "[1].z",
+      "[2].x", "[2].y", "[2].z"
+    ];
+  }
+  if (t == "mat4") {
+    return [
+      "[0].x", "[0].y", "[0].z", "[0].w",
+      "[1].x", "[1].y", "[1].z", "[1].w",
+      "[2].x", "[2].y", "[2].z", "[2].w",
+      "[3].x", "[3].y", "[3].z", "[3].w",
+    ];
+  }
 }
 
 // onChange(value, index/*for vectors and matrixes*/)
@@ -79,7 +105,7 @@ function componentForType (type, id, labelName, value, onChange) {
   var arity = arityForType(type);
   var primitive = inputPrimitiveTypes[primitiveForType(type)];
   var componentLines = componentLinesForType(type);
-  var labels = labelsForType(type);
+  var labels = labelsForType(type, labelName);
 
   var p = document.createElement("p");
   p.className = "type-"+type;
@@ -151,7 +177,6 @@ module.exports = {
     }
 
     function recomputeUniformsValues (oldUniforms, uniforms) {
-      console.log("recomputeUniformsValues");
       var values = _.extend({}, withoutInvalidValues(currentUniformValues, uniforms));
       var removed = _.difference(_.difference(_.keys(values), _.keys(uniforms)), ignoredUniforms);
       var missing = _.difference(_.keys(uniforms), _.keys(values));
@@ -180,10 +205,8 @@ module.exports = {
     }
 
     function recomputeUniforms (oldUniforms, uniforms) {
-      console.log("recomputeUniforms");
       var els = _.compact(_.map(uniforms, function (type, u) {
         return componentForType(type, "uniform_"+u, u, currentUniformValues[u], function (value, i) {
-          console.log("onChange", value, i, _.isArray(currentUniformValues[u]));
           if (_.isArray(currentUniformValues[u]))
             currentUniformValues[u][i] = value;
           else
@@ -195,7 +218,6 @@ module.exports = {
       _.each(els, function (el) {
         $properties.appendChild(el);
       });
-      console.log("done");
       return uniforms;
     }
 

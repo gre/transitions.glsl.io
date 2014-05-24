@@ -239,7 +239,6 @@ function show (args) {
   var marker;
 
   session.on("change", _.debounce(logExceptions(function () {
-    console.log("CHANGE...");
     if (marker) {
       session.removeMarker(marker.id);
       marker = null;
