@@ -82,12 +82,14 @@ function show (args) {
   var setSaveStatus = $saveStatus ? makeStatusSystem($saveStatus) : _.noop;
 
   var glslCompiled = true;
+  var touchSaveState;
 
   var publishTransitionElt = toolbar.querySelector(".publish-transition");
   var saveTransitionElt = toolbar.querySelector(".save-transition");
   var publishTransitionButton;
   var saveTransitionButton;
   var lastSavedTransition = transition.clone();
+  var lastSavingTransition = lastSavedTransition;
   if (saveTransitionElt) {
     saveTransitionButton = ClickButton({
       el: saveTransitionElt,
@@ -113,10 +115,14 @@ function show (args) {
         return false;
       },
       f: function (e) {
+        if (!this.isEnabled()) return;
+        if (lastSavingTransition.equals(transition)) return;
         var self = this;
         var t = transition.clone();
+        lastSavingTransition = t;
         if (args.isRootGist) {
           setSaveStatus("Creating...", "INFO");
+          self.disable();
           return model.createNewTransition()
             .then(function (r) {
               t.id = r.id;
@@ -136,15 +142,18 @@ function show (args) {
         }
         else {
           setSaveStatus("Saving...", "INFO");
+          self.disable();
           return model.saveTransition(t)
             .then(function () {
-              lastSavedTransition = t;
+              lastSavingTransition = lastSavedTransition = t;
               setSaveStatus("Saved.", "SUCCESS");
-              self.disable();
             })
             .fail(function (e) {
               setSaveStatus("Save failed.", "ERROR");
               throw e;
+            })
+            .fin(function () {
+              touchSaveState();
             });
         }
       }
@@ -159,10 +168,11 @@ function show (args) {
           if (name.match(/^[a-zA-Z0-9_]+$/)) {
             transition.name = name;
             saveTransitionButton.enable();
-            return Q.fcall(_.bind(saveTransitionButton.f, saveTransitionButton))
+            saveTransitionButton.pending = Q.fcall(_.bind(saveTransitionButton.f, saveTransitionButton))
               .then(function () {
                 return routes.reload();
               });
+            return saveTransitionButton.pending;
           }
           else {
             alert("Title must be alphanumeric.");
@@ -172,8 +182,8 @@ function show (args) {
     }
   }
 
-  var touchSaveState = _.debounce(function () {
-    if (saveTransitionButton) {
+  touchSaveState = _.debounce(function () {
+    if (saveTransitionButton && !saveTransitionButton.pending.isPending()) {
       if (!glslCompiled) {
         setSaveStatus("GLSL errors must be fixed.", "WARN");
         saveTransitionButton.disable();
@@ -193,6 +203,20 @@ function show (args) {
   var ed = createEditor($editor);
   var session = ed.session;
   var editor = ed.editor;
+  editor.commands.addCommand({
+    name: 'save',
+    bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+    exec: function(editor) {
+      if (saveTransitionButton) {
+        saveTransitionButton.pending.then(function () {
+          if (!saveTransitionButton.pending.isPending()) {
+            saveTransitionButton.pending = saveTransitionButton.f();
+          }
+        });
+      }
+    },
+    readOnly: true
+  });
   var validator = new Validator(canvas);
 
   var editorHeight = 0;
@@ -225,7 +249,7 @@ function show (args) {
     transition.onChange("name", touchSaveState);
     transition.onChange("uniforms", touchSaveState);
     touchSaveState();
-  }
+  };
 
   unbind = function () {
     if (saveTransitionButton) {

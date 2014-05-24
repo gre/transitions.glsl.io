@@ -9,6 +9,7 @@ var ClickButton = function (options) {
   this._onclick = function (e) {
     self.onClick(e);
   };
+  this.pending = Q();
 };
 
 ClickButton.create = function (options) {
@@ -50,6 +51,7 @@ ClickButton.prototype = {
       e.preventDefault();
     }
     if (!this.active && valid) {
+      this.pending =
       Q.fcall(function () {
         self.setActive(true);
         return self.f(e);
@@ -57,8 +59,7 @@ ClickButton.prototype = {
       .delay(this.debounceRate)
         .fin(function () {
           self.setActive(false);
-        })
-      .done();
+        });
     }
   },
   isValidClickEvent: function (e) {
@@ -68,4 +69,3 @@ ClickButton.prototype = {
 };
 
 module.exports = ClickButton;
-
