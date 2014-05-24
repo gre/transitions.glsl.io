@@ -1,2 +1,15 @@
-<div class="gallery"></div>
 
+{{#if unpublished}}
+<div class="gallery gallery-unpublished">
+  <a class="new-transition" href="/transition/new">
+    <i class="fa fa-plus"></i>
+    Create a new Transition
+  </a>
+</div>
+
+<div class="toolbar-like">
+  All published transitions:
+</div>
+{{/if}}
+
+<div class="gallery gallery-published"></div>

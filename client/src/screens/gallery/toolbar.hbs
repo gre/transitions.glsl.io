@@ -1,5 +1,11 @@
 
-<a href="/transition/new">
-  <i class="fa fa-plus"></i>
-  Create a new Transition</a>
+{{#if unpublished}}
+Your unpublished transitions:
+{{else}}
+All published transitions:
+{{/if}}
 
+<a class="new-transition" href="/transition/new">
+  <i class="fa fa-plus"></i>
+  Create a new Transition
+</a>

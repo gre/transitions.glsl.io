@@ -56,7 +56,10 @@ object Application extends Controller with GithubOAuthController {
     parseToken.map { implicit token =>
       val maybeUser = UserWS.me
       maybeUser.map { user =>
-        Ok(views.html.index(version, rootGist, (user \ "login").asOpt[String]))
+        val login = (user \ "login").asOpt[String]
+        val session = login.map(login => request.session + ("login" -> login)).getOrElse(request.session)
+        Ok(views.html.index(version, rootGist, login))
+          .withSession(session)
       }
     }.getOrElse {
       Future(Ok(views.html.index(version, rootGist, None)))

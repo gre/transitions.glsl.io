@@ -17,16 +17,10 @@ var HEIGHT = 200;
 var defaultHoverProgress = 0.4;
 
 function show (transitions) {
-  var elt = document.createElement("div");
-  var toolbar = document.createElement("div");
-  elt.innerHTML = template({});
-  toolbar.innerHTML = templateToolbar({});
-
-  var $gallery = elt.querySelector(".gallery");
-
-  var dpr = window.devicePixelRatio || 1;
-
   return imagesP.then(function (images) {
+
+    var dpr = window.devicePixelRatio || 1;
+
     var previewComputations = [];
     var canvasTransition = document.createElement("canvas");
     canvasTransition.width = dpr * WIDTH;
@@ -193,11 +187,35 @@ function show (transitions) {
       }).bind();
     });
 
-    $gallery.innerHTML = "";
-    _.each(elements, function (element) {
-      if (!element) return;
-      $gallery.appendChild(element);
+    var all = _.groupBy(_.zip(elements, transitions), function (o) {
+      var element = o[0], transition = o[1];
+      if (!element) return 'invalid';
+      if (transition.owner === env.user && transition.name === "TEMPLATE")
+        return 'unpublished';
+      return 'published';
     });
+
+    var elt = document.createElement("div");
+    var toolbar = document.createElement("div");
+    elt.innerHTML = template(all);
+    toolbar.innerHTML = templateToolbar(all);
+
+    var $galleryPublished = elt.querySelector(".gallery-published");
+    var $galleryUnpublished = elt.querySelector(".gallery-unpublished");
+
+    $galleryPublished.innerHTML = "";
+    _.each(all.published||[], function (o) {
+      var element = o[0], transition = o[1];
+      $galleryPublished.appendChild(element);
+    });
+
+    if (all.unpublished) {
+      $galleryUnpublished.innerHTML = "";
+      _.each(all.unpublished||[], function (o) {
+        var element = o[0], transition = o[1];
+        $galleryUnpublished.appendChild(element);
+      });
+    }
 
     _.reduce(previewComputations, function (promise, computation) {
       return promise.delay(50).then(computation);

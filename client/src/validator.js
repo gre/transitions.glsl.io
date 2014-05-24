@@ -11,18 +11,20 @@ function Validator (canvas) {
   this.canvas = canvas;
   if (!this.canvas) {
     this.canvas = document.createElement('canvas');
+    this.canvas.width = 800;
+    this.canvas.height = 600;
   }
   this.Transition = GlslTransition(this.canvas);
 }
 
 Validator.prototype.validate = function(source) {
-  var details, error, i, lineStr, line, lines, log, message, shader, status, _i, _len;
-  var context = this.Transition.getGL();
+  var details, error, i, lineStr, line, lines, log, message, status, _i, _len;
   if (!source) {
     return [true, null, null];
   }
   try {
-    shader = context.createShader(context.FRAGMENT_SHADER);
+    var context = this.Transition.getGL();
+    var shader = context.createShader(context.FRAGMENT_SHADER);
     context.shaderSource(shader, source);
     context.compileShader(shader);
     status = context.getShaderParameter(shader, context.COMPILE_STATUS);
