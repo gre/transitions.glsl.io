@@ -6,7 +6,7 @@
     "indent": 2,
     "node": true,
     "bitwise": true,
-    "camelcase": false,
+    "camelcase": true,
     "eqeqeq": true,
     "immed": true,
     "latedef": true,
@@ -19,5 +19,4 @@
     "globalstrict": false,
     "esnext": false,
     "quotmark": false
-
 }

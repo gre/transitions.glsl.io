@@ -78,6 +78,7 @@ var Qroute = function (f) {
 };
 
 var _router = Router(_.mapValues(routes, Qroute)).configure({
+  /*jshint -W106 */
   run_handler_in_init: true,
   html5history: true,
   async: true,
