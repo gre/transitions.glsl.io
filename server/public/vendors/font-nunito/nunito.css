@@ -10,3 +10,9 @@
   font-weight: 700;
   src: local('Nunito-Bold'), url(./TttUCfJ272GBgSKaOaD7KrO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
 }
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(./1TiHc9yag0wq3lDO9cw0vrO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+}

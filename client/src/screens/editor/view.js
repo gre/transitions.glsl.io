@@ -2,6 +2,7 @@ var _ = require("lodash");
 var Q = require("q");
 var TransitionViewer = require("../../transitionViewer");
 var images = require("../../images").editor;
+var noUniforms = require("./noUniforms.hbs");
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 function getCurrentUniforms (transition) {
@@ -214,10 +215,15 @@ module.exports = {
         });
       }));
 
-      $properties.innerHTML = "";
-      _.each(els, function (el) {
-        $properties.appendChild(el);
-      });
+      if (els.length) {
+        $properties.innerHTML = "";
+        _.each(els, function (el) {
+          $properties.appendChild(el);
+        });
+      }
+      else {
+        $properties.innerHTML = noUniforms();
+      }
       return uniforms;
     }
 
