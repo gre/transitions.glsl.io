@@ -189,7 +189,7 @@ function show (args) {
     }
   }, 50);
 
-  var view = View.init(elt, canvas);
+  var view = View.init(elt, canvas, transition);
   var ed = createEditor($editor);
   var session = ed.session;
   var editor = ed.editor;
@@ -256,7 +256,6 @@ function show (args) {
     var _ref = validator.validate(glsl), ok = _ref[0], line = _ref[1], msg = _ref[2];
     glslCompiled = !!ok;
     if (ok) {
-      view.setTransition(glsl).done();
       transition.glsl = glsl;
       return setGlslCompilationStatus('Shader successfully compiled', "SUCCESS");
     } else {
@@ -267,10 +266,6 @@ function show (args) {
     }
   }), 100));
 
-  view.setUniformValues(_.clone(transition.uniforms));
-  view.onUniformValues(function (uniforms) {
-    transition.uniforms = _.clone(uniforms);
-  });
   session.setValue(transition.glsl);
   return { elt: elt, toolbar: toolbar };
 }

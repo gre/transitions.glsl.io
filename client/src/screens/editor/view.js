@@ -96,7 +96,7 @@ function labelsForType (t, name) {
       "[0].x", "[0].y", "[0].z", "[0].w",
       "[1].x", "[1].y", "[1].z", "[1].w",
       "[2].x", "[2].y", "[2].z", "[2].w",
-      "[3].x", "[3].y", "[3].z", "[3].w",
+      "[3].x", "[3].y", "[3].z", "[3].w"
     ];
   }
 }
@@ -158,7 +158,7 @@ function componentForType (type, id, labelName, value, onChange) {
 }
 
 module.exports = {
-  init: function (elt, canvas) {
+  init: function (elt, canvas, transition) {
 
     var $properties = elt.querySelector("#properties");
 
@@ -167,14 +167,14 @@ module.exports = {
 
     var transitionViewerPromise;
 
-    var currentUniformValuesWatcher = _.noop; // FIXME
     var currentUniformValues = {};
 
     function onUniformsChange () {
+      var u = _.clone(currentUniformValues);
       transitionViewerPromise.then(function(transitionViewer){
-        transitionViewer.setUniforms(currentUniformValues);
+        transitionViewer.setUniforms(u);
       });
-      currentUniformValuesWatcher(currentUniformValues);
+      transition.uniforms = u;
     }
 
     function recomputeUniformsValues (oldUniforms, uniforms) {
@@ -212,6 +212,7 @@ module.exports = {
             currentUniformValues[u][i] = value;
           else
             currentUniformValues[u] = value;
+          onUniformsChange();
         });
       }));
 
@@ -228,7 +229,7 @@ module.exports = {
     }
 
     var currentUniforms;
-    function setTransition (glsl) {
+    function setGlsl (glsl) {
       transitionDefined.resolve();
       return transitionViewerPromise.then(function (transitionViewer) {
         transitionViewer.setGlsl(glsl);
@@ -272,14 +273,13 @@ module.exports = {
       transitionViewer.start();
     });
 
+    setGlsl(transition.glsl).done();
+    currentUniformValues = _.clone(transition.uniforms);
+    transition.onChange("glsl", function (glsl) {
+      setGlsl(glsl).done();
+    });
+
     return {
-      setTransition: setTransition,
-      setUniformValues: function (u) {
-        currentUniformValues = u;
-      },
-      onUniformValues: function (f) {
-        currentUniformValuesWatcher = f; // FIXME
-      },
       destroy: function () {
         // FIXME
       }
