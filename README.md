@@ -1,14 +1,12 @@
 # GLSL.io
 
-The open platform to build an Open Collection of [GLSL Transitions](http://github.com/gre/glsl-transition).
-
-See [GLSL.io](http://glsl.io/) for more information.
+Source code of [GLSL.io](http://glsl.io/) , the open platform to build an Open Collection of [GLSL Transitions](http://github.com/gre/glsl-transition).
 
 Technologies
 ---
 
-- /server: Play Framework (scala), Akka, ReactiveMongo
-- /client: Browserify [+ see NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
+- **server**: [Play Framework](http://playframework.org) (scala), [Akka](http://akka.io), [ReactiveMongo](http://reactivemongo.org)
+- **client**: [Browserify](http://browserify.org) + multiple [NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
 
 Build & Run
 ---
