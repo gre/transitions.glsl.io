@@ -1,5 +1,11 @@
 
 <div id="view">
+  <div id="leftPanel">
+    <a class="comments {{#unless transition.comments}}no-comments{{/unless}}" target="_blank" href="https://gist.github.com/{{ gist.owner }}/{{ gist.id }}">
+      <i class="fa fa-comments"></i>
+      {{transition.comments}}
+    </a>
+  </div>
   <div class="vignette" id="renderContainer">
     <canvas id="render" width=512 height=512></canvas>
     <div class="overlay" id="renderOverlay">

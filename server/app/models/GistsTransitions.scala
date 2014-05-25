@@ -135,6 +135,7 @@ object GistsTransitions {
     //(__ \ 'description).json.pickBranch(stringOrNull) and
     (__ \ 'git_pull_url).json.pickBranch(string) and
     (__ \ 'html_url).json.pickBranch(string) and
+    (__ \ 'comments).json.pickBranch(Reads.of[JsNumber]) and
     (__ \ 'owner).json.copyFrom((__ \ 'owner \ 'login).json.pick(string)) and
     (__ \ 'name).json.copyFrom((__ \ 'files).json.pick(extractGlslNameFromFiles)) and
     (__ \ 'glsl).json.copyFrom((__ \ 'files).json.pick(extractGlslFromFiles)) and

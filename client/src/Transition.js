@@ -1,7 +1,7 @@
 var GlslTransition = require("glsl-transition");
 var _ = require("lodash");
 
-function Transition (id, uniforms, glsl, name, stars, starred, owner) {
+function Transition (id, uniforms, glsl, name, stars, starred, owner, comments) {
   this._f = {};
   this._prop("id", id);
   this._prop("owner", owner);
@@ -10,10 +10,11 @@ function Transition (id, uniforms, glsl, name, stars, starred, owner) {
   this._prop("uniforms", uniforms);
   this._prop("starred", starred);
   this._prop("stars", stars);
+  this._prop("comments", comments);
 }
 
 Transition.fromServerData = function (data) {
-  return new Transition(data.id, data.defaults, data.glsl, data.name, data.stars||0, !!data.stars, data.owner);
+  return new Transition(data.id, data.defaults, data.glsl, data.name, data.stars||0, !!data.stars, data.owner, data.comments);
 };
 
 var validationGlslTransitionContext = GlslTransition(document.createElement("canvas"));
