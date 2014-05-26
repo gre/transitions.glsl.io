@@ -5,12 +5,18 @@ var images = require("../../images").editor;
 var noUniforms = require("./noUniforms.hbs");
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
+var unsupportedTypes = ["sampler2D", "samplerCube"];
+
 function getCurrentUniforms (transition) {
   var uniforms = transition.getUniforms().uniforms;
   var uniformsKeys = _.difference(
       _.keys(uniforms),
       ignoredUniforms
-      );
+    );
+  uniformsKeys = _.filter(uniformsKeys, function (key) {
+    var type = uniforms[key];
+    return !_.contains(unsupportedTypes, type);
+  });
   return _.foldl(uniformsKeys, function (obj, k) {
     obj[k] = uniforms[k];
     return obj;
@@ -101,6 +107,7 @@ function labelsForType (t, name) {
   }
 }
 
+
 // onChange(value, index/*for vectors and matrixes*/)
 function componentForType (type, id, labelName, value, onChange) {
   var arity = arityForType(type);
@@ -162,7 +169,6 @@ module.exports = {
 
     var $properties = elt.querySelector("#properties");
 
-    var transitionFirstDefinition = Q.defer();
     var transitionDefined = Q.defer();
 
     var transitionViewerPromise;
@@ -233,7 +239,6 @@ module.exports = {
       transitionDefined.resolve();
       return transitionViewerPromise.then(function (transitionViewer) {
         transitionViewer.setGlsl(glsl);
-        transitionFirstDefinition.resolve();
         var uniforms = getCurrentUniforms(transitionViewer.transition);
         currentUniformValues = withoutInvalidValues(currentUniformValues, uniforms);
         if (!_.isEqual(currentUniforms, uniforms)) {
@@ -273,9 +278,8 @@ module.exports = {
       transitionViewer.start();
     });
 
-    setGlsl(transition.glsl).done();
     currentUniformValues = _.clone(transition.uniforms);
-    transition.onChange("glsl", function (glsl) {
+    transition.syncChange("glsl", function (glsl) {
       setGlsl(glsl).done();
     });
 
