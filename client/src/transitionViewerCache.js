@@ -28,6 +28,11 @@ function TransitionViewerCache (hover, canvas, resolution) {
 }
 
 TransitionViewerCache.prototype = {
+  destroy: function () {
+    this.canvas = null;
+    this.ctx = null;
+    this.canvases = null;
+  },
   setProgress: function (p) {
     var i = Math.floor(p * this.resolution);
     var canvas = this.canvases(i);

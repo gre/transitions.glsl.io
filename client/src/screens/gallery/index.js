@@ -16,6 +16,8 @@ var HEIGHT = 200;
 
 var defaultHoverProgress = 0.4;
 
+var unbind;
+
 function show (transitions) {
   return imagesP.then(function (images) {
 
@@ -27,19 +29,28 @@ function show (transitions) {
     canvasTransition.height = dpr * HEIGHT;
     var Transition = GlslTransition(canvasTransition);
 
-    var elements = _.map(transitions, function (transition) {
+    var destroyable = [];
+
+    var glslTransitions = _.map(transitions, function (transition) {
       var uniforms = _.extend({}, transition.uniforms, {
         from: images[0],
         to: images[1]
       });
-      var t;
       try {
-        t = Transition(transition.glsl, uniforms);
+        return {
+          transition: Transition(transition.glsl, uniforms),
+          uniforms: uniforms
+        };
       } catch (e) {
         console.log("Invalid Transition", transition);
         console.log(e);
-        return;
       }
+    });
+
+    var elements = _.map(_.zip(glslTransitions, transitions), function (o) {
+      var t = o[0].transition, uniforms = o[0].uniforms, transition = o[1];
+      if (!t) return;
+      destroyable.push(t);
 
       // FIXME: refactor this stuff. React?
       var element = document.createElement("div");
@@ -91,6 +102,7 @@ function show (transitions) {
         t.draw();
         return canvasTransition;
       }, canvas, 50);
+      destroyable.push(transitionViewerCache);
 
       if ("ontouchstart" in document) {
         // FIXME: the current mobile support is pretty unfinished...
@@ -221,13 +233,30 @@ function show (transitions) {
       return promise.delay(50).then(computation);
     }, Q());
 
+    unbind = function () {
+      _.each(destroyable, function (d) {
+        try { d.destroy(); } catch (e) { console.log("'"+e.message+"' when trying to destroy "+d); }
+      });
+      $galleryPublished.innerHTML = "";
+      $galleryUnpublished.innerHTML = "";
+      previewComputations = null;
+      destroyable = null;
+      glslTransitions = null;
+      transitions = null;
+      elements = null;
+      all = null;
+    }
+
     return { elt: elt, toolbar: toolbar };
   });
 }
 
 function init () {
   return {
-    show: show
+    show: show,
+    hide: function () {
+      if (unbind) unbind(); // FIXME: a destroy() should be given by the show
+    }
   };
 }
 

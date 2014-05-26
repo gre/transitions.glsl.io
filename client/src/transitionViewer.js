@@ -10,6 +10,12 @@ function TransitionViewer (canvas, Transition) {
 }
 
 TransitionViewer.prototype = {
+  destroy: function () {
+    if (this.transition) this.transition.destroy();
+    this.transition = null;
+    this.canvas = null;
+    this.Transition = null;
+  },
   setGlsl: function (glsl, uniforms) {
     if (this.transition) {
       this.Transition.abort();
