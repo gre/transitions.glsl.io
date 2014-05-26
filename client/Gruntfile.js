@@ -39,7 +39,8 @@ module.exports = function (grunt) {
     },
     watch: {
       options: {
-        livereload: 35735
+        livereload: 35735,
+        debounceDelay: 1000
       },
       js: {
         files: ['src/**/*.js', 'src/**/*.hbs'],

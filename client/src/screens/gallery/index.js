@@ -10,6 +10,7 @@ var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
 var env = require("../../env");
 var model = require("../../model");
+var Validator = require("../../validator");
 
 var WIDTH = 300;
 var HEIGHT = 200;
@@ -18,20 +19,46 @@ var defaultHoverProgress = 0.4;
 
 var unbind;
 
+function Paginator (collection, size, onPaginate) {
+  this.collection = collection;
+  this.size = size;
+  this.onPaginate = onPaginate;
+}
+
+Paginator.prototype = {
+  paginate: function (page) {
+    this.page = page;
+    this.view = _.take(_.tail(this.collection, page * this.size), this.size);
+    return this.onPaginate(this.view);
+  },
+  hasPrev: function () {
+    return this.page !== 0;
+  },
+  hasNext: function () {
+    return (this.page+1) * this.size < this.collection.length;
+  },
+  fromUrlParameter: function (params) {
+    this.paginate(params.page || 0);
+  },
+  getUrlParameter: function () {
+    return { page: this.page };
+  }
+};
+
 function show (transitions) {
+  var validator = new Validator();
   return imagesP.then(function (images) {
 
     var dpr = window.devicePixelRatio || 1;
 
     var previewComputations = [];
+
     var canvasTransition = document.createElement("canvas");
     canvasTransition.width = dpr * WIDTH;
     canvasTransition.height = dpr * HEIGHT;
     var Transition = GlslTransition(canvasTransition);
 
-    var destroyable = [];
-
-    var glslTransitions = _.map(transitions, function (transition) {
+    function createGlslTransition (transition) {
       var uniforms = _.extend({}, transition.uniforms, {
         from: images[0],
         to: images[1]
@@ -45,13 +72,31 @@ function show (transitions) {
         console.log("Invalid Transition", transition);
         console.log(e);
       }
-    });
+    }
 
-    var elements = _.map(_.zip(glslTransitions, transitions), function (o) {
-      var t = o[0].transition, uniforms = o[0].uniforms, transition = o[1];
-      if (!t) return;
-      destroyable.push(t);
+    function createPreviewList (transitions) {
+      var objs = _.flatten(_.map(transitions, function (transition) {
+        var glsl = createGlslTransition(transition);
+        if (glsl) {
+          return createPreview(transition, glsl.transition, glsl.uniforms);
+        }
+      }));
+      var div = document.createElement("div");
+      _.each(objs, function (obj) {
+        div.appendChild(obj.node);
+      });
+      return {
+        node: div,
+        destroy: function () {
+          _.each(objs, function (o) {
+            o.destroy();
+          });
+          objs = null;
+        }
+      };
+    }
 
+    function createPreview (transition, t, uniforms) {
       // FIXME: refactor this stuff. React?
       var element = document.createElement("div");
       element.className = "vignette "+(transition.starred ? "starred" : "");
@@ -62,8 +107,10 @@ function show (transitions) {
       canvas.width = canvasTransition.width;
       canvas.height = canvasTransition.height;
       element.appendChild(canvas);
-      var overlay = document.createElement("div");
+      var overlay = document.createElement("a");
+      overlay.href = "/transition/"+transition.id;
       overlay.className = "overlay";
+      /*
       var stars = document.createElement("span");
       stars.className = "stars";
       stars.title = "Click to star/unstar";
@@ -77,6 +124,7 @@ function show (transitions) {
       stars.appendChild(starsCount);
       stars.appendChild(starsIcon);
       element.appendChild(stars);
+      */
       var title = document.createElement("span");
       title.className = "title";
       var tname = document.createElement("em");
@@ -102,7 +150,6 @@ function show (transitions) {
         t.draw();
         return canvasTransition;
       }, canvas, 50);
-      destroyable.push(transitionViewerCache);
 
       if ("ontouchstart" in document) {
         // FIXME: the current mobile support is pretty unfinished...
@@ -142,26 +189,7 @@ function show (transitions) {
         }, false);
       }
 
-      previewComputations.push(function(){
-        transitionViewerCache.hover(defaultHoverProgress);
-      });
-      return element;
-    });
-
-    _.each(_.zip(elements, transitions), function (o) {
-      var element = o[0], transition = o[1];
-      if (!element) return;
-      ClickButton({
-        el: element.querySelector(".overlay"),
-        f: function () {
-          return routes.route("/transition/"+transition.id);
-        }
-      }).bind();
-    });
-
-    _.each(_.zip(elements, transitions), function (o) {
-      var element = o[0], transition = o[1];
-      if (!element) return;
+      /*
       ClickButton({
         el: element.querySelector(".stars"),
         f: function () {
@@ -197,11 +225,23 @@ function show (transitions) {
           });
         }
       }).bind();
-    });
+      */
 
-    var all = _.groupBy(_.zip(elements, transitions), function (o) {
-      var element = o[0], transition = o[1];
-      if (!element) return 'invalid';
+      previewComputations.push(function(){
+        transitionViewerCache.hover(defaultHoverProgress);
+      });
+      return {
+        node: element,
+        destroy: function () {
+          transitionViewerCache.destroy();
+          t.destroy();
+        }
+      };
+    }
+
+    var groups = _.groupBy(transitions, function (transition) {
+      var valid = validator.validate(transition);
+      if (!valid) return 'invalid';
       if (transition.owner === env.user && transition.name === "TEMPLATE")
         return 'unpublished';
       return 'published';
@@ -209,38 +249,69 @@ function show (transitions) {
 
     var elt = document.createElement("div");
     var toolbar = document.createElement("div");
-    elt.innerHTML = template(all);
-    toolbar.innerHTML = templateToolbar(all);
+    elt.innerHTML = template(groups);
+    toolbar.innerHTML = templateToolbar(groups);
 
-    var $galleryPublished = elt.querySelector(".gallery-published");
-    var $galleryUnpublished = elt.querySelector(".gallery-unpublished");
+    var publishedPreviewList, unpublishedPreviewList;
 
-    $galleryPublished.innerHTML = "";
-    _.each(all.published||[], function (o) {
-      var element = o[0], transition = o[1];
-      $galleryPublished.appendChild(element);
-    });
+    if (groups.published) {
+      var $galleryPublished = elt.querySelector(".gallery-published");
+      var paginator = new Paginator(groups.published, 12, function (view) {
+        $galleryPublished.innerHTML = "";
+        if (this.hasPrev()) {
+          var prev = document.createElement("a");
+          prev.className = "page-nav prev";
+          prev.textContent = "← Page "+(this.page);
+          ClickButton({
+            el: prev,
+            f: function () {
+              return paginator.paginate(paginator.page - 1);
+            }
+          }).bind();
+          $galleryPublished.appendChild(prev);
+        }
+        if (publishedPreviewList) publishedPreviewList.destroy();
+        publishedPreviewList = createPreviewList(view);
+        $galleryPublished.appendChild(publishedPreviewList.node);
+        if (this.hasNext()) {
+          var next = document.createElement("a");
+          next.className = "page-nav next";
+          next.textContent = "Page "+(this.page+2)+" →";
+          ClickButton({
+            el: next,
+            f: function () {
+              return paginator.paginate(paginator.page + 1);
+            }
+          }).bind();
+          $galleryPublished.appendChild(next);
+        }
 
-    if (all.unpublished) {
-      $galleryUnpublished.innerHTML = "";
-      _.each(all.unpublished||[], function (o) {
-        var element = o[0], transition = o[1];
-        $galleryUnpublished.appendChild(element);
+        _.reduce(previewComputations, function (promise, computation) {
+          return promise.delay(50).then(computation);
+        }, Q());
+        previewComputations = [];
       });
+      paginator.paginate(0);
+    }
+
+    if (groups.unpublished) {
+      var $galleryUnpublished = elt.querySelector(".gallery-unpublished");
+      $galleryUnpublished.innerHTML = "";
+      unpublishedPreviewList = createPreviewList(groups.unpublished);
+      $galleryUnpublished.appendChild(unpublishedPreviewList.node);
     }
 
     _.reduce(previewComputations, function (promise, computation) {
       return promise.delay(50).then(computation);
     }, Q());
+    previewComputations = [];
 
     unbind = function () {
-      _.each(destroyable, function (d) {
-        try { d.destroy(); } catch (e) { console.log("'"+e.message+"' when trying to destroy "+d); }
-      });
+      if (unpublishedPreviewList) unpublishedPreviewList.destroy();
+      if (publishedPreviewList) publishedPreviewList.destroy();
       $galleryPublished.innerHTML = "";
       $galleryUnpublished.innerHTML = "";
       previewComputations = null;
-      destroyable = null;
       glslTransitions = null;
       transitions = null;
       elements = null;
