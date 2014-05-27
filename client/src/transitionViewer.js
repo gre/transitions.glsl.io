@@ -82,10 +82,15 @@ TransitionViewer.prototype = {
           self.nextFromTo();
         })
         .then(loop)
-        .fail(function(){
+        .fail(function(e){
           // Recover an interrupted animation
-          // console.log("interrupted", arguments[0]);
-          return loop();
+          if (e instanceof GlslTransition.TransitionAbortedError) {
+            return Q.delay(200).then(loop);
+          }
+          else {
+            console.log("TransitionViewer transition anormally aborted", e.stack);
+            return Q.delay(2000).then(loop);
+          }
         });
     }());
   },
