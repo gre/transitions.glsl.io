@@ -306,7 +306,18 @@ function show (transitions) {
     }, Q());
     previewComputations = [];
 
+    function onResize () {
+      var width = (window.innerWidth-20);
+      var thumbnailWidth = 312;
+      var innerWidth = thumbnailWidth * Math.floor(width/thumbnailWidth);
+      elt.style.margin = "0px "+Math.floor((width-innerWidth)/2)+"px";
+    }
+
+    onResize();
+    window.addEventListener("resize", onResize, false);
+
     unbind = function () {
+      window.removeEventListener("resize", onResize);
       if (unpublishedPreviewList) unpublishedPreviewList.destroy();
       if (publishedPreviewList) publishedPreviewList.destroy();
       $galleryPublished.innerHTML = "";
