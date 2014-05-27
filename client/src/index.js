@@ -1,7 +1,3 @@
-/**
- * Entry point of the editor app
- */
-
 var _ = require("lodash");
 var screens = require("./screens");
 var app = require("./app");

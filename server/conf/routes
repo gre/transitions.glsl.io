@@ -17,4 +17,7 @@ POST    /api/transitions/:id        controllers.Transitions.save(id)
 GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
 
 GET     /                           controllers.Application.index(path = "")
+GET     /transition/:id             controllers.Application.transition(id)
+GET     /transition/:id/preview.jpg controllers.Application.transitionPreview(id)
+GET     /transition/:id/embed       controllers.Application.transitionEmbed(id)
 GET     /*any                       controllers.Application.index(any)

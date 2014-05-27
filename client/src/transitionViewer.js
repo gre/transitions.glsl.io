@@ -28,13 +28,15 @@ TransitionViewer.prototype = {
   },
   setUniforms: function (uniforms) {
     this.uniforms = uniforms;
-    this.transition.reset();
-    _.each(this.getAllUniforms(), function (value, u) {
-      this.transition.setUniform(u, value);
-    }, this);
-    if (!this.running) {
-      this.transition.setUniform("progress", this.lastHover);
-      this.transition.draw();
+    if (this.transition) {
+      this.transition.reset();
+      _.each(this.getAllUniforms(), function (value, u) {
+        this.transition.setUniform(u, value);
+      }, this);
+      if (!this.running) {
+        this.transition.setUniform("progress", this.lastHover);
+        this.transition.draw();
+      }
     }
   },
   setImages: function (images) {
@@ -77,7 +79,7 @@ TransitionViewer.prototype = {
     return (function loop () {
       if (!self.running) return;
       return Q.fcall(_.bind(self.animate, self, transitionDuration||1500))
-        .delay(transitionPause||0)
+        .delay(transitionPause||100)
         .then(function () {
           self.nextFromTo();
         })

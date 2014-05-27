@@ -1,5 +1,6 @@
-@(version: String, rootGist: String, userName: Option[String])
+@(version: String, rootGist: String, userName: Option[String], maybeTransition: Option[play.api.libs.json.JsValue])
 
+@import play.api.libs.json._
 @import play.api._
 
 <!DOCTYPE html>
@@ -11,11 +12,25 @@
   <meta name="keywords" content="WebGL,GLSL,Transitions,JavaScript" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="GLSL.io">
-  <meta name="twitter:title" content="GLSL.io, an Open Collection of GLSL Transitions.">
-  <meta name="twitter:description" content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software.">
-  <meta name="twitter:creator" content="@@glslio">
+
+  @maybeTransition.map { transition =>
+    <meta name="twitter:card"           content="player">
+    <meta name="twitter:title"          content="GLSL.io – @{(transition\"name").as[String]}">
+    <meta name="twitter:creator"        content="@@glslio">
+    <meta name="twitter:site"           content="@@glslio">
+    <meta name="twitter:description"    content="GLSL.io transition – @{(transition\"name").as[String]}">
+    <meta name="twitter:image:src"      content="https://glsl.io/transitions/@{(transition\"id").as[String]}/preview.jpg">
+    <meta name="twitter:domain"         content="glsl.io">
+    <meta name="twitter:player"         content="https://glsl.io/transitions/@{(transition\"id").as[String]}/embed">
+    <meta name="twitter:player:width"   content="435">
+    <meta name="twitter:player:height"  content="290">
+  }.getOrElse {
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="GLSL.io">
+    <meta name="twitter:title" content="GLSL.io, an Open Collection of GLSL Transitions.">
+    <meta name="twitter:description" content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software.">
+    <meta name="twitter:creator" content="@@glslio">
+  }
 
   <link rel="stylesheet" href="/assets/bundle.css?v=@{version}" />
   <link rel="stylesheet" href="/assets/vendors/font-awesome-4.1.0/css/font-awesome.min.css" />

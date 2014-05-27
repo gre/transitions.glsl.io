@@ -12,12 +12,20 @@ module.exports = function (grunt) {
       prod: {
         src: 'tmp/bundle-before-min.js',
         dest: '../server/public/bundle.js'
+      },
+      embed: {
+        src: '../server/public/embed.js',
+        dest: '../server/public/embed.min.js'
       }
     },
     stylus: {
       app: {
         src: 'src/index.styl',
         dest: '../server/public/bundle.css'
+      },
+      embed: {
+        src: 'src/embed.styl',
+        dest: '../server/public/embed.css'
       }
     },
     browserify: {
@@ -35,6 +43,10 @@ module.exports = function (grunt) {
         options: {
           transform: ["hbsfy"]
         }
+      },
+      embed: {
+        src: 'src/embed.js',
+        dest: '../server/public/embed.js'
       }
     },
     watch: {
@@ -44,7 +56,7 @@ module.exports = function (grunt) {
       },
       js: {
         files: ['src/**/*.js', 'src/**/*.hbs'],
-        tasks: ['jshint', 'browserify:app'],
+        tasks: ['jshint', 'browserify:app', 'browserify:embed', 'uglify:embed'],
       },
       css: {
         files: ['src/**/*.styl'],
@@ -55,6 +67,6 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask('default', ['build', 'watch']);
-  grunt.registerTask('build', ['jshint', 'browserify:app', 'stylus:app']);
-  grunt.registerTask('build-prod', ['jshint', 'browserify:prod', 'uglify', 'stylus:app']);
+  grunt.registerTask('build', ['jshint', 'browserify:app', 'browserify:embed', 'uglify:embed', 'stylus:app', 'stylus:embed']);
+  grunt.registerTask('build-prod', ['jshint', 'browserify:prod', 'browserify:embed', 'uglify', 'stylus:app', 'stylus:embed']);
 };

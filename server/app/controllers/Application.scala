@@ -29,7 +29,7 @@ import collection.JavaConversions._
 
 import eu.henkelmann.actuarius._
 
-object Application extends Controller with GithubOAuthController {
+object Application extends Controller with GithubOAuthController with MongoController {
   def rootGist = Global.rootGist
 
   var version = Play.current.configuration.getString("application.version").get
@@ -52,17 +52,43 @@ object Application extends Controller with GithubOAuthController {
     Redirect(redirectUrl).withSession()
   }
 
-  def index (path: String) = Action.async { implicit request =>
+  def app (maybeTransition: Option[JsValue])(implicit request: Request[_]) = {
     parseToken.map { implicit token =>
       val maybeUser = UserWS.me
       maybeUser.map { user =>
         val login = (user \ "login").asOpt[String]
         val session = login.map(login => request.session + ("login" -> login)).getOrElse(request.session)
-        Ok(views.html.index(version, rootGist, login))
+        Ok(views.html.index(version, rootGist, login, maybeTransition))
           .withSession(session)
       }
     }.getOrElse {
-      Future(Ok(views.html.index(version, rootGist, None)))
+      Future(Ok(views.html.index(version, rootGist, None, maybeTransition)))
+    }
+  }
+
+  def index (path: String) =
+    Action.async { implicit request =>
+      app(None)
+    }
+
+  def transition (id: String) =
+    Action.async { implicit request =>
+    models.Transitions.get(id).flatMap { maybeTransition =>
+      app(maybeTransition)
+    }
+  }
+
+  def transitionPreview (id: String) = Cached("transitionPreview_"+id, 60) {
+    Action {
+      Ok.stream(Enumerator.fromFile(Play.getFile("/public/images/preview.jpg")))
+    }
+  }
+
+  def transitionEmbed (id: String) = Action.async { implicit request =>
+    models.Transitions.get(id).map { maybeTransition =>
+      maybeTransition.map { transition =>
+        Ok(views.html.embed(version, transition))
+      }.getOrElse(NotFound)
     }
   }
 }
