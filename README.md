@@ -13,7 +13,7 @@ Build & Run
 
 **Building Front End stack:**
 
-Requires: http://nodejs.org/ installed.
+Requires: http://nodejs.org/ installed. Also http://gruntjs.com/installing-grunt
 
 ```bash
 # in ./client/
