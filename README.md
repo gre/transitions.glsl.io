@@ -57,15 +57,23 @@ License
 Release Notes
 ---
 
-### Version 1.0 - 19 May 2014
+### Version 1.2 - 28 May 2014
 
-- Github authentification
-- Gist support (read forks on bootstrap, save to gist only)
-- Minimal gallery with overview controls
-- Minimal editor: live GLSL editor, uniforms, overview
-- Create a Transition
-- Save a Transition
-- About page
+- **Gallery**
+  - #16 : Add an "Unpublished transitions" section to display the user not published transitions.
+  - #11 : Add Pagination.
+  - #54 : Free the gallery memory when leaving it
+  - Center the gallery
+- **Editor**
+  - #50 : Support for new custom uniform types: mat2, mat3, mat4, ivec2, ivec3, ivec4, bvec2, bvec3, bvec4
+  - #46 : Add Ctrl+S / ⌘+S shortcut support for saving the transition
+  - #57 : Bugfix an editor freeze when trying to use unsupported uniform types
+  - #45 : Make sure all GLSL errors get caught by the validator (double check the GLSL both by compiling it and running it into glsl-parser which had some differences in order that you can't save an invalid Transition)
+  - #24 : Add a comments count meta info in the Transition
+  - Bugfix the uniform change detection so that a uniform can be changes live (instantly see the result in the current transition)
+- **Misc**
+  - #41 : Twitter stream is available in about page
+  - WIP for a better Twitter Card Integration
 
 ### Version 1.1 - 21 May 2014
 
@@ -85,20 +93,12 @@ Release Notes
   - #15 : When login/logout, stay on the same URL
   - #29 : Improve meta data in <head> for social networks
 
-### Version 1.2 - 28 May 2014
+### Version 1.0 - 19 May 2014
 
-- **Gallery**
-  - #16 : Add an "Unpublished transitions" section to display the user not published transitions.
-  - #11 : Add Pagination.
-  - #54 : Free the gallery memory when leaving it
-  - Center the gallery
-- **Editor**
-  - #50 : Support for new custom uniform types: mat2, mat3, mat4, ivec2, ivec3, ivec4, bvec2, bvec3, bvec4
-  - #46 : Add Ctrl+S / ⌘+S shortcut support for saving the transition
-  - #57 : Bugfix an editor freeze when trying to use unsupported uniform types
-  - #45 : Make sure all GLSL errors get caught by the validator (double check the GLSL both by compiling it and running it into glsl-parser which had some differences in order that you can't save an invalid Transition)
-  - #24 : Add a comments count meta info in the Transition
-  - Bugfix the uniform change detection so that a uniform can be changes live (instantly see the result in the current transition)
-- **Misc**
-  - #41 : Twitter stream is available in about page
-  - WIP for a better Twitter Card Integration
+- Github authentification
+- Gist support (read forks on bootstrap, save to gist only)
+- Minimal gallery with overview controls
+- Minimal editor: live GLSL editor, uniforms, overview
+- Create a Transition
+- Save a Transition
+- About page
