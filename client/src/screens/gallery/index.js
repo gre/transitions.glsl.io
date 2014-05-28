@@ -254,8 +254,10 @@ function show (transitions) {
 
     var publishedPreviewList, unpublishedPreviewList;
 
+    var $galleryPublished;
+
     if (groups.published) {
-      var $galleryPublished = elt.querySelector(".gallery-published");
+      $galleryPublished = elt.querySelector(".gallery-published");
       var paginator = new Paginator(groups.published, 12, function (view) {
         $galleryPublished.innerHTML = "";
         if (this.hasPrev()) {
@@ -294,8 +296,9 @@ function show (transitions) {
       paginator.paginate(0);
     }
 
+    var $galleryUnpublished;
     if (groups.unpublished) {
-      var $galleryUnpublished = elt.querySelector(".gallery-unpublished");
+      $galleryUnpublished = elt.querySelector(".gallery-unpublished");
       $galleryUnpublished.innerHTML = "";
       unpublishedPreviewList = createPreviewList(groups.unpublished);
       $galleryUnpublished.appendChild(unpublishedPreviewList.node);
@@ -309,8 +312,9 @@ function show (transitions) {
     function onResize () {
       var width = (window.innerWidth-20);
       var thumbnailWidth = 312;
-      var innerWidth = thumbnailWidth * Math.floor(width/thumbnailWidth);
-      elt.style.margin = "0px "+Math.floor((width-innerWidth)/2)+"px";
+      var innerWidth = 1 + thumbnailWidth * Math.floor(width/thumbnailWidth);
+      if ($galleryPublished) $galleryPublished.style.width = innerWidth+"px";
+      if ($galleryUnpublished) $galleryUnpublished.style.width = innerWidth+"px";
     }
 
     onResize();
@@ -320,8 +324,8 @@ function show (transitions) {
       window.removeEventListener("resize", onResize);
       if (unpublishedPreviewList) unpublishedPreviewList.destroy();
       if (publishedPreviewList) publishedPreviewList.destroy();
-      $galleryPublished.innerHTML = "";
-      $galleryUnpublished.innerHTML = "";
+      if ($galleryPublished) $galleryPublished.innerHTML = "";
+      if ($galleryUnpublished) $galleryUnpublished.innerHTML = "";
       previewComputations = null;
       glslTransitions = null;
       transitions = null;

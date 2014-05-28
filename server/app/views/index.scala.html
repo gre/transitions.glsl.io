@@ -99,7 +99,13 @@
   window.ROOT_GIST = "@rootGist";
   window.CONNECTED_USER = @{userName.map(name => Html(s""""$name"""")).getOrElse("null")};
   </script>
+  
+  @if(Play.current.mode == Mode.Dev) {
   <script src="/assets/bundle.js?v=@{version}"></script>
+  }else{
+  <script src="/assets/bundle.min.js?v=@{version}"></script>
+  }
+  
 
   @if(Play.current.mode == Mode.Dev) {
   <script src="//localhost:35735/livereload.js"></script>

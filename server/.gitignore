@@ -1,5 +1,9 @@
+run.sh
 .DS_Store
 logs
+public/embed.min.js
+public/embed.js
+public/bundle.min.js
 public/bundle.js
 public/bundle.css
 project/project

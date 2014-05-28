@@ -23,7 +23,11 @@
   <script>
   var transition = @Html(transition.toString());
   </script>
+  @if(Play.current.mode == Mode.Dev) {
   <script src="/assets/embed.js?v=@{version}"></script>
+  }else{
+  <script src="/assets/embed.min.js?v=@{version}"></script>
+  }
 
   @if(Play.current.mode == Mode.Dev) {
   <script src="//localhost:35735/livereload.js"></script>

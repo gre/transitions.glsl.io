@@ -5,7 +5,7 @@ REMOTE_APP=/home/play/glsl.io/
 
 cd client;
 npm install || exit 1;
-grunt build-prod || exit 2;
+grunt build || exit 2;
 cd ..;
 cd server;
 sbt stage || exit 3;
