@@ -9,8 +9,6 @@ var app = require("./app");
 var Transition = require("./Transition");
 var env = require("./env");
 
-var routes;
-
 function home() {
   return app.show("home");
 }
@@ -88,7 +86,7 @@ var _router = Router(_.mapValues(routes, Qroute)).configure({
   }
 });
 
-module.exports = routes = {
+module.exports = {
   init: function () {
     _router.init();
     return Q.delay(100).then(function(){

@@ -27,7 +27,7 @@ module.exports = function (grunt) {
         dest: '../server/public/bundle.css'
       },
       embed: {
-        src: 'src/embed.styl',
+        src: 'src/embed/index.styl',
         dest: '../server/public/embed.css'
       }
     },
@@ -41,7 +41,7 @@ module.exports = function (grunt) {
         }
       },
       embed: {
-        src: 'src/embed.js',
+        src: 'src/embed/index.js',
         dest: '../server/public/embed.js'
       }
     },

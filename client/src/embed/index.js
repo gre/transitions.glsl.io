@@ -1,6 +1,6 @@
 var Q = require("q");
 var Qimage = require("qimage");
-var TransitionViewer = require("./transitionViewer");
+var TransitionViewer = require("../transitionViewer");
 var transition = window.transition;
 var width = 435;
 var height = 290;

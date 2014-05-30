@@ -7,7 +7,7 @@ var ClickButton = function (options) {
   }
   var self = this;
   this._onclick = function (e) {
-    self.onClick(e);
+    self.onClick(e).done();
   };
   this.pending = Q();
 };
@@ -60,7 +60,9 @@ ClickButton.prototype = {
         .fin(function () {
           self.setActive(false);
         });
+      return this.pending;
     }
+    return Q();
   },
   isValidClickEvent: function (e) {
     // left click only and no control key pressed
