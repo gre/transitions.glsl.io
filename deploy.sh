@@ -3,6 +3,7 @@
 REMOTE=play@glsl.io
 REMOTE_APP=/home/play/glsl.io/
 
+export NODE_ENV="production";
 cd client;
 npm install || exit 1;
 grunt build || exit 2;

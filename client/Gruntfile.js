@@ -36,7 +36,7 @@ module.exports = function (grunt) {
         src: 'src/index.js',
         dest: '../server/public/bundle.js',
         options: {
-          transform: ["hbsfy"],
+          transform: ["envify", "hbsfy", "reactify"],
           debug: true
         }
       },

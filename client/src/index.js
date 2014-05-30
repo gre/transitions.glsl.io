@@ -5,6 +5,10 @@ var routes = require("./routes");
 var ClickButton = require("./clickbutton");
 var dom = require("./dom");
 
+if ("production" !== process.env.NODE_ENV) {
+  window.React = require("react");
+}
+
 ClickButton({
   el: document.body,
   resolveTarget: function (e) {
