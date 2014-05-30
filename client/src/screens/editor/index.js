@@ -1,13 +1,13 @@
 var View = require("./view");
-var Validator = require("../../validator");
+var Validator = require("../../core/glslFragmentValidator");
 var Q = require("q");
 var _ = require("lodash");
-var ClickButton = require("../../clickbutton");
+var ClickButton = require("../../core/clickbutton");
 var ace = window.ace;
 var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
 var model = require("../../model");
-var routes = require("../../routes");
+var routes = require("../../core/routes");
 var env = require("../../env");
 
 function logExceptions (f) {
@@ -58,13 +58,12 @@ function createEditor ($editor) {
 var afterShow;
 var unbind;
 
-function show (args) {
-  if (!args || !args.transition) throw new Error("args.transition required.");
-  var transition = args.transition;
+function show (transition) {
+  var args = { transition: transition };
   var elt = document.createElement("div");
   elt.id = "editor-wrapper";
   var toolbar = document.createElement("div");
-  args.isPublished = args.gist.name !== "TEMPLATE";
+  args.isPublished = transition.name !== "TEMPLATE";
   args.isMyGist = transition.owner === env.user;
   args.isRootGist = transition.id === env.rootGist;
   args.isRootOrMyGist = args.isRootGist || args.isMyGist;
@@ -114,7 +113,7 @@ function show (args) {
         e.preventDefault();
         return false;
       },
-      f: function (e) {
+      f: function () {
         if (!this.isEnabled()) return;
         if (lastSavingTransition.equals(transition)) return;
         var self = this;
@@ -164,7 +163,7 @@ function show (args) {
       publishTransitionButton = ClickButton({
         el: publishTransitionElt,
         f: function () {
-          var name = prompt("Please choose a transition name (alphanumeric only):");
+          var name = window.prompt("Please choose a transition name (alphanumeric only):");
           if (name.match(/^[a-zA-Z0-9_]+$/)) {
             transition.name = name;
             saveTransitionButton.enable();
@@ -175,7 +174,7 @@ function show (args) {
             return saveTransitionButton.pending;
           }
           else {
-            alert("Title must be alphanumeric.");
+            window.alert("Title must be alphanumeric.");
           }
         }
       });
@@ -206,7 +205,7 @@ function show (args) {
   editor.commands.addCommand({
     name: 'save',
     bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
-    exec: function(editor) {
+    exec: function () {
       if (saveTransitionButton) {
         saveTransitionButton.pending.then(function () {
           if (!saveTransitionButton.pending.isPending()) {

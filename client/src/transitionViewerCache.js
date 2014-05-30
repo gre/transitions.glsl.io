@@ -1,6 +1,8 @@
 var _ = require("lodash");
 var Q = require("q");
-var requestAnimationFrame = require("./requestAnimationFrame");
+var requestAnimationFrame = require("raf");
+
+// FIXME: refactor by extending transitionViewer ?
 
 function screenshot (canvas) {
   var c = document.createElement("canvas");

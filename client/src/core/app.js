@@ -5,6 +5,8 @@
 var Q = require("q");
 var _ = require("lodash");
 var dom = require("./dom");
+var routes = require("./routes");
+var catchAllLinks = require("./catchAllLinks");
 
 var $screen = dom.screen;
 var $toolbar = dom.toolbar;
@@ -23,14 +25,6 @@ function display (maybeNode, value) {
 }
 
 var screens;
-function init (_screens) {
-  screens = _.mapValues(_screens, function (f) {
-    return f();
-  });
-  screensD.resolve(screens);
-  return allReady;
-}
-
 var currentlyShowing = Q();
 var current;
 function show (screen, args) {
@@ -67,6 +61,19 @@ function show (screen, args) {
     })
   ]);
   return currentlyShowing;
+}
+
+function init (_screens, _routes) {
+  catchAllLinks().bind();
+  screens = _.mapValues(_screens, function (f) {
+    return f();
+  });
+  screensD.resolve(screens);
+  return allReady.then(function () {
+    return routes.init(_routes, function () {
+      show("error", "Not Found");
+    });
+  });
 }
 
 module.exports = {

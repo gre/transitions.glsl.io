@@ -23,7 +23,8 @@
     "qdebounce": "0.1.x",
     "qimage": "1.1.x",
     "lodash": "2.4.1",
-    "highlight.js": "8.0.0"
+    "highlight.js": "8.0.0",
+    "raf": "2.0.0"
   },
   "devDependencies": {
     "envify": "1.2.1",

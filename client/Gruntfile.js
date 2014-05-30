@@ -9,7 +9,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
     jshint: {
       options: grunt.file.readJSON('.jshintrc'),
-      src: ['src/**.js']
+      src: ['src/**/*.js']
     },
     uglify: {
       prod: {

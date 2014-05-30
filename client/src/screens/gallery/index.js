@@ -1,16 +1,18 @@
-var imagesP = require("../../images").gallery;
 var _ = require("lodash");
 var Q = require("q");
-var Qajax = require("qajax");
-var ClickButton = require("../../clickbutton");
+var Qimage = require("qimage");
+var ClickButton = require("../../core/clickbutton");
 var GlslTransition = require("glsl-transition");
 var TransitionViewerCache = require("../../transitionViewerCache");
-var routes = require("../../routes");
 var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
 var env = require("../../env");
-var model = require("../../model");
-var Validator = require("../../validator");
+var Validator = require("../../core/glslFragmentValidator");
+
+var imagesP = Q.all([
+  Qimage("/assets/images/gallery/1.jpg"),
+  Qimage("/assets/images/gallery/2.jpg")
+]);
 
 var WIDTH = 300;
 var HEIGHT = 200;
@@ -133,7 +135,7 @@ function show (transitions) {
       tauthor.textContent = transition.owner;
       title.appendChild(tname);
       title.appendChild(document.createTextNode(" by "));
-      title.appendChild(tauthor)
+      title.appendChild(tauthor);
       element.appendChild(title);
       element.appendChild(overlay);
       var cursor = document.createElement("span");
@@ -327,11 +329,8 @@ function show (transitions) {
       if ($galleryPublished) $galleryPublished.innerHTML = "";
       if ($galleryUnpublished) $galleryUnpublished.innerHTML = "";
       previewComputations = null;
-      glslTransitions = null;
       transitions = null;
-      elements = null;
-      all = null;
-    }
+    };
 
     return { elt: elt, toolbar: toolbar };
   });

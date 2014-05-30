@@ -1,6 +1,8 @@
 var GlslTransition = require("glsl-transition");
 var _ = require("lodash");
 
+// FIXME This whole code will disappear...
+
 function Transition (id, uniforms, glsl, name, stars, starred, owner, comments) {
   this._f = {};
   this._prop("id", id);

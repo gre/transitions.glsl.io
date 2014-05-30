@@ -28,16 +28,16 @@
 </span>
 
 <span class="gist-infos">
-  <a class="open-gist transition-name" target="_blank" href="https://gist.github.com/{{ gist.owner }}/{{ gist.id }}">
+  <a class="open-gist transition-name" target="_blank" href="https://gist.github.com/{{ transition.owner }}/{{ transition.id }}">
     {{#if isRootGist}}
     This is the <i class="fa fa-github"></i> transition template.
     {{else}}{{#if isPublished}}
-    <i class="fa fa-github"></i> {{ gist.name }}
+    <i class="fa fa-github"></i> {{ transition.name }}
     {{else}}
     <i class="fa fa-github"></i> Gist
     {{/if}}{{/if}}
   </a>
   {{#unless isRootGist}}
-  by <a target="_blank" href="https://gist.github.com/{{ gist.owner }}">{{ gist.owner }}</a>
+  by <a target="_blank" href="https://gist.github.com/{{ transition.owner }}">{{ transition.owner }}</a>
   {{/unless}}
 </span>

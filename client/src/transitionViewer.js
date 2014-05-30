@@ -2,6 +2,8 @@ var GlslTransition = require("glsl-transition");
 var _ = require("lodash");
 var Q = require("q");
 
+// FIXME make that a react module
+
 function TransitionViewer (canvas, Transition) {
   if (!(this instanceof TransitionViewer)) return new TransitionViewer(canvas);
   this.canvas = canvas;

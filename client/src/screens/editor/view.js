@@ -1,11 +1,38 @@
 var _ = require("lodash");
 var Q = require("q");
+var Qimage = require("qimage");
 var TransitionViewer = require("../../transitionViewer");
-var images = require("../../images").editor;
 var noUniforms = require("./noUniforms.hbs");
+var images = Q.all([
+  Qimage("/assets/images/editor/1.jpg"),
+  Qimage("/assets/images/editor/2.jpg"),
+  Qimage("/assets/images/editor/3.jpg")
+]);
+
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 var unsupportedTypes = ["sampler2D", "samplerCube"];
+
+var inputPrimitiveTypes = {
+  "float": {
+    type: "number",
+    step: 0.1,
+    value: 0.0,
+    get: function (input) { return parseFloat(input.value, 10); }
+  },
+  "int": {
+    type: "number",
+    step: 1,
+    value: 0,
+    get: function (input) { return parseInt(input.value, 10); }
+  },
+  "bool": {
+    type: "checkbox",
+    checked: false,
+    get: function (input) { return input.checked; }
+  }
+};
+
 
 function getCurrentUniforms (transition) {
   var uniforms = transition.getUniforms().uniforms;
@@ -28,22 +55,22 @@ function arityForType (t) {
   if (_.contains(t, "vec2")) return 2;
   if (_.contains(t, "vec3")) return 3;
   if (_.contains(t, "vec4")) return 4;
-  if (t == "mat2") return 4;
-  if (t == "mat3") return 9;
-  if (t == "mat4") return 16;
+  if (t === "mat2") return 4;
+  if (t === "mat3") return 9;
+  if (t === "mat4") return 16;
   return 1;
 }
 function componentLinesForType (t) {
-  if (t == "mat2") return 2;
-  if (t == "mat3") return 3;
-  if (t == "mat4") return 4;
+  if (t === "mat2") return 2;
+  if (t === "mat3") return 3;
+  if (t === "mat4") return 4;
   return 1;
 }
 
 function primitiveForType (t) {
   if (t in inputPrimitiveTypes) return t;
-  if (t[0] == "b") return "bool";
-  if (t[0] == "i") return "int";
+  if (t[0] === "b") return "bool";
+  if (t[0] === "i") return "int";
   return "float";
 }
 
@@ -59,45 +86,25 @@ function defaultValueForType (t) {
   return arr;
 }
 
-var inputPrimitiveTypes = {
-  "float": {
-    type: "number",
-    step: 0.1,
-    value: 0.0,
-    get: function (input) { return parseFloat(input.value, 10); }
-  },
-  "int": {
-    type: "number",
-    step: 1,
-    value: 0,
-    get: function (input) { return parseInt(input.value, 10); }
-  },
-  "bool": {
-    type: "checkbox",
-    checked: false,
-    get: function (input) { return input.checked; }
-  }
-};
-
 function labelsForType (t, name) {
   if (_.contains(t, "vec")) {
     var colorLike = (name||"").toLowerCase().indexOf("color") > -1 && (t[3]==="3" || t[3]==="4");
     return colorLike ? ["r","g","b","a"] : ["x", "y", "z", "w"];
   }
-  if (t == "mat2") {
+  if (t === "mat2") {
     return [
       "[0].x", "[0].y",
       "[1].x", "[1].y"
     ];
   }
-  if (t == "mat3") {
+  if (t === "mat3") {
     return [
       "[0].x", "[0].y", "[0].z",
       "[1].x", "[1].y", "[1].z",
       "[2].x", "[2].y", "[2].z"
     ];
   }
-  if (t == "mat4") {
+  if (t === "mat4") {
     return [
       "[0].x", "[0].y", "[0].z", "[0].w",
       "[1].x", "[1].y", "[1].z", "[1].w",
