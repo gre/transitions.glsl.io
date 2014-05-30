@@ -285,7 +285,9 @@ module.exports = {
 
     return {
       destroy: function () {
-        // FIXME
+        transitionViewerPromise.then(function (transitionViewer) {
+          transitionViewer.destroy();
+        }).done();
       }
     };
   }

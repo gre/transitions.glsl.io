@@ -91,7 +91,6 @@ TransitionViewer.prototype = {
           }
           else {
             console.log("TransitionViewer transition anormally aborted", e.stack);
-            return Q.delay(2000).then(loop);
           }
         });
     }());
