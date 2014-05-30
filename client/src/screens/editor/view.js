@@ -3,6 +3,7 @@ var Q = require("q");
 var TransitionViewer = require("../../transitionViewer");
 var images = require("../../images").editor;
 var noUniforms = require("./noUniforms.hbs");
+var ClickButton = require("../../clickbutton");
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 var unsupportedTypes = ["sampler2D", "samplerCube"];
@@ -253,6 +254,14 @@ module.exports = {
     var transitionViewer = TransitionViewer(canvas);
     var overlay = elt.querySelector("#renderOverlay");
     var cursor = overlay.querySelector(".cursor");
+
+    ClickButton({
+      el: overlay.querySelector(".edit"),
+      f: function () {
+        console.log("EDIT");
+      }
+    }).bind();
+
     transitionViewerPromise = images
     .then(function (images) {
       transitionViewer.setImages(images);
