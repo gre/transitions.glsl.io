@@ -290,7 +290,10 @@ function show (transition) {
   }), 100));
 
   session.setValue(transition.glsl);
-  return { elt: elt, toolbar: toolbar };
+  return {
+    elt: elt.innerHTML, // FIXME
+    toolbar: toolbar
+  };
 }
 
 function init () {

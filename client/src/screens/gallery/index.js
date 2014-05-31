@@ -332,7 +332,10 @@ function show (transitions) {
       transitions = null;
     };
 
-    return { elt: elt, toolbar: toolbar };
+    return {
+      elt: elt.innerHTML, // FIXME
+      toolbar: toolbar
+    };
   });
 }
 

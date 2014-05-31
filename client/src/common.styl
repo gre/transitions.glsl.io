@@ -102,7 +102,7 @@ nav a {
   color: #888;
 }
 
-.current-home nav a.home {
+.current-about nav a.about {
   color: #000;
   background: #eee;
 }
@@ -122,6 +122,18 @@ footer {
   background: #222;
   color: #aaa;
   font-size: 1em;
+  > * {
+    &:after {
+      content: " - ";
+      color: #888;
+      &:hover {
+        color: #888;
+      }
+    }
+    &:last-child:after {
+      content: "";
+    }
+  }
 }
 
 .loading #loading {

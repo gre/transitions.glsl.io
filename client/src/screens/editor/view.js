@@ -9,7 +9,6 @@ var images = Q.all([
   Qimage("/assets/images/editor/3.jpg")
 ]);
 
-
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 var unsupportedTypes = ["sampler2D", "samplerCube"];
 

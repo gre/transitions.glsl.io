@@ -4,9 +4,21 @@
 
 var Q = require("q");
 var _ = require("lodash");
+var env = require("../env");
 var dom = require("./dom");
 var routes = require("./routes");
 var catchAllLinks = require("./catchAllLinks");
+
+var React = require("react");
+var ui = require("../ui");
+var appComponent = ui.App({
+  env: env
+});
+
+
+/**
+ * FIXME: remove toolbar
+ */
 
 var $screen = dom.screen;
 var $toolbar = dom.toolbar;
@@ -45,8 +57,8 @@ function show (screen, args) {
       return s.show(args);
     })
     .then(function (nodes) {
-      document.body.className = "current-"+screen;
-      $screen.appendChild(nodes.elt);
+      document.body.className = "current-"+screen; // FIXME remove?
+      // $screen.appendChild(nodes.elt);
       if ("toolbar" in nodes) {
         $toolbar.removeAttribute("hidden");
         $toolbar.appendChild(nodes.toolbar);
@@ -54,6 +66,14 @@ function show (screen, args) {
       else {
         $toolbar.setAttribute("hidden", "hidden");
       }
+      return appComponent.setScreen({
+        /*
+        nodes.elt ?
+        nodes.elt.innerHTML :
+        */
+        inner: nodes,
+        name: screen
+      });
     })
     .then(function () {
       var s = screens[current];
@@ -65,6 +85,8 @@ function show (screen, args) {
 
 function init (_screens, _routes) {
   catchAllLinks().bind();
+  console.log(React, appComponent);
+  React.renderComponent(appComponent, document.body);
   screens = _.mapValues(_screens, function (f) {
     return f();
   });

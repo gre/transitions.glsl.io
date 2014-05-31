@@ -31,7 +31,7 @@
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.6",
     "grunt-contrib-uglify": "~0.3.2",
-    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-jshint": "git://github.com/gre/grunt-contrib-jshint#jsx-support",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-stylus": "~0.12.0",
     "matchdep": "~0.1.2",

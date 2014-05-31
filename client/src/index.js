@@ -1,7 +1,8 @@
 var _ = require("lodash");
 var Q = require("q");
 if ("production" !== process.env.NODE_ENV) {
-  window.React = require("react"); // Expose React for the react web console
+  var React = require("react");
+  window.React = React; // Expose React for the react web console
 }
 var screens = require("./screens");
 var app = require("./core/app");
@@ -11,8 +12,8 @@ var model = require("./model");
 
 var run = app.init(screens, {
 
-  '/': function home() {
-    return app.show("home");
+  '/': function about() {
+    return app.show("about");
   },
 
   '/gallery': function gallery () {

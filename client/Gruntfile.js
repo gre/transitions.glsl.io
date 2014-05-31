@@ -1,3 +1,4 @@
+
 module.exports = function (grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
@@ -8,7 +9,10 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     jshint: {
-      options: grunt.file.readJSON('.jshintrc'),
+      options: {
+        jshintrc: true,
+        convertJSX: true
+      },
       src: ['src/**/*.js']
     },
     uglify: {
@@ -48,7 +52,7 @@ module.exports = function (grunt) {
     watch: {
       options: {
         livereload: 35735,
-        debounceDelay: 1000
+        debounceDelay: 400
       },
       js: {
         files: ['src/**/*.js', 'src/**/*.hbs'],
