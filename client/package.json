@@ -22,6 +22,7 @@
     "qajax": "0.2.x",
     "qdebounce": "0.1.x",
     "qimage": "1.1.x",
+    "qstart": "0.1.0",
     "lodash": "2.4.1",
     "highlight.js": "8.0.0",
     "raf": "2.0.0"

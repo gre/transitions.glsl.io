@@ -1,4 +1,17 @@
 
+<div class="toolbar">
+  {{#if unpublished}}
+  Your unpublished transitions:
+  {{else}}
+  All published transitions:
+  {{/if}}
+
+  <a class="new-transition" href="/transition/new">
+    <i class="fa fa-plus"></i>
+    Create a new Transition
+  </a>
+</div>
+
 {{#if unpublished}}
 <div class="gallery gallery-unpublished">
   <a class="new-transition" href="/transition/new">
@@ -7,7 +20,7 @@
   </a>
 </div>
 
-<div class="toolbar-like">
+<div class="toolbar">
   All published transitions:
 </div>
 {{/if}}

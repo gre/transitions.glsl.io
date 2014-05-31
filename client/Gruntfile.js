@@ -46,7 +46,11 @@ module.exports = function (grunt) {
       },
       embed: {
         src: 'src/embed/index.js',
-        dest: '../server/public/embed.js'
+        dest: '../server/public/embed.js',
+        options: {
+          transform: ["reactify"],
+          debug: true
+        }
       }
     },
     watch: {

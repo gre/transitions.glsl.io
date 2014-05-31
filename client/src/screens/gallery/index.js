@@ -1,6 +1,7 @@
 var _ = require("lodash");
 var Q = require("q");
 var Qimage = require("qimage");
+var Qstart = require("qstart");
 var ClickButton = require("../../core/clickbutton");
 var GlslTransition = require("glsl-transition");
 var TransitionViewerCache = require("../../transitionViewerCache");
@@ -9,14 +10,19 @@ var template = require("./screen.hbs");
 var env = require("../../env");
 var Validator = require("../../core/glslFragmentValidator");
 
-var imagesP = Q.all([
-  Qimage("/assets/images/gallery/1.jpg"),
-  Qimage("/assets/images/gallery/2.jpg")
-]);
+var imagesRequiredNow = Q.defer();
+var imagesP =
+  // Only preload images after a page time load or if it is required now
+  Q.race([ Qstart.delay(1000), imagesRequiredNow.promise ])
+  .then(function () {
+    return Q.all([
+      Qimage("/assets/images/gallery/1.jpg"),
+      Qimage("/assets/images/gallery/2.jpg")
+    ]);
+  });
 
 var WIDTH = 300;
 var HEIGHT = 200;
-
 var defaultHoverProgress = 0.4;
 
 var unbind;
@@ -48,6 +54,8 @@ Paginator.prototype = {
 };
 
 function show (transitions) {
+  imagesRequiredNow.resolve();
+
   var validator = new Validator();
   return imagesP.then(function (images) {
 
