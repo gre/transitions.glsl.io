@@ -40,12 +40,12 @@ var Vignette = React.createClass({
   },
 
   onMouseEnter: function () {
-    if (this.props.autoloop)
+    if (this.props.autostart || this.props.startonleave)
       this.stop();
   },
 
   onMouseLeave: function () {
-    if (this.props.autoloop)
+    if (this.props.autostart || this.props.startonleave)
       this.start();
   },
 
@@ -62,7 +62,7 @@ var Vignette = React.createClass({
       this.transitionViewer.setUniforms(this.props.uniforms);
       this.transitionViewer.setGlsl(this.props.glsl);
     }
-    if (this.props.autoloop)
+    if (this.props.autostart)
       this.transitionViewer.start();
   },
 

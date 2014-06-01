@@ -6,7 +6,7 @@ var TransitionPreview = React.createClass({
   render: function () {
     var href = "/transition/"+this.props.id;
     return this.transferPropsTo(
-      <Vignette href={href}>
+      <Vignette startonleave={true} href={href}>
         <span className="title">
           <em>{this.props.name}</em>
           <span> by </span>
