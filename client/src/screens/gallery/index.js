@@ -361,7 +361,15 @@ function show (transitions) {
     };
     */
 
+    var pageSize = 12;
     return TransitionsBrowser({
+      pageSize: pageSize,
+      hasData: function (page) {
+        return 0 <= page && page * pageSize < transitions.length;
+      },
+      getData: function (page) {
+        return _.take(_.tail(transitions, page * pageSize), pageSize);
+      },
       transitions: transitions,
       thumbnailWidth: WIDTH,
       thumbnailHeight: HEIGHT,

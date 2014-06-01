@@ -4,6 +4,7 @@ var TransitionViewer = require("../../transitionViewer");
 
 // TODO: use states ?
 // TODO: takes a TransitionViewer parameter ?
+// TODO: need to reset the state when something changes
 
 var Vignette = React.createClass({
 

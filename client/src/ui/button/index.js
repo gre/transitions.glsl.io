@@ -3,8 +3,13 @@ var React = require("react");
 var ClickButton = require("../../core/clickbutton");
 
 var Button = React.createClass({
+  propTypes: {
+    f: React.PropTypes.func.isRequired
+  },
   render: function () {
-    return <a href="" className={this.props.className} dangerouslySetInnerHTML={{__html: this.props.content}} />;
+    return this.transferPropsTo(
+      <a href="">{this.props.children}</a>
+    );
   },
   componentDidMount: function () {
     this.button = ClickButton.create({
