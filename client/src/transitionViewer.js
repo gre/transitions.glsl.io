@@ -2,7 +2,13 @@ var GlslTransition = require("glsl-transition");
 var _ = require("lodash");
 var Q = require("q");
 
-// FIXME make that a react module
+/**
+ * TODO
+ * - nextFromTo should be removed, same as "setImages" : instead we will call a "getFromToImages" external function
+ * - Exact same interface with TransitionViewerCache
+ * - We could use a react mixin ?
+ * - get a TransitionViewerCache from this component?
+ */
 
 function TransitionViewer (canvas, Transition) {
   if (!(this instanceof TransitionViewer)) return new TransitionViewer(canvas);
@@ -61,7 +67,7 @@ TransitionViewer.prototype = {
     this.transition.reset();
     return this.transition(this.getAllUniforms(), duration);
   },
-  hover: function (p) {
+  hover: function (p) { // RENAME to setProgress
     this.lastHover = p;
     this.stop();
     this.transition.reset();

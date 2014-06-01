@@ -2,7 +2,12 @@ var _ = require("lodash");
 var Q = require("q");
 var requestAnimationFrame = require("raf");
 
-// FIXME: refactor by extending transitionViewer ?
+/**
+ * TODO
+ * - While the caching is slow, we may need a smarter moment to render it;
+ * - invalidate the cache by clearing the memoize.cache https://github.com/lodash/lodash/issues/330
+ */
+
 
 function screenshot (canvas) {
   var c = document.createElement("canvas");
@@ -12,11 +17,6 @@ function screenshot (canvas) {
   ctx.drawImage(canvas, 0, 0);
   return c;
 }
-
-/**
- * FIXME: While the caching is slow,
- * we may need a smarter moment to render it;
- */
 
 function TransitionViewerCache (hover, canvas, resolution) {
   this.canvas = canvas;
@@ -64,7 +64,7 @@ TransitionViewerCache.prototype = {
     this.stop();
     this.setProgress(p);
   },
-  start: function () {
+  start: function (transitionDuration, transitionPause) {
     var self = this;
     this.loopI++;
     var id = this.loopI;
@@ -74,8 +74,8 @@ TransitionViewerCache.prototype = {
         self.stopRequested = 0;
         return;
       }
-      Q.fcall(_.bind(self.animate, self, 1500))
-        .delay(500)
+      Q.fcall(_.bind(self.animate, self, transitionDuration||1500))
+        .delay(transitionPause||500)
         .then(loop);
     }());
   },

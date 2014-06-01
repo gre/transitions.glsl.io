@@ -7,8 +7,22 @@ var ace = window.ace;
 var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
 var model = require("../../model");
-var routes = require("../../core/routes");
+var router = require("../../core/router");
 var env = require("../../env");
+
+/**
+React components:
+
+ * EditorScreen
+   * EditorTransitionPreview(width,height) // uses a Vignette(...)
+   * StatusMessage(type,message)
+   * SaveButton
+   * TransitionComments(count)
+   * GlslEditor(glsl)
+   * UniformsEditor(uniforms)
+    * UniformEditor(uniform)
+      * UniformComponentInput()
+ */
 
 function logExceptions (f) {
   return function () {
@@ -132,7 +146,7 @@ function show (transition) {
             })
             .then(function () {
               self.disable();
-              return routes.route("/transition/"+t.id);
+              return router.route("/transition/"+t.id);
             })
             .fail(function (e) {
               setSaveStatus("Create failed.", "ERROR");
@@ -169,7 +183,7 @@ function show (transition) {
             saveTransitionButton.enable();
             saveTransitionButton.pending = Q.fcall(_.bind(saveTransitionButton.f, saveTransitionButton))
               .then(function () {
-                return routes.reload();
+                return router.reload();
               });
             return saveTransitionButton.pending;
           }

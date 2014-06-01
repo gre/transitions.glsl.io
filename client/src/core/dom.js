@@ -1,3 +1,4 @@
+// FIXME remove core/dom.js
 
 var $ = function (id) {
   return document.getElementById(id);

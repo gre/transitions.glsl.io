@@ -27,7 +27,7 @@ var App = React.createClass({
   render: function () {
     return <div id="wrapper">
       <Header user={this.state.env.user} />
-      <ScreenContainer screen={this.state.screen} />
+      <ScreenContainer name={this.state.screen.name}>{this.state.screen.inner}</ScreenContainer>
       <Footer version={this.state.env.version} />
     </div>;
   }

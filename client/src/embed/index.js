@@ -2,7 +2,7 @@ var _ = require("lodash");
 var Q = require("q");
 var Qimage = require("qimage");
 var React = require("react");
-var Vignette = require("../ui/vignette");
+var Vignette = require("../ui/Vignette");
 
 var transition = window.transition;
 

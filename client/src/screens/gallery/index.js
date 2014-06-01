@@ -2,18 +2,30 @@ var _ = require("lodash");
 var Q = require("q");
 var Qimage = require("qimage");
 var Qstart = require("qstart");
-var ClickButton = require("../../core/clickbutton");
 var GlslTransition = require("glsl-transition");
+var ClickButton = require("../../core/clickbutton");
 var TransitionViewerCache = require("../../transitionViewerCache");
+
 var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
+
 var env = require("../../env");
 var Validator = require("../../core/glslFragmentValidator");
+
+/**
+React components:
+
+ * GalleryScreen(published,unpublished)
+   * TransitionsBrowserHeader(title)
+   * TransitionsBrowser(pageSize,thumbnailWidth,thumbnailHeight,getData,header[opt])
+     * TransitionsBrowserPager(current,firstPage,lastPage)
+     * TransitionPreview(width,height) // uses a Vignette(...)
+ */
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
   // Only preload images after a page time load or if it is required now
-  Q.race([ Qstart.delay(1000), imagesRequiredNow.promise ])
+  Q.race([ Qstart.delay(400), imagesRequiredNow.promise ])
   .then(function () {
     return Q.all([
       Qimage("/assets/images/gallery/1.jpg"),

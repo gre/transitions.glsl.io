@@ -3,6 +3,7 @@ var React = require("react");
 var TransitionViewer = require("../../transitionViewer");
 
 // TODO: use states ?
+// TODO: takes a TransitionViewer parameter ?
 
 var Vignette = React.createClass({
 

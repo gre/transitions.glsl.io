@@ -6,14 +6,12 @@ var Q = require("q");
 var _ = require("lodash");
 var env = require("../env");
 var dom = require("./dom");
-var routes = require("./routes");
+var router = require("./router");
 var catchAllLinks = require("./catchAllLinks");
 
 var React = require("react");
-var ui = require("../ui");
-var appComponent = ui.App({
-  env: env
-});
+var App = require("../ui/app");
+var appComponent;
 
 
 /**
@@ -84,15 +82,16 @@ function show (screen, args) {
 }
 
 function init (_screens, _routes) {
+  appComponent = React.renderComponent(App({
+    env: env
+  }), document.body);
   catchAllLinks().bind();
-  console.log(React, appComponent);
-  React.renderComponent(appComponent, document.body);
   screens = _.mapValues(_screens, function (f) {
     return f();
   });
   screensD.resolve(screens);
   return allReady.then(function () {
-    return routes.init(_routes, function () {
+    return router.init(_routes, function () {
       show("error", "Not Found");
     });
   });

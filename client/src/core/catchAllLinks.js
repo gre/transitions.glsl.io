@@ -1,4 +1,4 @@
-var routes = require("./routes");
+var router = require("./router");
 var ClickButton = require("./clickbutton");
 
 module.exports = function () {
@@ -26,7 +26,7 @@ module.exports = function () {
       );
     },
     f: function (e) {
-      return routes.route(this.resolveTarget(e).getAttribute("href"));
+      return router.route(this.resolveTarget(e).getAttribute("href"));
     }
   });
 };
