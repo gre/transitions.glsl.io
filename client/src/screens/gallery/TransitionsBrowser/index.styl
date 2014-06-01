@@ -1,0 +1,36 @@
+.transitions-browser {
+  margin: 0 auto;
+  padding: 10px 10px 0 10px;
+  min-height: 40px;
+
+  .transitions-browser-pager {
+    font-size: 1.2em;
+    padding: 0.5em 0;
+    display: block;
+    cursor: pointer;
+    &.prev {
+      text-align: left;
+    }
+    &.next {
+      text-align: right;
+    }
+  }
+
+  .vignette {
+    display: inline-block;
+    margin: 0px 5px 5px 5px;
+    width: 300px;
+    height: 200px;
+    border-color: #000;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  canvas {
+    border-radius: 2px;
+  }
+  .overlay {
+    border-radius: 2px;
+    overflow: hidden;
+  }
+}

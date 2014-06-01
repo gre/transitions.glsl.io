@@ -11,13 +11,15 @@ var Vignette = React.createClass({
     var dpr = window.devicePixelRatio || 1;
     var width = this.props.width;
     var height = this.props.height;
+    var href = this.props.href;
 
     return (
     <div className="vignette" style={{width: width+"px", height: height+"px"}}>
       <canvas ref="render" width={width*dpr} height={height*dpr} style={{width: width+"px", height: height+"px"}}></canvas>
-      <div className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+      {this.props.children}
+      <a href={href} className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         <span className="cursor" ref="cursor"></span>
-      </div>
+      </a>
     </div>
     );
   },
@@ -37,20 +39,30 @@ var Vignette = React.createClass({
   },
 
   onMouseEnter: function () {
-    this.stop();
+    if (this.props.autoloop)
+      this.stop();
   },
 
   onMouseLeave: function () {
-    this.start();
+    if (this.props.autoloop)
+      this.start();
   },
 
   componentDidMount: function() {
     this.overlay = this.refs.overlay.getDOMNode();
     this.cursor = this.refs.cursor.getDOMNode();
-    this.transitionViewer = new TransitionViewer(this.refs.render.getDOMNode());
-    this.transitionViewer.setImages(this.props.images);
-    this.transitionViewer.setUniforms(this.props.uniforms);
-    this.transitionViewer.setGlsl(this.props.glsl);
+    var render = this.refs.render.getDOMNode();
+    if (this.props.getTransitionViewer) {
+      this.transitionViewer = this.props.getTransitionViewer(render, images, uniforms, glsl);
+    }
+    else {
+      this.transitionViewer = new TransitionViewer(render);
+      this.transitionViewer.setImages(this.props.images);
+      this.transitionViewer.setUniforms(this.props.uniforms);
+      this.transitionViewer.setGlsl(this.props.glsl);
+    }
+    if (this.props.autoloop)
+      this.transitionViewer.start();
   },
 
   componentWillUnmount: function() {

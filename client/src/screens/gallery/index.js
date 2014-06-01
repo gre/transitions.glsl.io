@@ -6,6 +6,8 @@ var GlslTransition = require("glsl-transition");
 var ClickButton = require("../../core/clickbutton");
 var TransitionViewerCache = require("../../transitionViewerCache");
 
+var TransitionsBrowser = require("./TransitionsBrowser");
+
 var templateToolbar = require("./toolbar.hbs");
 var template = require("./screen.hbs");
 
@@ -352,10 +354,19 @@ function show (transitions) {
       transitions = null;
     };
 
+    /*
     return {
       elt: elt.innerHTML, // FIXME
       toolbar: toolbar
     };
+    */
+
+    return TransitionsBrowser({
+      transitions: transitions,
+      thumbnailWidth: WIDTH,
+      thumbnailHeight: HEIGHT,
+      images: images
+    });
   });
 }
 

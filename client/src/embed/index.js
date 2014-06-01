@@ -12,7 +12,8 @@ Q.all([
   Qimage("/assets/images/gallery/3.jpg")
 ])
   .then(function (images) {
-    var vignette = React.renderComponent(Vignette({
+    return React.renderComponent(Vignette({
+      autoloop: true,
       width: window.innerWidth,
       height: window.innerHeight,
       images: images,
@@ -21,6 +22,5 @@ Q.all([
       duration: 1500,
       delay: 500
     }), document.body);
-    vignette.start();
   })
   .done();
