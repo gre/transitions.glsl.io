@@ -3,6 +3,9 @@
 var React = require("react");
 
 var Header = React.createClass({
+  propTypes: {
+    user: React.PropTypes.string.isRequired
+  },
   render: function () {
     var user = this.props.user;
     var userPart = user ?

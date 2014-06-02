@@ -1,6 +1,8 @@
 var router = require("./router");
 var ClickButton = require("./clickbutton");
 
+// FIXME: replace this by a <Link /> ? That may also make it more efficient
+
 module.exports = function () {
   return ClickButton({
     el: document.body,

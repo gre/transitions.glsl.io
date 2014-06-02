@@ -25,6 +25,7 @@ TransitionViewer.prototype = {
     this.Transition = null;
   },
   setGlsl: function (glsl, uniforms) {
+    this.glsl = glsl;
     if (this.transition) {
       this.Transition.abort();
       this.transition.destroy();

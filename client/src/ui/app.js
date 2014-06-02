@@ -8,6 +8,9 @@ var Footer = require("./Footer");
 var ScreenContainer = require("./ScreenContainer");
 
 var App = React.createClass({
+  propTypes: {
+    env: React.PropTypes.object.isRequired
+  },
   getInitialState: function () {
     return {
       env: this.props.env,
@@ -25,9 +28,10 @@ var App = React.createClass({
     return d.promise;
   },
   render: function () {
+    var inner = this.state.screen.inner;
     return <div id="wrapper">
       <Header user={this.state.env.user} />
-      <ScreenContainer name={this.state.screen.name}>{this.state.screen.inner}</ScreenContainer>
+      <ScreenContainer name={this.state.screen.name}>{inner}</ScreenContainer>
       <Footer version={this.state.env.version} />
     </div>;
   }

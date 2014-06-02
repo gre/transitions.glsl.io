@@ -2,6 +2,9 @@
 
 var React = require("react");
 var Footer = React.createClass({
+  propTypes: {
+    version: React.PropTypes.string.isRequired
+  },
   render: function () {
     return <footer id="footer">
       <span>GLSL.io</span>

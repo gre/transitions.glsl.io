@@ -13,7 +13,7 @@ Q.all([
 ])
   .then(function (images) {
     return React.renderComponent(Vignette({
-      autoloop: true,
+      autostart: true,
       width: window.innerWidth,
       height: window.innerHeight,
       images: images,
