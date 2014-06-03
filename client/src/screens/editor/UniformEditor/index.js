@@ -34,7 +34,8 @@ var UniformEditor = React.createClass({
       var inputsPerLine = arity / componentLines;
       var inputs = (function(){
         if (inputsPerLine === 1) {
-          return <UniformComponentInput id={id+"_"+l} primitiveType={primitiveType} value={value} onChange={onChangeForIndex(null)} />;
+          var iid = id+"_"+l;
+          return <UniformComponentInput key={iid} id={iid} primitiveType={primitiveType} value={value} onChange={onChangeForIndex(null)} />;
         }
         else {
           return _.map(_.range(0, inputsPerLine), function (i) {
@@ -42,7 +43,7 @@ var UniformEditor = React.createClass({
             var iid = id+"_"+index;
             return <label htmlFor={iid}>
               <span>{labels && labels[index] || ""}</span>
-              <UniformComponentInput id={iid} primitiveType={primitiveType} value={value && value[index]} onChange={onChangeForIndex(index)} />
+              <UniformComponentInput key={iid} id={iid} primitiveType={primitiveType} value={value && value[index]} onChange={onChangeForIndex(index)} />
             </label>;
           });
         }

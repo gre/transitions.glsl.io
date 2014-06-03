@@ -1,17 +1,21 @@
 /** @jsx React.DOM */
 var React = require("react");
+var _ = require("lodash");
 var ace = window.ace;
 
 var GlslEditor = React.createClass({
   propTypes: {
-    initialGlsl: React.PropTypes.string.required,
+    initialGlsl: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func.isRequired,
     onSave: React.PropTypes.func.isRequired,
     width: React.PropTypes.number,
     height: React.PropTypes.number
   },
   getInitialState: function () {
-    return { glsl: initialGlsl };
+    return { glsl: this.props.initialGlsl };
+  },
+  getSession: function () {
+    return this.session;
   },
   render: function () {
     var width = this.props.width ? this.props.width+"px" : "100%";
@@ -59,7 +63,6 @@ var GlslEditor = React.createClass({
     }
   },
   componentWillUnmount: function () {
-    // FIXME should we destroy the editor?
     this.editor.destroy();
     delete this.editor;
     delete this.session;

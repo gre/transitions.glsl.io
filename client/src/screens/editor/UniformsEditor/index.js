@@ -6,6 +6,7 @@ var UniformEditor = require("../UniformEditor");
 var UniformsEditor = React.createClass({
   propTypes: {
     uniforms: React.PropTypes.object.isRequired,
+    initialUniformValues: React.PropTypes.object,
     onUniformsChange: React.PropTypes.func
   },
   getInitialState: function () {
@@ -27,7 +28,8 @@ var UniformsEditor = React.createClass({
         this.setState({ uniformValues: uniformValues });
         onUniformsChange(uniformValues);
       }, this);
-      return <UniformEditor id={"uniform_"+u} type={type} name={u} value={this.state.uniformValues[u]} onChange={onUniformChange} />;
+      var id = "uniform_"+u;
+      return <UniformEditor id={id} key={id} type={type} name={u} value={this.state.uniformValues[u]} onChange={onUniformChange} />;
     }, this);
 
     if (uniforms.length) {

@@ -2,6 +2,10 @@
 var React = require("react");
 var ClickButton = require("../../core/clickbutton");
 
+/**
+ * FIXME reimplement the button logic inline and with State
+ */
+
 var Button = React.createClass({
   propTypes: {
     f: React.PropTypes.func.isRequired

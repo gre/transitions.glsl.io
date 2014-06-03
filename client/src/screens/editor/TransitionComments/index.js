@@ -7,9 +7,8 @@ var TransitionComments = React.createClass({
     href: React.PropTypes.string.isRequired
   },
   render: function () {
-    var transition = this.props.transition;
     return <a className={"comments " + this.props.count ? "" : "no-comments"} target="_blank" href={this.props.href}>
-      <i class="fa fa-comments"></i>&nbsp;{transition.comments}
+      <i class="fa fa-comments"></i>&nbsp;{this.props.count}
     </a>;
   }
 });

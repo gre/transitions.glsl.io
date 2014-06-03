@@ -19,6 +19,7 @@ var TransitionEditor = React.createClass({
     return this.state.compilationStatus === "success";
   },
   onChange: function (glsl) {
+    var session = this.refs.editor.getSession();
     if (this.marker) {
       session.removeMarker(this.marker.id);
       this.marker = null;
@@ -53,7 +54,7 @@ var TransitionEditor = React.createClass({
   },
   render: function () {
     return <div className="transition-editor">
-      {this.transferPropsTo(<GlslEditor onChange={this.onChange} />)}
+      {this.transferPropsTo(<GlslEditor ref="editor" onChange={this.onChange} />)}
       <StatusMessage type={this.state.compilationStatus}>{this.state.compilationMessage}</StatusMessage>
     </div>;
   },
