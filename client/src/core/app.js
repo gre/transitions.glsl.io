@@ -42,11 +42,11 @@ function show (screen, args) {
   $screen.innerHTML = "";
   $toolbar.innerHTML = "";
   currentlyShowing = Q.all([
-    Q.fcall(function(){
+    Q.fcall(function(){ // FIXME REMOVE !!
       if (current) {
         var s = screens[current];
         display(s.$, "none");
-        if (s.hide) return s.hide();
+        if (s.hide) return s.hide(); // FIXME: remove. React unmount solve this
       }
     }),
     Q.fcall(function(){
@@ -64,6 +64,7 @@ function show (screen, args) {
       else {
         $toolbar.setAttribute("hidden", "hidden");
       }
+      // FIXME Can we afford just to re-render everything?
       return appComponent.setScreen({
         /*
         nodes.elt ?

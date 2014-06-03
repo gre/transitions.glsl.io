@@ -4,7 +4,7 @@ var React = require("react");
 
 var Header = React.createClass({
   propTypes: {
-    user: React.PropTypes.string.isRequired
+    user: React.PropTypes.string
   },
   render: function () {
     var user = this.props.user;

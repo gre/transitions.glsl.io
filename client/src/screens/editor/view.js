@@ -3,26 +3,11 @@ var Q = require("q");
 var Qimage = require("qimage");
 var Qstart = require("qstart");
 var TransitionViewer = require("../../transitionViewer");
+
+
+/*
+
 var noUniforms = require("./noUniforms.hbs");
-var images = Q.all([
-  Qimage("/assets/images/editor/1.jpg"),
-  Qimage("/assets/images/editor/2.jpg"),
-  Qimage("/assets/images/editor/3.jpg")
-]);
-
-var imagesRequiredNow = Q.defer();
-var imagesP =
-  // Only preload images after a page time load or if it is required now
-  Q.race([ Qstart.delay(1200), imagesRequiredNow.promise ])
-  .then(function () {
-    return Q.all([
-      Qimage("/assets/images/editor/1.jpg"),
-      Qimage("/assets/images/editor/2.jpg"),
-      Qimage("/assets/images/editor/3.jpg")
-    ]);
-  });
-
-
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 var unsupportedTypes = ["sampler2D", "samplerCube"];
 
@@ -127,8 +112,6 @@ function labelsForType (t, name) {
   }
 }
 
-
-// onChange(value, index/*for vectors and matrixes*/)
 function componentForType (type, id, labelName, value, onChange) {
   var arity = arityForType(type);
   var primitive = inputPrimitiveTypes[primitiveForType(type)];
@@ -183,6 +166,7 @@ function componentForType (type, id, labelName, value, onChange) {
   });
   return p;
 }
+*/
 
 module.exports = {
   init: function (elt, canvas, transition) {
@@ -274,7 +258,7 @@ module.exports = {
     var transitionViewer = TransitionViewer(canvas);
     var overlay = elt.querySelector("#renderOverlay");
     var cursor = overlay.querySelector(".cursor");
-    transitionViewerPromise = images
+    transitionViewerPromise = imagesP
     .then(function (images) {
       transitionViewer.setImages(images);
       return transitionViewer;

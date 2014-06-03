@@ -40,7 +40,7 @@ module.exports = function (grunt) {
         src: 'src/index.js',
         dest: '../server/public/bundle.js',
         options: {
-          transform: ["envify", "hbsfy", "reactify"],
+          transform: ["envify", "reactify"],
           debug: true
         }
       },
@@ -59,7 +59,7 @@ module.exports = function (grunt) {
         debounceDelay: 400
       },
       js: {
-        files: ['src/**/*.js', 'src/**/*.hbs'],
+        files: ['src/**/*.js'],
         tasks: ['jshint', 'browserify'],
       },
       css: {

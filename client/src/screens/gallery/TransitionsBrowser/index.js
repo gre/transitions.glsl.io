@@ -3,6 +3,8 @@ var React = require("react");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
 
+// FIXME: this shouldn't have to watch window resize.. someone on top should do it !!! + remove getWidth
+
 var TransitionsBrowser = React.createClass({
   propTypes: {
     thumbnailWidth: React.PropTypes.number.isRequired,
@@ -65,6 +67,7 @@ var TransitionsBrowser = React.createClass({
         glsl: transition.glsl,
         uniforms: transition.uniforms,
         id: transition.id,
+        key: transition.id,
         name: transition.name,
         owner: transition.owner
       });

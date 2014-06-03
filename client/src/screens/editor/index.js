@@ -1,16 +1,35 @@
 var View = require("./view");
 var Validator = require("../../core/glslFragmentValidator");
 var Q = require("q");
+var Qstart = require("qstart");
 var _ = require("lodash");
 var ClickButton = require("../../core/clickbutton");
 var ace = window.ace;
-var templateToolbar = require("./toolbar.hbs");
-var template = require("./screen.hbs");
 var model = require("../../model");
 var router = require("../../core/router");
-var env = require("../../env");
+
+var UniformsEditor = require("./UniformsEditor");
+
+var imagesRequiredNow = Q.defer();
+var imagesP =
+  // Only preload images after a page time load or if it is required now
+  Q.race([ Qstart.delay(1200), imagesRequiredNow.promise ])
+  .then(function () {
+    return Q.all([
+      Qimage("/assets/images/editor/1.jpg"),
+      Qimage("/assets/images/editor/2.jpg"),
+      Qimage("/assets/images/editor/3.jpg")
+    ]);
+  });
+
 
 /**
+// To be remove
+var templateToolbar = require("./toolbar.hbs");
+var template = require("./screen.hbs");
+
+var env = require("../../env"); // FIXME: how to get rid of that and use React?
+
 React components:
 
  * EditorScreen
@@ -24,6 +43,7 @@ React components:
       * UniformComponentInput()
  */
 
+/*
 function logExceptions (f) {
   return function () {
     try {
@@ -309,17 +329,67 @@ function show (transition) {
     toolbar: toolbar
   };
 }
+*/
+
+var arityForType = require("./UniformEditor/arityForType");
+var primitiveForType = require("./UniformEditor/primitiveForType");
+var ignoredUniforms = ["progress", "resolution", "from", "to"];
+
+function withoutInvalidValues (values, uniforms) {
+  var r = {};
+  for (var key in values) {
+    if (key in uniforms) {
+      var arity = arityForType(uniforms[key]);
+      var isArray = _.isArray(values[key]);
+      if (arity === (!isArray ? 1 : values[key].length)) {
+        r[key] = values[key];
+      }
+    }
+  }
+  return r;
+}
+
+function defaultValueForType (t) {
+  var arity = arityForType(t);
+  var primitive = primitiveForType(t);
+  var v = ({ "bool": false, "int": 0, "float": 0.0 })[primitive];
+  if (arity === 1) return v;
+  var arr = [];
+  for (var i=0; i<arity; ++i) {
+    arr.push(v);
+  }
+  return arr;
+}
+
+function uniformValuesForUniforms (uniforms, initialValues) {
+  var values = _.extend({}, withoutInvalidValues(initialValues||{}, uniforms));
+  var removed = _.difference(_.difference(_.keys(values), _.keys(uniforms)), ignoredUniforms);
+  var missing = _.difference(_.keys(uniforms), _.keys(values));
+  _.each(removed, function (u) {
+    delete values[u];
+  });
+  _.each(missing, function (u) {
+    var type = uniforms[u];
+    values[u] = defaultValueForType(type);
+  });
+  return values;
+}
+
+function show (transition) {
+  imagesRequiredNow.resolve();
+  var uniforms = { a: "int", b: "float", c: "vec3", foo: "mat4" };
+  return UniformsEditor({
+    uniforms: uniforms,
+    initialUniformValues: uniformValuesForUniforms(uniforms),
+    onUniformsChange: function (uniforms) {
+      console.log(uniforms);
+    }
+  });
+}
 
 function init () {
   return {
-    ready: Q(),
-    show: show,
-    afterShow: function () {
-      if (afterShow) afterShow();
-    },
-    hide: function () {
-      if (unbind) unbind();
-    }
+    show: show
   };
 }
 

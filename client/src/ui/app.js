@@ -7,13 +7,13 @@ var Header = require("./Header");
 var Footer = require("./Footer");
 var ScreenContainer = require("./ScreenContainer");
 
+// FIXME improve how the setScreen works.
 var App = React.createClass({
   propTypes: {
     env: React.PropTypes.object.isRequired
   },
   getInitialState: function () {
     return {
-      env: this.props.env,
       screen: {
         name: "none",
         inner: <div />
@@ -30,9 +30,9 @@ var App = React.createClass({
   render: function () {
     var inner = this.state.screen.inner;
     return <div id="wrapper">
-      <Header user={this.state.env.user} />
+      <Header user={this.props.env.user} />
       <ScreenContainer name={this.state.screen.name}>{inner}</ScreenContainer>
-      <Footer version={this.state.env.version} />
+      <Footer version={this.props.env.version} />
     </div>;
   }
 });
