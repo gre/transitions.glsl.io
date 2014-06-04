@@ -16,6 +16,7 @@ case class OAuth2Infos(
 trait OAuth2Configuration {
   def authenticateCall: Call
   def oauth2info: OAuth2Infos
+  def useSSL: Boolean
 }
 
 /**
@@ -27,6 +28,8 @@ trait OAuth2DefaultConfiguration extends OAuth2Configuration {
   // Path where OAuth2 configuration must be set (can be overrided)
   val configuration: String = "oauth2"
   private lazy val conf = current.configuration.getConfig(configuration).getOrElse(throwConfigurationNotFound)
+
+  override lazy val useSSL = conf.getBoolean("https").getOrElse(throwMissingFieldError("https"))
 
   override lazy val oauth2info = OAuth2Infos(
     get("client.id"),

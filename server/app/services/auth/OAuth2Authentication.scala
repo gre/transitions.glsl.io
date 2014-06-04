@@ -74,7 +74,7 @@ trait OAuth2Authentication {
     val params = Map(
       "grant_type" -> "authorization_code",
       "code" -> code,
-      "redirect_uri" -> authenticateCall.absoluteURL(false),
+      "redirect_uri" -> authenticateCall.absoluteURL(useSSL),
       "client_id" -> oauth2info.clientId,
       "client_secret" -> oauth2info.clientSecret)
     logger.trace(s"Request access token : $params")
@@ -101,7 +101,7 @@ trait OAuth2Authentication {
     val csrf = java.util.UUID.randomUUID().toString
     val redirectQueryString = Map(
       "client_id"       -> oauth2info.clientId,
-      "redirect_uri"    -> authenticateCall.absoluteURL(false),
+      "redirect_uri"    -> authenticateCall.absoluteURL(useSSL),
       "state"           -> csrf,
       "scope"           -> oauth2info.scope,
       "response_type"   -> "code")
