@@ -13,6 +13,7 @@ var UniformComponentInput = React.createClass({
     var primitive = inputPrimitiveTypes[this.props.primitiveType];
     var onChange = this.props.onChange;
     var props = {
+      className: "uniform-component-input",
       key: this.props.id,
       type: primitive.type,
       onChange: function (e) {

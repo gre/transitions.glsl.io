@@ -27,8 +27,8 @@ var TransitionActions = React.createClass({
     else {
       return <span className="transition-actions actions">
         You must
-        <a class="github connect" href="/authenticate">
-          Connect with <i class="fa fa-github"></i> Github
+        <a className="github connect" href="/authenticate">
+          Connect with <i className="fa fa-github"></i> Github
         </a>
       </span>;
     }

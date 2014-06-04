@@ -33,7 +33,6 @@ var Vignette = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var href = this.props.href;
-    console.log("render");
 
     return (
     <div className="vignette" style={{width: width+"px", height: height+"px"}}>

@@ -33,10 +33,10 @@ var UniformsEditor = React.createClass({
     }, this);
 
     if (uniforms.length) {
-      return <div>{uniforms}</div>;
+      return <div className="uniforms-editor">{uniforms}</div>;
     }
     else {
-      return <div class="no-uniforms">
+      return <div className="uniforms-editor-no-uniforms">
         <p>
           No uniform parameters are currently used by this transition.
         </p>

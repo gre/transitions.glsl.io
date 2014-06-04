@@ -12,7 +12,7 @@ var Button = React.createClass({
   },
   render: function () {
     return this.transferPropsTo(
-      <a href="">{this.props.children}</a>
+      <a className={"button "+this.props.className} href="">{this.props.children}</a>
     );
   },
   componentDidMount: function () {

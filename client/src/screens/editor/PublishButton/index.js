@@ -9,7 +9,7 @@ var PublishButton = React.createClass({
   render: function () {
     var f = this.props.f;
     return <Button className="publish-transition action primary" f={f}>
-      <i class="if-active fa fa-circle-o-notch fa-spin"></i><i class="if-not-active fa fa-cloud-upload"></i>&nbsp;
+      <i className="if-active fa fa-circle-o-notch fa-spin"></i><i className="if-not-active fa fa-cloud-upload"></i>&nbsp;
       {this.props.children || "Publish"}
     </Button>;
   }

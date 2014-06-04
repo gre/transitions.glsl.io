@@ -86,13 +86,15 @@ var EditorScreen = React.createClass({
         <TransitionActions onSave={onSave} onPublish={onPublish} env={env} isPublished={isPublished} transition={transition} />
         <TransitionInfos env={env} isPublished={isPublished} transition={transition} />
       </div>
-      <div>
-        <div id="view">
-          <div id="leftPanel">
+      <div className="main">
+        <div className="view">
+          <div className="leftPanel">
             <TransitionComments count={transition.comments} href={"https://gist.github.com/"+transition.owner+"/"+transition.id} />
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
-          <UniformsEditor initialUniformValues={uniformValues} uniforms={uniforms} onUniformsChange={onUniformsChange} />
+          <div className="properties">
+            <UniformsEditor initialUniformValues={uniformValues} uniforms={uniforms} onUniformsChange={onUniformsChange} />
+          </div>
         </div>
 
         <TransitionEditor onChangeSuccess={onGlslChangeSuccess} onChangeFailure={onGlslChangeFailure} initialGlsl={transition.glsl} onSave={onSave} width={editorWidth} height={editorHeight} />

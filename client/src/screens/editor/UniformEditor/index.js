@@ -48,13 +48,13 @@ var UniformEditor = React.createClass({
           });
         }
       }());
-      return <div className={"inputs inputs-"+inputsPerLine}>{inputs}</div>;
+      return <div key={"input-line-"+l} className={"inputs inputs-"+inputsPerLine}>{inputs}</div>;
     });
 
-    return <p className={"type-"+type}>
+    return <div className={"uniform-editor type-"+type}>
       <label htmlFor="{id}">{labelName}</label>
       {inputsLines}
-    </p>;
+    </div>;
   }
 });
 

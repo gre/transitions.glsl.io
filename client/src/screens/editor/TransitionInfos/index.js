@@ -15,15 +15,15 @@ var TransitionInfos = React.createClass({
     var openGist =
       isRootGist ? 
       <a className="open-gist transition-name" target="_blank" href={href}>
-        This is the <i className="fa fa-github"></i> transition template.
+        This is the <i className="fa fa-github"></i>&nbsp;transition template.
       </a>
       : isPublished ?
       <a className="open-gist transition-name" target="_blank" href={href}>
-        <i className="fa fa-github"></i> { transition.name }
+        <i className="fa fa-github"></i>&nbsp;{ transition.name }
       </a>
       :
       <a className="open-gist transition-name" target="_blank" href={href}>
-        <i className="fa fa-github"></i> Gist
+        <i className="fa fa-github"></i>&nbsp;Gist
       </a>
     ;
 

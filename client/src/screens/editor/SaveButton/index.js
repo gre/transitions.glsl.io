@@ -11,7 +11,7 @@ var SaveButton = React.createClass({
     var f = this.props.f;
     return <span class="save-button">
       <Button className="save-transition action primary" f={f}>
-        <i class="if-active fa fa-circle-o-notch fa-spin"></i><i class="if-not-active fa fa-cloud-upload"></i>
+        <i className="if-active fa fa-circle-o-notch fa-spin"></i><i className="if-not-active fa fa-cloud-upload"></i>
         {this.props.children || "Save"}
       </Button>
       <StatusMessage type={this.props.status}>{this.props.statusMessage}</StatusMessage>
