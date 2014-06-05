@@ -38,6 +38,9 @@
   <link href='/assets/vendors/font-nunito/nunito.css' rel='stylesheet' type='text/css'>
 </head>
 <body class="loading">
+
+  @* Here is the Loading Content which will be replaced by the application *@
+
   <div id="wrapper">
     <div id="loading">
       <h2>
@@ -50,51 +53,7 @@
         an open collection of GLSL Transitions.
       </p>
     </div>
-
-    <header id="header">
-      <h1>
-        <a href="/" class="logo" id="logo">
-          <span>GLSL</span><span>.io</span>
-        </a>
-      </h1>
-      <nav>
-        <a class="home" href="/">About</a>
-        <a class="gallery" href="/gallery">Gallery</a>
-        <a class="editor" href="/transition/new">Editor</a>
-      </nav>
-      @userName.map { name =>
-      <span class="github">
-        <a class="logout" href="/logout">logout</a>
-        -
-        <a class="profile" target="_blank" href="https://gist.github.com/@name">
-          <i class="fa fa-github"></i>
-          @name
-        </a>
-      </span>
-      }.getOrElse {
-        <a class="github connect" href="/authenticate">
-          Connect with <i class="fa fa-github"></i> Github
-        </a>
-      }
-    </header>
-    <header id="toolbar" hidden></header>
-    <div id="main">
-
-      <div id="screen"></div>
-    </div>
-    <footer id="footer" hidden>
-      GLSL.io
-      -
-      v@{version}
-      -
-      <a href="https://twitter.com/glslio">@@glslio</a>
-      -
-      <a href="mailto:contact@@glsl.io">contact@@glsl.io</a>
-      -
-      <a href="https://github.com/glslio/glsl.io/issues/new">Found a bug?</a>
-    </footer>
   </div>
-
 
   <script src="/assets/vendors/ace/ace.js"></script>
   <script src="/assets/vendors/ace/mode-glsl.js"></script>

@@ -6,7 +6,7 @@ var Footer = React.createClass({
     version: React.PropTypes.string.isRequired
   },
   render: function () {
-    return <footer id="footer">
+    return <footer className="app-footer">
       <span>GLSL.io</span>
       <span>v{this.props.version}</span>
       <a href="https://twitter.com/glslio">@glslio</a>

@@ -1,0 +1,25 @@
+
+.app-footer {
+  clear: both;
+  text-align: center;
+  vertical-align: top;
+  margin-top: 20px;
+  border-top: 1px solid #000;
+  padding: 10px 0;
+  background: #222;
+  color: #aaa;
+  font-size: 1em;
+  > * {
+    &:after {
+      content: " - ";
+      color: #888;
+      &:hover {
+        color: #888;
+      }
+    }
+    &:last-child:after {
+      content: "";
+    }
+  }
+}
+

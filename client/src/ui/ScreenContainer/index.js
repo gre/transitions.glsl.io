@@ -6,7 +6,7 @@ var ScreenContainer = React.createClass({
     name: React.PropTypes.string.isRequired
   },
   render: function () {
-    return <div id="main" className={"screen-"+this.props.name}>{this.props.children}</div>;
+    return <div className={"screen-container screen-"+this.props.name}>{this.props.children}</div>;
   }
 });
 module.exports = ScreenContainer;

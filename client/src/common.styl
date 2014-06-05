@@ -17,27 +17,35 @@ html, body {
   user-select: none;
 }
 
+a {
+  color: #ccc;
+  text-decoration: none;
+  &:hover {
+    color: #fff;
+  }
+}
+
+.logo {
+  text-decoration: none;
+  span:first-child {
+    color: #fff;
+  }
+  span:last-child {
+    color: #FC6;
+  }
+}
+
+#loading {
+  display: none;
+  text-align: center;
+  margin: 50px;
+  height: 300px;
+  font-size: 2em;
+}
+
 /* FIXME: split out into the different components */
 
-header {
-  padding: 0 10px;
-}
-header h1 {
-  margin: 0;
-  padding: 0;
-  font-size: 1.4em;
-  float: left;
-  margin-left: 60px;
-  margin-right: 60px;
-}
-
-#header {
-  background: #000;
-  color: #fff;
-  height: 40px;
-  line-height: 40px;
-}
-
+/* "Toolbar" component? */
 .toolbar {
   padding: 0 10px;
   background: #444;
@@ -69,83 +77,3 @@ header h1 {
   }
 }
 
-#main {
-  box-sizing: border-box;
-  position: relative;
-}
-
-.logo {
-  text-decoration: none;
-  span:first-child {
-    color: #fff;
-  }
-  span:last-child {
-    color: #FC6;
-  }
-}
-a {
-  color: #ccc;
-  text-decoration: none;
-  &:hover {
-    color: #fff;
-  }
-}
-nav {
-  display: inline-block;
-}
-nav a {
-  padding: 0 10px;
-  display: inline-block;
-}
-
-#header .github {
-  display: inline-block;
-  float: right;
-  color: #888;
-}
-
-.current-about nav a.about {
-  color: #000;
-  background: #eee;
-}
-.current-editor nav a.editor,
-.current-gallery nav a.gallery {
-  color: #fff;
-  background: #444;
-}
-
-footer {
-  clear: both;
-  text-align: center;
-  vertical-align: top;
-  margin-top: 20px;
-  border-top: 1px solid #000;
-  padding: 10px 0;
-  background: #222;
-  color: #aaa;
-  font-size: 1em;
-  > * {
-    &:after {
-      content: " - ";
-      color: #888;
-      &:hover {
-        color: #888;
-      }
-    }
-    &:last-child:after {
-      content: "";
-    }
-  }
-}
-
-.loading #loading {
-  display: block;
-}
-
-#loading {
-  display: none;
-  text-align: center;
-  margin: 50px;
-  height: 300px;
-  font-size: 2em;
-}

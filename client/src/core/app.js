@@ -5,21 +5,12 @@
 var Q = require("q");
 var _ = require("lodash");
 var env = require("../env");
-var dom = require("./dom");
 var router = require("./router");
 var catchAllLinks = require("./catchAllLinks");
 
 var React = require("react");
 var App = require("../ui/app");
-var appComponent;
 
-
-/**
- * FIXME: remove toolbar
- */
-
-var $screen = dom.screen;
-var $toolbar = dom.toolbar;
 var screensD = Q.defer();
 var screensPromise = screensD.promise;
 
@@ -28,64 +19,34 @@ var allReady = screensPromise.then(function(screens){
     .thenResolve(screens);
 });
 
-function display (maybeNode, value) {
-  if (maybeNode) {
-    maybeNode.style.display = value;
-  }
+function render (env, screen) {
+  return React.renderComponent(App({
+    env: env,
+    screen: screen
+  }), document.body);
 }
 
 var screens;
 var currentlyShowing = Q();
 var current;
 function show (screen, args) {
-  document.body.className = "loading";
-  $screen.innerHTML = "";
-  $toolbar.innerHTML = "";
-  currentlyShowing = Q.all([
-    Q.fcall(function(){ // FIXME REMOVE !!
-      if (current) {
-        var s = screens[current];
-        display(s.$, "none");
-        if (s.hide) return s.hide(); // FIXME: remove. React unmount solve this
-      }
-    }),
+  currentlyShowing = 
     Q.fcall(function(){
       current = screen;
       var s = screens[screen];
       return s.show(args);
     })
     .then(function (nodes) {
-      document.body.className = "current-"+screen; // FIXME remove?
-      // $screen.appendChild(nodes.elt);
-      if ("toolbar" in nodes) {
-        $toolbar.removeAttribute("hidden");
-        $toolbar.appendChild(nodes.toolbar);
-      }
-      else {
-        $toolbar.setAttribute("hidden", "hidden");
-      }
-      // FIXME Can we afford just to re-render everything?
-      return appComponent.setScreen({
-        /*
-        nodes.elt ?
-        nodes.elt.innerHTML :
-        */
+      return render(env, {
         inner: nodes,
         name: screen
       });
-    })
-    .then(function () {
-      var s = screens[current];
-      if (s.afterShow) s.afterShow(args);
-    })
-  ]);
+    });
   return currentlyShowing;
 }
 
+
 function init (_screens, _routes) {
-  appComponent = React.renderComponent(App({
-    env: env
-  }), document.body);
   catchAllLinks().bind();
   screens = _.mapValues(_screens, function (f) {
     return f();
