@@ -7,10 +7,10 @@ var Header = require("./Header");
 var Footer = require("./Footer");
 var ScreenContainer = require("./ScreenContainer");
 
-// FIXME improve how the setScreen works.
 var App = React.createClass({
   propTypes: {
-    env: React.PropTypes.object.isRequired
+    env: React.PropTypes.object.isRequired,
+    screen: React.PropTypes.object.isRequired
   },
   render: function () {
     var screen = this.props.screen;

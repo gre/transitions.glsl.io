@@ -2,7 +2,6 @@
 var _ = require("lodash");
 var Qajax = require("qajax");
 var env = require("../env");
-var Transition = require("../Transition");
 
 module.exports = {
   getTransitions: function () {
@@ -10,15 +9,16 @@ module.exports = {
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
       .then(function (gists) {
-        return _.map(gists, Transition.fromServerData);
+        return gists;
+        //return _.map(gists, Transition.fromServerData);
       });
   },
 
   getTransition: function (id) {
     return Qajax("/api/transitions/"+id)
       .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
-      .then(Transition.fromServerData);
+      .then(Qajax.toJSON);
+      //.then(Transition.fromServerData);
   },
 
   createNewTransition: function () {
@@ -36,7 +36,7 @@ module.exports = {
     return Qajax({
       method: "POST",
       url: "/api/transitions/"+transition.id,
-      data: transition.toServerData()
+      data: transition//.toServerData()
     })
       .then(Qajax.filterSuccess)
       .thenResolve(undefined);

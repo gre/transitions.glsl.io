@@ -61,26 +61,53 @@ var EditorScreen = React.createClass({
     previewWidth: React.PropTypes.number.isRequired,
     previewHeight: React.PropTypes.number.isRequired
   },
+  computeWidth: function () {
+    return window.innerWidth;
+  },
+  computeHeight: function () {
+    return window.innerHeight - 60;
+  },
+  getInitialState: function () {
+    return {
+      width: this.computeWidth(),
+      height: this.computeHeight()
+    };
+  },
+  componentDidMount: function () {
+    window.addEventListener("resize", this._onResize=_.bind(this.onResize, this), false);
+  },
+  componentWillUnmount: function () {
+    window.removeEventListener("resize", this._onResize);
+  },
+  onResize: function () {
+    this.setState({
+      width: this.computeWidth(),
+      height: this.computeHeight()
+    });
+  },
   render: function () {
     var env = this.props.env;
     var transition = this.props.transition;
     var images = this.props.images;
     var previewWidth = this.props.previewWidth;
     var previewHeight = this.props.previewHeight;
+    var width = this.state.width;
+    var height = this.state.height;
     
+    var editorWidth = width - 336;
+    var editorHeight = height - 40;
+    var isPublished = transition.name !== "TEMPLATE";
+
     // Mock / Not Implemented Yet
-    var editorWidth = 400;
-    var editorHeight = 600;
-    var isPublished = false;
-    var onSave = _.noop;
-    var onPublish = _.noop;
-    var onUniformsChange = _.noop;
-    var onGlslChangeSuccess = _.noop;
-    var onGlslChangeFailure = _.noop;
+    var onSave = _.bind(console.log, console, "onSave");
+    var onPublish = _.bind(console.log, console, "onPublish");
+    var onUniformsChange = _.bind(console.log, console, "onUniformsChange");
+    var onGlslChangeSuccess = _.bind(console.log, console, "onGlslChangeSuccess");
+    var onGlslChangeFailure = _.bind(console.log, console, "onGlslChangeFailure");
     var uniforms = { a: "int", b: "float", c: "vec3", foo: "mat4" };
     var uniformValues = uniformValuesForUniforms(uniforms);
 
-    return <div className="editor-screen">
+    return <div className="editor-screen" style={{width:width,height:height}}>
       <div className="toolbar">
         <LicenseLabel />
         <TransitionActions onSave={onSave} onPublish={onPublish} env={env} isPublished={isPublished} transition={transition} />
@@ -89,7 +116,7 @@ var EditorScreen = React.createClass({
       <div className="main">
         <div className="view">
           <div className="leftPanel">
-            <TransitionComments count={transition.comments} href={"https://gist.github.com/"+transition.owner+"/"+transition.id} />
+            <TransitionComments count={transition.comments} href={transition.html_url} />
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
           <div className="properties">

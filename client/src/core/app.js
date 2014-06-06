@@ -46,16 +46,17 @@ function show (screen, args) {
 }
 
 
-function init (_screens, _routes) {
+function init (_screens, _routes, routeNotFound) {
   catchAllLinks().bind();
   screens = _.mapValues(_screens, function (f) {
     return f();
   });
   screensD.resolve(screens);
   return allReady.then(function () {
-    return router.init(_routes, function () {
-      show("error", "Not Found");
-    });
+    return router.init(_routes, routeNotFound);
+  })
+  .fin(function () {
+    document.body.className = "";
   });
 }
 

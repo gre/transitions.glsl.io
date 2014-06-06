@@ -11,7 +11,7 @@ var TransitionInfos = React.createClass({
     var isPublished = this.props.isPublished;
     var isRootGist = this.props.transition.id === this.props.env.rootGist;
     var transition = this.props.transition;
-    var href = "https://gist.github.com/"+ transition.owner +"/"+ transition.id;
+    var href = transition.html_url;
     var openGist =
       isRootGist ? 
       <a className="open-gist transition-name" target="_blank" href={href}>

@@ -139,7 +139,7 @@ object GistsTransitions {
     (__ \ 'owner).json.copyFrom((__ \ 'owner \ 'login).json.pick(string)) and
     (__ \ 'name).json.copyFrom((__ \ 'files).json.pick(extractGlslNameFromFiles)) and
     (__ \ 'glsl).json.copyFrom((__ \ 'files).json.pick(extractGlslFromFiles)) and
-    (__ \ 'defaults).json.copyFrom((__ \ 'files).json.pick(extractDefaultUniformsFromFiles orElse defaultUniforms))
+    (__ \ 'uniforms).json.copyFrom((__ \ 'files).json.pick(extractDefaultUniformsFromFiles orElse defaultUniforms))
   ).reduce
 
 

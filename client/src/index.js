@@ -33,6 +33,8 @@ var run = app.init(screens, {
 
   '/logout': "reload"
 
+}, function routeNotFound () {
+  app.show("error", "Not Found");
 });
 
 run.fail(_.bind(app.show, app, "error")).done();
