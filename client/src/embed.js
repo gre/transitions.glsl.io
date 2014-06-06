@@ -18,9 +18,11 @@ renderContainer.style.height = canvas.style.height = height+'px';
 var transitionViewer = new TransitionViewer(canvas);
 
 function start () {
+  cursor.style.display = "none";
   return transitionViewer.start(1500, 200);
 }
 function stop () {
+  cursor.style.display = "block";
   return transitionViewer.stop();
 }
 
@@ -35,16 +37,39 @@ Q.all([
   .then(function () {
     transitionViewer.setUniforms(transition.defaults);
     transitionViewer.setGlsl(transition.glsl);
-    overlay.addEventListener("mousemove", function (e) {
-      var p = (e.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth;
+    var lastHover = 0;
+    function hover (p) {
       transitionViewer.hover(p);
       cursor.style.left = (p * 100)+"%";
-    });
-    overlay.addEventListener("mouseenter", function () {
+      lastHover = 0;
+    }
+    function hoverEvent (e) {
+      hover((e.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth);
+    }
+    var down = false;
+    overlay.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      down = true;
+      hoverEvent(e);
       stop();
     });
-    overlay.addEventListener("mouseleave", function () {
+    overlay.addEventListener("mouseup", function () {
+      down = false;
       start();
+    });
+    overlay.addEventListener("mousemove", function (e) {
+      if (down) {
+        e.preventDefault();
+        hoverEvent(e);
+      }
+    });
+    overlay.addEventListener("mouseenter", function () {
+    });
+    overlay.addEventListener("mouseleave", function () {
+      if (down) {
+        down = false;
+        start();
+      }
     });
     return start();
   })
