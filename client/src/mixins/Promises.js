@@ -7,13 +7,21 @@ var PromisesMixin = {
     this.setState(state, d.resolve);
     return d.promise;
   },
+  replaceStateQ: function (nextState) {
+    var d = Q.defer();
+    this.replaceState(nextState, d.resolve);
+    return d.promise;
+  },
+  forceUpdateQ: function () {
+    var d = Q.defer();
+    this.forceUpdate(d.resolve);
+    return d.promise;
+  },
   // When a Promise ends, force a rendering update
   watchQ: function (promise) {
     var self = this;
     return promise.fin(function () {
-      var d = Q.defer();
-      self.forceUpdate(d.resolve);
-      return d.promise;
+      return self.forceUpdateQ();
     });
   }
 };
