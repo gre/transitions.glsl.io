@@ -1,5 +1,4 @@
 var Q = require("q");
-var _ = require("lodash");
 
 var PromisesMixin = {
   // Promified setState
