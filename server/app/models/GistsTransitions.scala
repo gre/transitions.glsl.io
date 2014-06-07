@@ -146,7 +146,7 @@ object GistsTransitions {
   def makeTransitionToGistPatchReader (previousEntry: Option[JsValue] = None) = //(
     //(__ \ 'description).json.pickBranch(stringOrNull) and
     (__ \ 'files).json.copyFrom((__).json.pick(Reads {
-      json: JsValue => (json \ "glsl", json \ "name", json \ "defaults") match {
+      json: JsValue => (json \ "glsl", json \ "name", json \ "uniforms") match {
         case (glsl: JsString, JsString(name), defaults: JsObject) =>
           JsSuccess(
             JsObject(Seq(
@@ -167,7 +167,7 @@ object GistsTransitions {
               )))
             ))
           )
-        case _ => JsError("invalid entry. Must have glsl, name and defaults")
+        case _ => JsError("invalid entry. Must have glsl, name and uniforms")
       }
     }))
 }

@@ -24,7 +24,7 @@ function show (transition) {
   return imagesP.then(function (images) {
     return EditorScreen({
       env: env,
-      transition: transition,
+      initialTransition: transition,
       images: images,
       previewWidth: 256,
       previewHeight: 256

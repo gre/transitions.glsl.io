@@ -30,7 +30,7 @@ var TransitionInfos = React.createClass({
     return <span className="transition-infos">
       {openGist}
       {isRootGist ? '' :
-        <span>by <a target="_blank" href={"https://gist.github.com/"+transition.owner }>{ transition.owner }</a></span>
+        <span> by <a target="_blank" href={"https://gist.github.com/"+transition.owner }>{ transition.owner }</a></span>
       }
     </span>;
   }

@@ -8,7 +8,7 @@ var Qdebounce = require("qdebounce");
 var currentPromise;
 
 function reload () {
-  return window.location.reload();
+  return window.location.reload(); // FIXME: the reload may be trivial now we have React (no more states living everywhere)
 }
 
 var route = Qdebounce(function (fun, args, next) {

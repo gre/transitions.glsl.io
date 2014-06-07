@@ -7,19 +7,9 @@ var StatusMessage = React.createClass({
     type: React.PropTypes.oneOf([ "success", "error", "warning", "info", "unknown" ])
   },
   render: function () {
-    return <div ref="status" className="status-message {this.props.type}">{this.props.children}</div>;
+    return <div ref="status" className={"status-message "+this.props.type}>{this.props.children}</div>;
   },
   componentDidUpdate: function () {
-    if (this.timeout) { 
-      clearTimeout(this.timeout);
-      this.timeout = null;
-    }
-    if (this.props.type === "success") {
-      this.timeout = setTimeout(_.bind(function () {
-        this.refs.status.getDOMNode().className = "status";
-        this.timeout = null;
-      }, this), 500);
-    }
   }
 });
 

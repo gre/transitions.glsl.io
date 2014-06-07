@@ -20,7 +20,7 @@ function Validator (canvas) {
 Validator.prototype.validate = function(source) {
   var details, error, i, lineStr, line, lines, log, message, status, _i, _len;
   if (!source) {
-    return [true, null, null];
+    return [false, null, null];
   }
   try {
     var context = this.Transition.getGL();
@@ -36,8 +36,9 @@ Validator.prototype.validate = function(source) {
     return [false, 0, e.getMessage];
   }
   if (status === true) {
+    var transition;
     try {
-      this.Transition(source).destroy();
+      transition = this.Transition(source);
     }
     catch (e) {
       // Parse a glsl-parser error
@@ -49,7 +50,9 @@ Validator.prototype.validate = function(source) {
       }
       else return [false, 0, msg];
     }
-    return [true, null, null];
+    var uniforms = transition.getUniforms().uniforms;
+    transition.destroy();
+    return [uniforms, null, null];
   } else {
     lines = log.split('\n');
     for (_i = 0, _len = lines.length; _i < _len; _i++) {
