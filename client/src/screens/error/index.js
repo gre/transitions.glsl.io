@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require("react");
+var Link = require("../../ui/Link");
 
 var ErrorScreen = React.createClass({
   render: function () {
@@ -14,9 +15,9 @@ var ErrorScreen = React.createClass({
       </h2>
       <h3 className="error-msg">{msg}</h3>
       <p className="error-btns">
-        <a href="">
+        <Link href="">
           <i className="fa fa-refresh"></i>&nbsp;Reload
-        </a>
+        </Link>
       </p>
     </div>;
   }

@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require("react");
+var Link = require("../../../ui/Link");
 
 var TransitionInfos = React.createClass({
   propTypes: {
@@ -14,23 +15,23 @@ var TransitionInfos = React.createClass({
     var href = transition.html_url;
     var openGist =
       isRootGist ? 
-      <a className="open-gist transition-name" target="_blank" href={href}>
+      <Link className="open-gist transition-name" target="_blank" href={href}>
         This is the <i className="fa fa-github"></i>&nbsp;transition template.
-      </a>
+      </Link>
       : isPublished ?
-      <a className="open-gist transition-name" target="_blank" href={href}>
+      <Link className="open-gist transition-name" target="_blank" href={href}>
         <i className="fa fa-github"></i>&nbsp;{ transition.name }
-      </a>
+      </Link>
       :
-      <a className="open-gist transition-name" target="_blank" href={href}>
+      <Link className="open-gist transition-name" target="_blank" href={href}>
         <i className="fa fa-github"></i>&nbsp;Gist
-      </a>
+      </Link>
     ;
 
     return <span className="transition-infos">
       {openGist}
       {isRootGist ? '' :
-        <span> by <a target="_blank" href={"https://gist.github.com/"+transition.owner }>{ transition.owner }</a></span>
+        <span> by <Link target="_blank" href={"https://gist.github.com/"+transition.owner }>{ transition.owner }</Link></span>
       }
     </span>;
   }

@@ -2,6 +2,7 @@
 var React = require("react");
 var SaveButton = require("../SaveButton");
 var PublishButton = require("../PublishButton");
+var Link = require("../../../ui/Link");
 
 var TransitionActions = React.createClass({
   propTypes: {
@@ -31,9 +32,9 @@ var TransitionActions = React.createClass({
     else {
       return <span className="transition-actions actions">
         <span>You must </span>
-        <a className="github connect" href="/authenticate">
+        <Link className="github connect" href="/authenticate">
           Connect with <i className="fa fa-github"></i> Github
-        </a>
+        </Link>
         <span> for creating content.</span>
       </span>;
     }

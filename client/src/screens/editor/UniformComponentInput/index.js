@@ -3,8 +3,6 @@ var React = require("react");
 var _ = require("lodash");
 var inputPrimitiveTypes = require("./primitiveTypes");
 
-// FIXME: the native input type=number is not working in React
-
 var UniformComponentInput = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,

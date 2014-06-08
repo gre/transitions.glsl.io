@@ -2,6 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
+var Validator = require("glsl-transition-validator");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionInfos = require("../TransitionInfos");
@@ -9,7 +10,6 @@ var TransitionActions = require("../TransitionActions");
 var TransitionComments = require("../TransitionComments");
 var TransitionEditor = require("../TransitionEditor");
 var UniformsEditor = require("../UniformsEditor");
-var Validator = require("../../../core/glslFragmentValidator");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 

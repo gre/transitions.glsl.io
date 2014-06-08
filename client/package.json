@@ -18,6 +18,7 @@
     "react": "0.10.0",
     "director": "git://github.com/gre/director.git",
     "glsl-transition": "0.4.x",
+    "glsl-transition-validator": "0.1.x",
     "q": "1.0.x",
     "qajax": "0.2.x",
     "qdebounce": "0.1.x",

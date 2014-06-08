@@ -1,11 +1,13 @@
 /** @jsx React.DOM */
 var React = require("react");
 var _ = require("lodash");
-var TransitionViewer = require("../../transitionViewer");
+var TransitionViewer = require("./transitionViewer");
+var Link = require("../Link");
 
-// TODO: use states ?
+// TODO: use more states ?
 // TODO: takes a TransitionViewer parameter ?
 // TODO: need to reset the state when something changes
+// FIXME need to implement more cache and lazy-ness
 
 var Vignette = React.createClass({
 
@@ -34,13 +36,15 @@ var Vignette = React.createClass({
     var height = this.props.height;
     var href = this.props.href;
 
+    var OverlayElement = href ? Link : React.DOM.div;
+
     return (
     <div className="vignette" style={{width: width+"px", height: height+"px"}}>
       <canvas ref="render" width={width*dpr} height={height*dpr} style={{width: width+"px", height: height+"px"}}></canvas>
       {this.props.children}
-      <a href={href} className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+      <OverlayElement href={href} className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         <span className="cursor" ref="cursor" style={{ left: (this.state.progress * 100)+"%" }}></span>
-      </a>
+      </OverlayElement>
     </div>
     );
   },

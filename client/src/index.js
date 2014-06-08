@@ -5,7 +5,6 @@ var Q = require("q");
 if ("production" !== process.env.NODE_ENV) window.React = require("react"); /* Expose React for the react web console */
 var screens = require("./screens");
 var app = require("./core/app");
-var env = require("./env");
 var model = require("./model");
 
 var run = app.init(screens, {
@@ -22,7 +21,7 @@ var run = app.init(screens, {
 
   '/transition/:gistId': function openGist (id) {
     if (id === "new") {
-      id = env.rootGist;
+      id = app.env.rootGist;
     }
     return Q(id)
       .then(model.getTransition)

@@ -3,7 +3,7 @@ var Q = require("q");
 var Qimage = require("qimage");
 var Qstart = require("qstart");
 var GalleryScreen = require("./GalleryScreen");
-var Validator = require("../../core/glslFragmentValidator");
+var Validator = require("glsl-transition-validator");
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
@@ -16,18 +16,19 @@ var imagesP =
     ]);
   });
 
-function show (transitions) {
+function show (transitions, env) {
   imagesRequiredNow.resolve();
   var validator = new Validator();
-  return imagesP.then(function (images) {
+  return imagesP.then(_.bind(function (images) {
     return GalleryScreen({
+      env: env,
       pageSize: 12,
       images: images,
       thumbnailWidth: 300,
       thumbnailHeight: 200,
       transitions: _.filter(transitions, validator.validate)
     });
-  });
+  }, this));
 }
 
 function init () {

@@ -1,7 +1,7 @@
 
 var _ = require("lodash");
 var Qajax = require("qajax");
-var env = require("../env");
+var app = require("../core/app");
 
 module.exports = {
   getTransitions: function () {
@@ -10,7 +10,6 @@ module.exports = {
       .then(Qajax.toJSON)
       .then(function (gists) {
         return gists;
-        //return _.map(gists, Transition.fromServerData);
       });
   },
 
@@ -18,7 +17,6 @@ module.exports = {
     return Qajax("/api/transitions/"+id)
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON);
-      //.then(Transition.fromServerData);
   },
 
   createNewTransition: function () {
@@ -26,7 +24,7 @@ module.exports = {
       method: "POST",
       url: "/api/transitions",
       data: {
-        fork: env.rootGist
+        fork: app.env.rootGist
       }
     })
       .then(Qajax.filterSuccess)
@@ -36,7 +34,7 @@ module.exports = {
     return Qajax({
       method: "POST",
       url: "/api/transitions/"+transition.id,
-      data: transition//.toServerData()
+      data: transition
     })
       .then(Qajax.filterSuccess)
       .thenResolve(undefined);

@@ -2,7 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var TransitionsBrowser = require("../TransitionsBrowser");
-var env = require("../../../env"); // FIXME need to resolve from the tree
+var Link = require("../../../ui/Link");
 
 function getWidth () {
   return window.innerWidth-20;
@@ -11,19 +11,20 @@ function getWidth () {
 var GalleryScreen = React.createClass({
 
   propTypes: {
+    env: React.PropTypes.object.isRequired,
     transitions: React.PropTypes.array.isRequired,
     pageSize: React.PropTypes.number.isRequired
   },
 
   render: function () {
-    var createNewTransition = <a className="new-transition" href="/transition/new">
+    var createNewTransition = <Link className="new-transition" href="/transition/new">
       <i className="fa fa-plus"></i>&nbsp;Create a new Transition
-    </a>;
+    </Link>;
     var groups = _.groupBy(this.props.transitions, function (transition) {
-      if (transition.owner === env.user && transition.name === "TEMPLATE")
+      if (transition.owner === this.props.env.user && transition.name === "TEMPLATE")
         return 'unpublished';
       return 'published';
-    });
+    }, this);
     var pageSize = this.props.pageSize;
 
     var unpublishedHasData = function () {

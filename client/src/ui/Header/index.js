@@ -2,6 +2,7 @@
 
 var React = require("react");
 var _ = require("lodash");
+var Link = require("../Link");
 
 var Header = React.createClass({
   propTypes: {
@@ -14,17 +15,17 @@ var Header = React.createClass({
 
     var userPart = user ?
       <span className="github">
-        <a className="logout" href="/logout">logout</a>
+        <Link className="logout" href="/logout">logout</Link>
         <span> - </span>
-        <a className="profile" target="_blank" href="https://gist.github.com/{user}">
+        <Link className="profile" target="_blank" href="https://gist.github.com/{user}">
           <i className="fa fa-github"></i>&nbsp;
           {user}
-        </a>
+        </Link>
       </span>
       :
-      <a className="github connect" href="/authenticate">
+      <Link className="github connect" href="/authenticate">
         Connect with <i className="fa fa-github"></i> Github
-      </a>
+      </Link>
       ;
 
     var navs = _.map([
@@ -32,14 +33,14 @@ var Header = React.createClass({
       { id: "gallery", href: "/gallery", name: "Gallery" },
       { id: "editor", href: "/transition/new", name: "Editor" },
     ], function (nav) {
-      return <a key={nav.id} className={nav.id+(screenName==nav.id ? " current" : "")} href={nav.href}>{nav.name}</a>;
+      return <Link key={nav.id} className={nav.id+(screenName==nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
     });
 
     return <header className="app-header">
       <h1>
-        <a href="/" className="logo" id="logo">
+        <Link href="/" className="logo" id="logo">
           <span>GLSL</span><span>.io</span>
-        </a>
+        </Link>
       </h1>
       <nav>
         {navs}

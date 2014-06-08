@@ -1,12 +1,10 @@
 /**
- * Helpers for the workflow of the "app"
+ * A mini-framework for making multi-screen and Promise-based screens.
  */
 
 var Q = require("q");
 var _ = require("lodash");
-var env = require("../env");
 var router = require("./router");
-var catchAllLinks = require("./catchAllLinks");
 
 var React = require("react");
 var App = require("../ui/app");
@@ -18,6 +16,8 @@ var allReady = screensPromise.then(function(screens){
   return Q.all(_.compact(_.pluck(_.values(screens), "ready")))
     .thenResolve(screens);
 });
+
+var env = _.clone(window.ENV);
 
 function render (env, screen) {
   return React.renderComponent(App({
@@ -34,7 +34,7 @@ function show (screen, args) {
     Q.fcall(function(){
       current = screen;
       var s = screens[screen];
-      return s.show(args);
+      return s.show(args, env);
     })
     .then(function (nodes) {
       return render(env, {
@@ -47,7 +47,6 @@ function show (screen, args) {
 
 
 function init (_screens, _routes, routeNotFound) {
-  catchAllLinks().bind();
   screens = _.mapValues(_screens, function (f) {
     return f();
   });
@@ -63,5 +62,14 @@ function init (_screens, _routes, routeNotFound) {
 module.exports = {
   init: init,
   show: show,
-  allReady: allReady
+  allReady: allReady,
+  env: {
+    get function () {
+      return env;
+    },
+    set function (e) {
+      env = e;
+      render(env, screens[current]);
+    }
+  }
 };

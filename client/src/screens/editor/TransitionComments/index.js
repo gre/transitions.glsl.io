@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require("react");
+var Link = require("../../../ui/Link");
 
 var TransitionComments = React.createClass({
   propTypes: {
@@ -7,9 +8,9 @@ var TransitionComments = React.createClass({
     href: React.PropTypes.string.isRequired
   },
   render: function () {
-    return <a className={"transition-comments " + this.props.count ? "" : "no-comments"} target="_blank" href={this.props.href}>
+    return <Link className={"transition-comments " + this.props.count ? "" : "no-comments"} target="_blank" href={this.props.href}>
       <i className="fa fa-comments"></i>&nbsp;{this.props.count}
-    </a>;
+    </Link>;
   }
 });
 

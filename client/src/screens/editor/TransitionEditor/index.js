@@ -1,8 +1,8 @@
 /** @jsx React.DOM */
 var React = require("react");
+var Validator = require("glsl-transition-validator");
 var GlslEditor = require("../GlslEditor");
 var StatusMessage = require("../StatusMessage");
-var Validator = require("../../../core/glslFragmentValidator");
 
 var TransitionEditor = React.createClass({
   propTypes: {
@@ -21,7 +21,7 @@ var TransitionEditor = React.createClass({
       return {
         uniforms: {},
         line: 0,
-        compilationStatus: "warning",
+        compilationStatus: "error",
         compilationMessage: "Shader cannot be empty"
       };
     }

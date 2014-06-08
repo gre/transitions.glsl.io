@@ -1,3 +1,4 @@
+var _ = require("lodash");
 var Q = require("q");
 var Qstart = require("qstart");
 var Qimage = require("qimage");
@@ -15,13 +16,9 @@ var imagesP =
     ]);
   });
 
-function show (transition) {
-  console.log(transition);
-
+function show (transition, env) {
   imagesRequiredNow.resolve();
-  var env = require("../../env");
-
-  return imagesP.then(function (images) {
+  return imagesP.then(_.bind(function (images) {
     return EditorScreen({
       env: env,
       initialTransition: transition,
@@ -29,7 +26,7 @@ function show (transition) {
       previewWidth: 256,
       previewHeight: 256
     });
-  });
+  }, this));
 }
 
 function init () {
