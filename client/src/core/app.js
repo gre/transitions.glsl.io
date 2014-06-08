@@ -14,10 +14,12 @@ var currentlyShowing = Q();
 var current;
 
 function render (env, screen) {
-  return React.renderComponent(App({
+  var d = Q.defer();
+  React.renderComponent(App({
     env: env,
     screen: screen
-  }), document.body);
+  }), document.body, d.resolve);
+  return d.promise;
 }
 
 function show (screen, args) {
