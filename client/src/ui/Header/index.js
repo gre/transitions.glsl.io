@@ -33,7 +33,7 @@ var Header = React.createClass({
       { id: "gallery", href: "/gallery", name: "Gallery" },
       { id: "editor", href: "/transition/new", name: "Editor" },
     ], function (nav) {
-      return <Link key={nav.id} className={nav.id+(screenName==nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
+      return <Link key={nav.id} className={nav.id+(screenName===nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
     });
 
     return <header className="app-header">

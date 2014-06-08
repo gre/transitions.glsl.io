@@ -28,7 +28,7 @@ var TransitionsBrowser = React.createClass({
       page: 0
     };
   },
-  handleResize: function(e) {
+  handleResize: function() {
     var previewsPerLine = this.getPreviewsPerLine();
     if (this.state.previewsPerLine !== previewsPerLine) {
       this.setState({

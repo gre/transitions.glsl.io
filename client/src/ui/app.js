@@ -1,7 +1,5 @@
 /** @jsx React.DOM */
 
-var _ = require("lodash");
-var Q = require("q");
 var React = require("react");
 var Header = require("./Header");
 var Footer = require("./Footer");

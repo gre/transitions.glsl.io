@@ -1,6 +1,5 @@
 /** @jsx React.DOM */
 var React = require("react");
-var _ = require("lodash");
 
 var StatusMessage = React.createClass({
   propTypes: {

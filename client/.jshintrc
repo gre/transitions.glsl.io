@@ -6,7 +6,7 @@
     "indent": 2,
     "node": true,
     "bitwise": true,
-    "camelcase": true,
+    "camelcase": false,
     "eqeqeq": true,
     "immed": true,
     "latedef": true,

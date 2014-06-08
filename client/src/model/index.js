@@ -1,5 +1,3 @@
-
-var _ = require("lodash");
 var Qajax = require("qajax");
 var app = require("../core/app");
 

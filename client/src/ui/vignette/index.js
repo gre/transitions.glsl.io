@@ -96,14 +96,14 @@ var Vignette = React.createClass({
     this.cursor = this.refs.cursor.getDOMNode();
     var render = this.refs.render.getDOMNode();
     if (this.props.getTransitionViewer) {
-      this.transitionViewer = this.props.getTransitionViewer(render, images, uniforms, glsl);
+      this.transitionViewer = this.props.getTransitionViewer(render);
     }
     else {
       this.transitionViewer = new TransitionViewer(render);
-      this.transitionViewer.setImages(this.props.images);
-      this.transitionViewer.setUniforms(this.props.uniforms);
-      this.transitionViewer.setGlsl(this.props.glsl);
     }
+    this.transitionViewer.setImages(this.props.images);
+    this.transitionViewer.setUniforms(this.props.uniforms);
+    this.transitionViewer.setGlsl(this.props.glsl);
     if (this.props.autostart)
       this.transitionViewer.start();
   },

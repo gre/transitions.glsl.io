@@ -1,4 +1,3 @@
-var _ = require("lodash");
 var Q = require("q");
 var Qimage = require("qimage");
 var React = require("react");

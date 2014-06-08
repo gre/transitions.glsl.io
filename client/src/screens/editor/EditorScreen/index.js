@@ -127,7 +127,7 @@ var EditorScreen = React.createClass({
         this.lastSavedTransition = transition;
       }, this))
       .then(_.bind(this.setSaveStatus, this, "success", "Saved."))
-      .fail(throwAgain(function (e) {
+      .fail(throwAgain(function () {
         this.lastSavingTransition = null;
         return this.setSaveStatus("error", "Save failed.");
       }, this));
@@ -147,7 +147,7 @@ var EditorScreen = React.createClass({
       .then(function () {
         return router.route("/transition/"+transition.id);
       })
-      .fail(throwAgain(function (e) {
+      .fail(throwAgain(function () {
         this.lastSavingTransition = null;
         return this.setSaveStatus("error", "Create failed.");
       }, this));
@@ -171,7 +171,7 @@ var EditorScreen = React.createClass({
   },
   onPublish: function () {
     // TODO making a proper UI for that. prompt() is the worse but easy solution
-    var name = prompt("Please choose a transition name (alphanumeric only):");
+    var name = window.prompt("Please choose a transition name (alphanumeric only):");
     if (name.match(/^[a-zA-Z0-9_ ]+$/)) {
       return this.setStateQ({
           transition: _.defaults({ name: name }, this.state.transition)
@@ -180,7 +180,7 @@ var EditorScreen = React.createClass({
         .then(_.bind(router.reload, router));
     }
     else {
-      alert("Title must be alphanumeric.");
+      window.alert("Title must be alphanumeric.");
     }
   },  
   onGlslChangeFailure: function () {
