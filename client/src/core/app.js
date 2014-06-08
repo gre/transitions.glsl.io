@@ -63,13 +63,11 @@ module.exports = {
   init: init,
   show: show,
   allReady: allReady,
-  env: {
-    get function () {
-      return env;
-    },
-    set function (e) {
-      env = e;
-      render(env, screens[current]);
-    }
+  get env () {
+    return env;
+  },
+  set env (e) {
+    env = e;
+    render(env, screens[current]);
   }
 };
