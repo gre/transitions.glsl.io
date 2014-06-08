@@ -25,7 +25,7 @@ var UniformComponentInput = React.createClass({
     if ("step" in primitive)
       props.step = primitive.step;
     if ("checked" in primitive)
-      props.checked = primitive.value || primitive.checked;
+      props.checked = this.props.value || primitive.checked;
     else
       props.value = this.props.value || primitive.value;
     props = _.extend({}, this.props, props);
