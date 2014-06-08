@@ -11,57 +11,17 @@ var TransitionEditor = require("../TransitionEditor");
 var UniformsEditor = require("../UniformsEditor");
 var Validator = require("../../../core/glslFragmentValidator");
 var PromisesMixin = require("../../../mixins/Promises");
+var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
 var router = require("../../../core/router");
 var model = require("../../../model");
 
-// FIXME Should we move those functions somewhere else? also moving functions defined in this EditorScreen scope
-var arityForType = require("../UniformEditor/arityForType");
-var primitiveForType = require("../UniformEditor/primitiveForType");
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 var unsupportedTypes = ["sampler2D", "samplerCube"];
-
 function keepCustomUniforms (uniforms) {
   return _.omit(uniforms, function (uniformType, uniformName) {
     return _.contains(ignoredUniforms, uniformName) || _.contains(unsupportedTypes, uniformType);
   });
-}
-
-function uniformTypeCheck (type, value) {
-  var arity = arityForType(type);
-  var isArray = _.isArray(value);
-  if (arity !== (!isArray ? 1 : value.length)) {
-    return false; // Invalid arity
-  }
-  // TODO More checks (bool / number)
-  return true;
-}
-
-function defaultValueForType (t) {
-  var arity = arityForType(t);
-  var primitive = primitiveForType(t);
-  var v = ({ "bool": false, "int": 0, "float": 0.0 })[primitive];
-  if (arity === 1) return v;
-  var arr = [];
-  for (var i=0; i<arity; ++i) {
-    arr.push(v);
-  }
-  return arr;
-}
-
-function uniformValuesForUniforms (uniformTypes, initialValues) {
-  return _(uniformTypes)
-    .mapValues(function (type, key) {
-      var value = key in initialValues ? initialValues[key] : defaultValueForType(type);
-      return [type, value];
-    })
-    .omit(function (typeValue, key) {
-      return !uniformTypeCheck.apply(this, typeValue);
-    })
-    .mapValues(function (typeValue) {
-      return typeValue[1];
-    })
-    .value();
 }
 
 function onLeavingAppIfUnsaved () {
@@ -91,7 +51,7 @@ var EditorScreen = React.createClass({
       width: this.computeWidth(),
       height: this.computeHeight(),
       transition: this.props.initialTransition,
-      uniformTypes: uniformTypes,
+      uniformTypes: keepCustomUniforms(uniformTypes),
       saveStatusMessage: null,
       saveStatus: null
     };
@@ -124,9 +84,6 @@ var EditorScreen = React.createClass({
     var editorHeight = height - 40;
     var isPublished = transition.name !== "TEMPLATE";
 
-    var uniformTypes = keepCustomUniforms(this.state.uniformTypes);
-    var uniformValues = uniformValuesForUniforms(uniformTypes, transition.uniforms);
-
     return <div className="editor-screen" style={{width:width,height:height}}>
       <div className="toolbar">
         <LicenseLabel />
@@ -140,7 +97,7 @@ var EditorScreen = React.createClass({
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
           <div className="properties">
-            <UniformsEditor initialUniformValues={uniformValues} uniforms={uniformTypes} onUniformsChange={this.onUniformsChange} />
+            <UniformsEditor initialUniformValues={transition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
           </div>
         </div>
 
@@ -228,13 +185,18 @@ var EditorScreen = React.createClass({
   },  
   onGlslChangeFailure: function () {
   },
-  onGlslChangeSuccess: function (glsl, uniformTypes) {
+  onGlslChangeSuccess: function (glsl, allUniformTypes) {
+    var uniformTypes = keepCustomUniforms(allUniformTypes);
     this.setState({
-      transition: _.defaults({ glsl: glsl }, this.state.transition),
+      transition: _.defaults({
+        glsl: glsl,
+        uniforms: uniformValuesForUniforms(uniformTypes, this.state.transition.uniforms)
+      }, this.state.transition),
       uniformTypes: uniformTypes
     });
   },
   onUniformsChange: function (uniforms) {
+    console.log("onUniformsChange", uniforms);
     this.setState({
       transition: _.defaults({ uniforms: uniforms }, this.state.transition)
     });

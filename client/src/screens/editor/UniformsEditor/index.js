@@ -2,6 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var UniformEditor = require("../UniformEditor");
+var uniformValuesForUniforms = require("./uniformValuesForUniforms");
 
 var UniformsEditor = React.createClass({
   propTypes: {
@@ -9,25 +10,36 @@ var UniformsEditor = React.createClass({
     initialUniformValues: React.PropTypes.object,
     onUniformsChange: React.PropTypes.func
   },
-  getInitialState: function () {
+  getInitialProps: function () {
     return {
-      uniformValues: this.props.initialUniformValues || {}
+      onUniformsChange: _.noop
     };
   },
+  getInitialState: function () {
+    var uniformTypes = this.props.uniforms;
+    return {
+      uniformValues: uniformValuesForUniforms(uniformTypes, this.props.initialUniformValues || {})
+    };
+  },
+  recomputeUniformValues: function () {
+    return _.cloneDeep(uniformValuesForUniforms(this.props.uniforms, this.state.uniformValues));
+  },
+  onUniformChange: function (u) {
+    return _.bind(function (value, index) {
+      var uniformValues = this.recomputeUniformValues();
+      if (_.isArray(uniformValues[u])) {
+        uniformValues[u][index] = value;
+      }
+      else {
+        uniformValues[u] = value;
+      }
+      this.setState({ uniformValues: uniformValues });
+      this.props.onUniformsChange(uniformValues);
+    }, this);
+  },
   render: function () {
-    var onUniformsChange = this.props.onUniformsChange || _.noop;
     var uniforms = _.map(this.props.uniforms, function (type, u) {
-      var onUniformChange = _.bind(function (value, index) {
-        var uniformValues = _.cloneDeep(this.state.uniformValues);
-        if (_.isArray(uniformValues[u])) {
-          uniformValues[u][index] = value;
-        }
-        else {
-          uniformValues[u] = value;
-        }
-        this.setState({ uniformValues: uniformValues });
-        onUniformsChange(uniformValues);
-      }, this);
+      var onUniformChange = this.onUniformChange(u);
       var id = "uniform_"+u;
       return <UniformEditor id={id} key={id} type={type} name={u} value={this.state.uniformValues[u]} onChange={onUniformChange} />;
     }, this);
