@@ -14,6 +14,7 @@ Q.all([
   .then(function (images) {
     return React.renderComponent(Vignette({
       autostart: true,
+      controlsMode: "mousedown",
       width: window.innerWidth,
       height: window.innerHeight,
       images: images,

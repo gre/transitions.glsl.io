@@ -24,6 +24,7 @@ var Vignette = React.createClass({
     startonleave: React.PropTypes.bool,
     defaultProgress: React.PropTypes.number,
     getTransitionViewer: React.PropTypes.func,
+    controlsMode: React.PropTypes.oneOf(["hover", "mousedown"]),
     cache: React.PropTypes.shape({
       drawer: React.PropTypes.func.isRequired,
       resolution: React.PropTypes.number
@@ -31,9 +32,11 @@ var Vignette = React.createClass({
   },
 
   getInitialState: function () {
+    console.log(this.props.controlsMode);
     return {
       progress: this.props.defaultProgress || 0.4,
-      i: 0
+      i: 0,
+      cursorEnabled: this.props.controlsMode !== "mousedown"
     };
   },
 
@@ -56,8 +59,8 @@ var Vignette = React.createClass({
     <div className="vignette" style={{width: this.props.width+"px", height: this.props.height+"px"}}>
       {transitionCanvas}
       {this.props.children}
-      <OverlayElement href={this.props.href} className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-        <span className="cursor" ref="cursor" style={{ left: (this.state.progress * 100)+"%" }}></span>
+      <OverlayElement href={this.props.href} className="overlay" ref="overlay" onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+        <span className="cursor" ref="cursor" style={{ display: this.state.cursorEnabled ? "block" : "none", left: (this.state.progress * 100)+"%" }}></span>
       </OverlayElement>
     </div>
     );
@@ -84,17 +87,55 @@ var Vignette = React.createClass({
     });
   },
 
+  onMouseDown: function (e) {
+    if (this.props.controlsMode === "mousedown") {
+      e.preventDefault();
+      this.setState({
+        cursorEnabled: true
+      });
+      this.setProgress(this.progressForEvent(e));
+    }
+  },
+
+  onMouseUp: function () {
+    if (this.props.controlsMode === "mousedown") {
+      this.setState({
+        cursorEnabled: false
+      });
+      this.maybeRestart();
+    }
+  },
+
   onMouseMove: function (e) {
-    this.setProgress(this.progressForEvent(e));
+    if (this.props.controlsMode !== "mousedown" || this.state.cursorEnabled) {
+      e.preventDefault();
+      this.setProgress(this.progressForEvent(e));
+    }
   },
 
   onMouseEnter: function (e) {
-    if (this.props.autostart || this.props.startonleave)
-      this.stop();
-    this.setProgress(this.progressForEvent(e));
+    if (this.props.controlsMode !== "mousedown") {
+      if (this.props.autostart || this.props.startonleave)
+        this.stop();
+      this.setProgress(this.progressForEvent(e));
+    }
   },
 
   onMouseLeave: function () {
+    if (this.props.controlsMode === "mousedown") {
+      if (this.state.cursorEnabled) {
+        this.setState({
+          cursorEnabled: false
+        });
+        this.maybeRestart();
+      }
+    }
+    else {
+      this.maybeRestart();
+    }
+  },
+
+  maybeRestart: function () {
     if (this.props.autostart || this.props.startonleave)
       this.start();
     else if ("defaultProgress" in this.props)
