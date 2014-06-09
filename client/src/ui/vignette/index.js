@@ -27,7 +27,8 @@ var Vignette = React.createClass({
     controlsMode: React.PropTypes.oneOf(["hover", "mousedown"]),
     cache: React.PropTypes.shape({
       drawer: React.PropTypes.func.isRequired,
-      resolution: React.PropTypes.number
+      resolution: React.PropTypes.number,
+      delay: React.PropTypes.number
     })
   },
 
@@ -49,7 +50,7 @@ var Vignette = React.createClass({
 
     var transitionCanvas = (
       this.props.cache ?
-      <TransitionCanvasCache ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} drawer={this.props.cache.drawer} resolution={this.props.cache.resolution} />
+      <TransitionCanvasCache ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} drawer={this.props.cache.drawer} resolution={this.props.cache.resolution} delay={this.props.cache.delay} />
       :
       <TransitionCanvas ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} />
     );

@@ -28,7 +28,8 @@ var TransitionCanvasCache = React.createClass({
     height: React.PropTypes.number.isRequired,
     progress: React.PropTypes.number.isRequired,
     drawer: React.PropTypes.func.isRequired,
-    resolution: React.PropTypes.number
+    resolution: React.PropTypes.number,
+    delay: React.PropTypes.number
     // TODO: add a "thumbnail" image parameter
   },
   getInitialProps: function () {
@@ -46,7 +47,10 @@ var TransitionCanvasCache = React.createClass({
   },
   componentDidMount: function () {
     this.ctx = this.refs.render.getDOMNode().getContext("2d");
-    this.sync();
+    if (this.props.delay)
+      setTimeout(_.bind(this.sync, this), this.props.delay);
+    else
+      this.sync();
   },
   componentWillUnmount: function () {
     this.clearCache();
@@ -55,6 +59,7 @@ var TransitionCanvasCache = React.createClass({
     this.sync();
   },
   sync: function () {
+    if (!this.isMounted()) return;
     if (this.props.glsl !== this.lastGlsl ||
       this.props.to !== this.lastTo ||
       this.props.from !== this.lastFrom ||

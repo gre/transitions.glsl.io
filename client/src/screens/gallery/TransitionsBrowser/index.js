@@ -64,7 +64,7 @@ var TransitionsBrowser = React.createClass({
     var width = this.props.width;
     var transitions = this.props.getData(this.state.page);
 
-    var previews = transitions.map(function (transition) {
+    var previews = transitions.map(function (transition, i) {
       return TransitionPreview({
         width: this.props.thumbnailWidth,
         height: this.props.thumbnailHeight,
@@ -77,7 +77,8 @@ var TransitionsBrowser = React.createClass({
         owner: transition.owner,
         cache: {
           drawer: this.cache.getTransitionDrawer(transition.id),
-          resolution: Math.floor(64)
+          resolution: 64,
+          delay: 30 + i * 50
         }
       });
     }, this);
