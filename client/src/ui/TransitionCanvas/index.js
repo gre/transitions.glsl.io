@@ -8,13 +8,13 @@ var validSampler2D = React.PropTypes.oneOfType([
   React.PropTypes.instanceOf(window.HTMLCanvasElement)
 ]);
 
-var TransitionCanvas = React.createClass({ // FIXME need to implement more cache and lazy-ness
+var TransitionCanvas = React.createClass({
   propTypes: {
     glsl: React.PropTypes.string.isRequired,
     from: validSampler2D,
     to: validSampler2D,
     uniforms: React.PropTypes.object.isRequired,
-    width: React.PropTypes.number.isRequired, // FIXME handle width/height changes@
+    width: React.PropTypes.number.isRequired, // TODO handle width/height changes@
     height: React.PropTypes.number.isRequired,
     progress: React.PropTypes.number.isRequired
   },
@@ -73,7 +73,7 @@ var TransitionCanvas = React.createClass({ // FIXME need to implement more cache
       this.transition.draw();
     }
   },
-  getAllUniforms: function () { // FIXME is that a bottleneck?
+  getAllUniforms: function () {
     return _.extend({ from: this.props.from, to: this.props.to }, this.props.uniforms);
   },
   animate: function (duration) {

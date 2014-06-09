@@ -2,8 +2,6 @@
 var React = require("react");
 var Vignette = require("../../../ui/Vignette");
 
-// FIXME: need to cache the transitions preview
-
 var TransitionPreview = React.createClass({
   propTypes: {
     id: React.PropTypes.string.isRequired,
