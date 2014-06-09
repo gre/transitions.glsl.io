@@ -32,7 +32,6 @@ var Vignette = React.createClass({
   },
 
   getInitialState: function () {
-    console.log(this.props.controlsMode);
     return {
       progress: this.props.defaultProgress || 0.4,
       i: 0,
