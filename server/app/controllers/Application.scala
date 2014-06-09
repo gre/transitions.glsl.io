@@ -35,7 +35,7 @@ object Application extends Controller with GithubOAuthController with MongoContr
   var version = Play.current.configuration.getString("application.version").get
 
   // OMG I love this code
-  def homeContent = Cached("homeContent", 120) {
+  def homeContent = Cached((_:RequestHeader)=>"homeContent", 120) {
     Action.async {
         GistWS.get("600d8a793ca7901a25f2")
         .map(json => (json \ "files" \ "article.md" \ "content").as[String])
