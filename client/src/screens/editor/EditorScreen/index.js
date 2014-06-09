@@ -67,12 +67,12 @@ var EditorScreen = React.createClass({
     window.removeEventListener("resize", this._onResize);
   },
   componentDidUpdate: function () {
-    var onbeforeunload = this._hasUnsavingChanges ? onLeavingAppIfUnsaved : null;
+    var onbeforeunload = this.hasUnsavingChanges() ? onLeavingAppIfUnsaved : null;
     if (onbeforeunload !== window.onbeforeunload)
       window.onbeforeunload = onbeforeunload;
   },
   render: function () {
-    this._hasUnsavingChanges = this.hasUnsavingChanges();
+    var hasUnsavingChanges = this.hasUnsavingChanges();
     var env = this.props.env;
     var transition = this.state.transition;
     var images = this.props.images;
@@ -88,7 +88,7 @@ var EditorScreen = React.createClass({
     return <div className="editor-screen" style={{width:width,height:height}}>
       <Toolbar>
         <LicenseLabel />
-        <TransitionActions saveDisabled={!this._hasUnsavingChanges} onSave={this.onSave} onPublish={this.onPublish} env={env} isPublished={isPublished} transition={transition} saveStatusMessage={this.state.saveStatusMessage} saveStatus={this.state.saveStatus} />
+        <TransitionActions saveDisabled={!hasUnsavingChanges} onSave={this.onSave} onPublish={this.onPublish} env={env} isPublished={isPublished} transition={transition} saveStatusMessage={this.state.saveStatusMessage} saveStatus={this.state.saveStatus} />
         <TransitionInfos env={env} isPublished={isPublished} transition={transition} />
       </Toolbar>
       <div className="main">
@@ -141,8 +141,10 @@ var EditorScreen = React.createClass({
       .then(_.bind(model.createNewTransition, model))
       .then(_.bind(function (r) {
         transition.id = r.id;
-        this.lastSavingTransition = transition;
         return model.saveTransition(transition);
+      }, this))
+      .then(_.bind(function () {
+        return this.setStateQ({ transition: transition });
       }, this))
       .then(_.bind(this.setSaveStatus, this, "success", "Created."))
       .then(function () {
@@ -197,7 +199,6 @@ var EditorScreen = React.createClass({
     });
   },
   onUniformsChange: function (uniforms) {
-    console.log("onUniformsChange", uniforms);
     this.setState({
       transition: _.defaults({ uniforms: uniforms }, this.state.transition)
     });

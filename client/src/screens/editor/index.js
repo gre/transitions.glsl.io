@@ -20,6 +20,7 @@ function show (transition, env) {
   imagesRequiredNow.resolve();
   return imagesP.then(_.bind(function (images) {
     return EditorScreen({
+      key: "transition-"+transition.id,
       env: env,
       initialTransition: transition,
       images: images,
