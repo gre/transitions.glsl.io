@@ -10,6 +10,7 @@ var TransitionActions = require("../TransitionActions");
 var TransitionComments = require("../TransitionComments");
 var TransitionEditor = require("../TransitionEditor");
 var UniformsEditor = require("../UniformsEditor");
+var Toolbar = require("../../../ui/Toolbar");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
@@ -85,11 +86,11 @@ var EditorScreen = React.createClass({
     var isPublished = transition.name !== "TEMPLATE";
 
     return <div className="editor-screen" style={{width:width,height:height}}>
-      <div className="toolbar">
+      <Toolbar>
         <LicenseLabel />
         <TransitionActions saveDisabled={!this._hasUnsavingChanges} onSave={this.onSave} onPublish={this.onPublish} env={env} isPublished={isPublished} transition={transition} saveStatusMessage={this.state.saveStatusMessage} saveStatus={this.state.saveStatus} />
         <TransitionInfos env={env} isPublished={isPublished} transition={transition} />
-      </div>
+      </Toolbar>
       <div className="main">
         <div className="view">
           <div className="leftPanel">

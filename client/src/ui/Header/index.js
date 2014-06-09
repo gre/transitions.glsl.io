@@ -3,6 +3,7 @@
 var React = require("react");
 var _ = require("lodash");
 var Link = require("../Link");
+var Logo = require("../Logo");
 
 var Header = React.createClass({
   propTypes: {
@@ -37,11 +38,7 @@ var Header = React.createClass({
     });
 
     return <header className="app-header">
-      <h1>
-        <Link href="/" className="logo" id="logo">
-          <span>GLSL</span><span>.io</span>
-        </Link>
-      </h1>
+      <Logo />
       <nav>
         {navs}
       </nav>

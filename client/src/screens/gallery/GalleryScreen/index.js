@@ -3,6 +3,7 @@ var React = require("react");
 var _ = require("lodash");
 var TransitionsBrowser = require("../TransitionsBrowser");
 var Link = require("../../../ui/Link");
+var Toolbar = require("../../../ui/Toolbar");
 
 function getWidth () {
   return window.innerWidth-20;
@@ -44,18 +45,18 @@ var GalleryScreen = React.createClass({
     return <div className="gallery-screen">
       {!groups.unpublished ? '': this.transferPropsTo(
         <TransitionsBrowser paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
-        <div className="toolbar">
+        <Toolbar>
           Your unpublished transitions:
           {index++===0 ? createNewTransition : ''}
-        </div>
+        </Toolbar>
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
         <TransitionsBrowser paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
-        <div className="toolbar">
+        <Toolbar>
           All published transitions:
           {index++===0 ? createNewTransition : ''}
-        </div>
+        </Toolbar>
         </TransitionsBrowser>)
       }
     </div>;

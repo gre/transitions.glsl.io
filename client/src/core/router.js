@@ -6,9 +6,20 @@ var Q = require("q");
 var Qdebounce = require("qdebounce");
 
 var currentPromise;
+var _router;
+
+function routeFunction (r) {
+  if (window.onbeforeunload) {
+    if (!window.confirm(window.onbeforeunload())) {
+      return currentPromise;
+    }
+  }
+  _router.setRoute(r);
+  return currentPromise;
+}
 
 function reload () {
-  return window.location.reload(); // FIXME: the reload may be trivial now we have React (no more states living everywhere)
+  return routeFunction(window.location.pathname);
 }
 
 var route = Qdebounce(function (fun, args, next) {
@@ -29,8 +40,6 @@ var Qroute = function (f) {
   };
 };
 
-var _router;
-
 module.exports = {
   init: function (routes, notFound) {
     _router = Router(_.mapValues(routes, Qroute)).configure({
@@ -49,13 +58,5 @@ module.exports = {
     });
   },
   reload: reload,
-  route: function (route) {
-    if (window.onbeforeunload) {
-      if (!window.confirm(window.onbeforeunload())) {
-        return currentPromise;
-      }
-    }
-    _router.setRoute(route);
-    return currentPromise;
-  }
+  route: routeFunction
 };
