@@ -61,6 +61,6 @@ module.exports = {
   set env (e) {
     env = e;
     if (current)
-      render(env, screens[current]);
+      render(env, screens[current]).done();
   }
 };

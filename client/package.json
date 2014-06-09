@@ -2,6 +2,7 @@
   "name": "glsl-transition-editor",
   "version": "0.0.0",
   "description": "An editor for glsl-transition",
+  "private": true,
   "keywords": [
     "glsl",
     "glsl-transition"
@@ -17,9 +18,10 @@
   "dependencies": {
     "react": "0.10.0",
     "director": "git://github.com/gre/director.git",
-    "glsl-transition": "0.4.x",
+    "glsl-transition": "0.5.x",
     "glsl-transition-validator": "0.1.x",
     "q": "1.0.x",
+    "raf": "2.0.x",
     "qajax": "0.2.x",
     "qdebounce": "0.2.x",
     "qimage": "1.1.x",

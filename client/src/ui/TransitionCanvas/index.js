@@ -14,8 +14,9 @@ var TransitionCanvas = React.createClass({ // FIXME need to implement more cache
     from: validSampler2D,
     to: validSampler2D,
     uniforms: React.PropTypes.object.isRequired,
-    width: React.PropTypes.number.isRequired, // FIXME handle width/height changes
-    height: React.PropTypes.number.isRequired
+    width: React.PropTypes.number.isRequired, // FIXME handle width/height changes@
+    height: React.PropTypes.number.isRequired,
+    progress: React.PropTypes.number.isRequired
   },
   render: function () {
     var dpr = window.devicePixelRatio || 1;
@@ -72,7 +73,7 @@ var TransitionCanvas = React.createClass({ // FIXME need to implement more cache
       this.transition.draw();
     }
   },
-  getAllUniforms: function () {
+  getAllUniforms: function () { // FIXME is that a bottleneck?
     return _.extend({ from: this.props.from, to: this.props.to }, this.props.uniforms);
   },
   animate: function (duration) {
@@ -84,6 +85,9 @@ var TransitionCanvas = React.createClass({ // FIXME need to implement more cache
     }, this));
     return p;
   },
+  abort: function () {
+    this.Transition.abort();
+  }
 });
 
 module.exports = TransitionCanvas;

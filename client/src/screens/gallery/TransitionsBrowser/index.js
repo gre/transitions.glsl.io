@@ -1,7 +1,9 @@
 /** @jsx React.DOM */
 var React = require("react");
+var _ = require("lodash");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
+var SharedCanvas = require("../../../ui/TransitionCanvasCache/SharedCanvas");
 
 var TransitionsBrowser = React.createClass({
   propTypes: {
@@ -31,10 +33,35 @@ var TransitionsBrowser = React.createClass({
   prevPage: function () {
     this.setState({ page: this.state.page - 1 });
   },
-
+  componentWillMount: function() {
+    this.cache = SharedCanvas.create(this.props.thumbnailWidth, this.props.thumbnailHeight);
+    var transitions = this.props.getData(this.state.page);
+    _.each(transitions, function (t) {
+      this.cache.createTransitionDrawer(t.id, t.glsl, t.uniforms);
+    }, this);
+  },
+  componentWillUnmount: function() {
+    this.cache.destroy();
+    this.cache = null;
+  },
+  componentWillUpdate: function (nextProps, nextState) {
+    var data = nextProps.getData(nextState.page);
+    var beforeIds = this.cache.getAllIds();
+    var afterIds = _.pluck(data, "id");
+    var deleted = _.difference(beforeIds, afterIds);
+    var created = _.difference(afterIds, beforeIds);
+    _.each(deleted, function (id) {
+      this.cache.removeTransitionDrawer(id);
+    }, this);
+    _.each(created, function (id) {
+      var transition = _.find(data, function (t) { return t.id === id; });
+      this.cache.createTransitionDrawer(id, transition.glsl, transition.uniforms);
+    }, this);
+  },
   render: function () {
     var width = this.props.width;
     var transitions = this.props.getData(this.state.page);
+
     var previews = transitions.map(function (transition) {
       return TransitionPreview({
         width: this.props.thumbnailWidth,
@@ -45,7 +72,11 @@ var TransitionsBrowser = React.createClass({
         id: transition.id,
         key: transition.id,
         name: transition.name,
-        owner: transition.owner
+        owner: transition.owner,
+        cache: {
+          drawer: this.cache.getTransitionDrawer(transition.id),
+          resolution: Math.floor(64)
+        }
       });
     }, this);
     return <div className="transitions-browser">

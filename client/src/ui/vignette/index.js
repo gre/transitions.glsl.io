@@ -4,6 +4,7 @@ var _ = require("lodash");
 var GlslTransition = require("glsl-transition");
 var Q = require("q");
 var TransitionCanvas = require("../TransitionCanvas");
+var TransitionCanvasCache = require("../TransitionCanvasCache");
 var Link = require("../Link");
 
 function circular (n, l) {
@@ -22,7 +23,11 @@ var Vignette = React.createClass({
     autostart: React.PropTypes.bool,
     startonleave: React.PropTypes.bool,
     defaultProgress: React.PropTypes.number,
-    getTransitionViewer: React.PropTypes.func
+    getTransitionViewer: React.PropTypes.func,
+    cache: React.PropTypes.shape({
+      drawer: React.PropTypes.func.isRequired,
+      resolution: React.PropTypes.number
+    })
   },
 
   getInitialState: function () {
@@ -40,9 +45,16 @@ var Vignette = React.createClass({
     var to = this.props.images[j];
     var OverlayElement = this.props.href ? Link : React.DOM.div;
 
+    var transitionCanvas = (
+      this.props.cache ?
+      <TransitionCanvasCache ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} drawer={this.props.cache.drawer} resolution={this.props.cache.resolution} />
+      :
+      <TransitionCanvas ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} />
+    );
+
     return (
     <div className="vignette" style={{width: this.props.width+"px", height: this.props.height+"px"}}>
-      <TransitionCanvas ref="transition" progress={this.state.progress} width={this.props.width} height={this.props.height} glsl={this.props.glsl} uniforms={this.props.uniforms} from={from} to={to} />
+      {transitionCanvas}
       {this.props.children}
       <OverlayElement href={this.props.href} className="overlay" ref="overlay" onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         <span className="cursor" ref="cursor" style={{ left: (this.state.progress * 100)+"%" }}></span>
@@ -125,7 +137,7 @@ var Vignette = React.createClass({
   },
   stop: function () {
     this.running = false;
-    this.refs.transition.Transition.abort();
+    this.refs.transition.abort();
   }
 });
 

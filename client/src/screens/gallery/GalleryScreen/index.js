@@ -70,7 +70,7 @@ var GalleryScreen = React.createClass({
     var index = 0;
     return <div className="gallery-screen">
       {!groups.unpublished ? '': this.transferPropsTo(
-        <TransitionsBrowser width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
+        <TransitionsBrowser key="unpublished" width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
         <Toolbar>
           Your unpublished transitions:
           {index++===0 ? createNewTransition : ''}
@@ -78,7 +78,7 @@ var GalleryScreen = React.createClass({
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
+        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
         <Toolbar>
           All published transitions:
           {index++===0 ? createNewTransition : ''}
