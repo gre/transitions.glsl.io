@@ -17,7 +17,33 @@ var GalleryScreen = React.createClass({
     pageSize: React.PropTypes.number.isRequired
   },
 
+  componentDidMount: function() {
+    window.addEventListener('resize', this.handleResize);
+  },
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+  getInitialState: function() {
+    return {
+      previewsPerLine: this.getPreviewsPerLine()
+    };
+  },
+  getThumbnailFullWidth: function () {
+    return this.props.thumbnailWidth + 12;
+  },
+  getPreviewsPerLine: function () {
+    return Math.floor(getWidth() / this.getThumbnailFullWidth());
+  },
+  handleResize: function() {
+    var previewsPerLine = this.getPreviewsPerLine();
+    if (this.state.previewsPerLine !== previewsPerLine) {
+      this.setState({
+        previewsPerLine: previewsPerLine
+      });
+    }
+  },
   render: function () {
+    var width = this.getThumbnailFullWidth() * this.state.previewsPerLine;
     var createNewTransition = <Link className="new-transition" href="/transition/new">
       <i className="fa fa-plus"></i>&nbsp;Create a new Transition
     </Link>;
@@ -44,7 +70,7 @@ var GalleryScreen = React.createClass({
     var index = 0;
     return <div className="gallery-screen">
       {!groups.unpublished ? '': this.transferPropsTo(
-        <TransitionsBrowser paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
+        <TransitionsBrowser width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
         <Toolbar>
           Your unpublished transitions:
           {index++===0 ? createNewTransition : ''}
@@ -52,7 +78,7 @@ var GalleryScreen = React.createClass({
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
+        <TransitionsBrowser width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
         <Toolbar>
           All published transitions:
           {index++===0 ? createNewTransition : ''}

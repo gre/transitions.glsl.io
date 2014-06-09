@@ -1,5 +1,3 @@
-/* FIXME ideally only index.js and index.styl should be in this src/ */
-
 var _ = require("lodash");
 var Q = require("q");
 if ("production" !== process.env.NODE_ENV) window.React = require("react"); /* Expose React for the react web console */

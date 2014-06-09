@@ -3,44 +3,20 @@ var React = require("react");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
 
-// FIXME: this shouldn't have to watch window resize.. someone on top should do it !!! + remove getWidth
-
 var TransitionsBrowser = React.createClass({
   propTypes: {
     thumbnailWidth: React.PropTypes.number.isRequired,
     thumbnailHeight: React.PropTypes.number.isRequired,
-    getWidth: React.PropTypes.func,
+    width: React.PropTypes.number.isRequired,
     hasData: React.PropTypes.func.isRequired,
     getData: React.PropTypes.func.isRequired,
     images: React.PropTypes.array.isRequired,
     paginated: React.PropTypes.bool
   },
-  getThumbnailFullWidth: function () {
-    return this.props.thumbnailWidth + 12;
-  },
-  getPreviewsPerLine: function () {
-    var windowWidth = this.props.getWidth ? this.props.getWidth() : window.innerWidth;
-    return Math.floor(windowWidth / this.getThumbnailFullWidth());
-  },
   getInitialState: function() {
     return {
-      previewsPerLine: this.getPreviewsPerLine(),
       page: 0
     };
-  },
-  handleResize: function() {
-    var previewsPerLine = this.getPreviewsPerLine();
-    if (this.state.previewsPerLine !== previewsPerLine) {
-      this.setState({
-        previewsPerLine: previewsPerLine
-      });
-    }
-  },
-  componentDidMount: function() {
-    window.addEventListener('resize', this.handleResize);
-  },
-  componentWillUnmount: function() {
-    window.removeEventListener('resize', this.handleResize);
   },
 
   hasNextPage: function () {
@@ -57,7 +33,7 @@ var TransitionsBrowser = React.createClass({
   },
 
   render: function () {
-    var width = this.getThumbnailFullWidth() * this.state.previewsPerLine;
+    var width = this.props.width;
     var transitions = this.props.getData(this.state.page);
     var previews = transitions.map(function (transition) {
       return TransitionPreview({
