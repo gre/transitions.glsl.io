@@ -1,0 +1,35 @@
+.app-header {
+  background: #000;
+  color: #fff;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 10px;
+  h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 1.4em;
+    float: left;
+    margin-left: 60px;
+    margin-right: 60px;
+  }
+  .github {
+    display: inline-block;
+    float: right;
+    color: #888;
+  }
+  nav {
+    display: inline-block;
+    a {
+      padding: 0 10px;
+      display: inline-block;
+      &.current {
+        color: #fff;
+        background: #444;
+        &.about {
+          color: #000;
+          background: #eee;
+        }
+      }
+    }
+  }
+}

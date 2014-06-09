@@ -1,0 +1,46 @@
+.uniform-editor {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  > label {
+    line-height: 30px;
+    position: absolute;
+    right: 260px;
+    font-size: 0.8em;
+  }
+  .inputs {
+    box-sizing: border-box;
+    padding: 0 5px;
+    margin-bottom: 6px;
+
+    label {
+      display: inline-block;
+      box-sizing: border-box;
+      padding: 0 3px;
+      position: relative;
+    }
+    label:hover > span {
+      display: block;
+    }
+    label > span {
+      display: none;
+      position: absolute;
+      color: #aaa;
+      bottom: -9px;
+      left: 10px;
+      font-size: 9px;
+    }
+    &.inputs-1 {
+      padding: 0 10px;
+    }
+    &.inputs-2 label {
+      width: 50%;
+    }
+    &.inputs-3 label {
+      width: 33.333333%;
+    }
+    &.inputs-4 label {
+      width: 25%;
+    }
+  }
+}

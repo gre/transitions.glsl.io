@@ -38,80 +38,34 @@
   <link href='/assets/vendors/font-nunito/nunito.css' rel='stylesheet' type='text/css'>
 </head>
 <body class="loading">
-  <div id="wrapper">
-    <header id="header">
-      <h1>
-        <a href="/" class="logo" id="logo">
-          <span>GLSL</span><span>.io</span>
-        </a>
-      </h1>
-      <nav>
-        <a class="home" href="/">About</a>
-        <a class="gallery" id="go-to-gallery" href="/gallery">Gallery</a>
-        <a class="editor" id="go-to-root-gist" href="/transition/new">Editor</a>
-      </nav>
-      @userName.map { name =>
-      <span class="github">
-        <a class="logout" href="/logout">logout</a>
-        -
-        <a class="profile" target="_blank" href="https://gist.github.com/@name">
-          <i class="fa fa-github"></i>
-          @name
-        </a>
-      </span>
-      }.getOrElse {
-        <a class="github connect" href="/authenticate">
-          Connect with <i class="fa fa-github"></i> Github
-        </a>
-      }
-    </header>
-    <header id="toolbar" hidden></header>
-    <div id="main">
-      <div id="loading">
-        <h2>
-          <i class="fa fa-cog fa-spin"></i>
-          <span class="logo">
-            <span>GLSL</span><span>.io</span>
-          </span>
-        </h2>
-        <p style="opacity: 0.5; font-size: 0.8em; font-style: italic">
-          an open collection of GLSL Transitions.
-        </p>
-      </div>
 
-      <div id="screen"></div>
+  @* Here is the Loading Content which will be replaced by the application *@
+
+  <div id="wrapper">
+    <div id="loading">
+      <h2>
+        <i class="fa fa-cog fa-spin"></i>
+        <span class="logo">
+          <span>GLSL</span><span>.io</span>
+        </span>
+      </h2>
+      <p style="opacity: 0.5; font-size: 0.8em; font-style: italic">
+        an open collection of GLSL Transitions.
+      </p>
     </div>
-    <footer id="footer" hidden>
-      GLSL.io
-      -
-      v@{version}
-      -
-      <a href="https://twitter.com/glslio">@@glslio</a>
-      -
-      <a href="mailto:contact@@glsl.io">contact@@glsl.io</a>
-      -
-      <a href="https://github.com/glslio/glsl.io/issues/new">Found a bug?</a>
-    </footer>
   </div>
+
   <script src="/assets/vendors/ace/ace.js"></script>
   <script src="/assets/vendors/ace/mode-glsl.js"></script>
   <script>
-  window.ROOT_GIST = "@rootGist";
-  window.CONNECTED_USER = @{userName.map(name => Html(s""""$name"""")).getOrElse("null")};
+  window.ENV={version:"@version",rootGist:"@rootGist",user:@{userName.map(name => Html(s""""$name"""")).getOrElse("null")}};
   </script>
-  
-  @if(Play.current.mode == Mode.Dev) {
+
+@if(Play.current.mode == Mode.Dev) {
   <script src="/assets/bundle.js?v=@{version}"></script>
-  }else{
-  <script src="/assets/bundle.min.js?v=@{version}"></script>
-  }
-  
-
-  @if(Play.current.mode == Mode.Dev) {
   <script src="//localhost:35735/livereload.js"></script>
-  }
-
-  @if(Play.current.mode != Mode.Dev) {
+}else{
+  <script src="/assets/bundle.min.js?v=@{version}"></script>
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -121,7 +75,7 @@
   ga('create', 'UA-51124142-1', 'glsl.io');
   ga('send', 'pageview');
   </script>
-  }
+}
 
 </body>
 </html>

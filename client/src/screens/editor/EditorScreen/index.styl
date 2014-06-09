@@ -1,0 +1,56 @@
+/*
+ * Solving positionning between screen components
+ * Component styles are in their respective stylus files
+ */
+
+.editor-screen {
+  position: relative;
+  .toolbar {
+    position: relative;
+    .license-label {
+      position: absolute;
+      text-align: center;
+      left: 0;
+      top: 0;
+      width: 80px;
+      height: 100%;
+      overflow: hidden;
+    }
+    .transition-infos {
+      min-width: 300px;
+      text-align: right;
+      float: right;
+    }
+  }
+  .main {
+    position: relative;
+    .view {
+      width: 256px;
+      position: absolute;
+      left: 80px;
+      top: 0;
+      .leftPanel {
+        position: absolute;
+        right: 256px;
+        width: 70px;
+      }
+      .vignette {
+        border: none;
+      }
+      .properties {
+        padding: 5px 0;
+        background: #333;
+      }
+    }
+    .transition-editor {
+      position: absolute;
+      left: 336px;
+      top: 0;
+      .glsl-editor {
+        width: 100%;
+        height: 400px;
+      }
+    }
+  }
+}
+
