@@ -18,7 +18,7 @@ Q.all([
       height: window.innerHeight,
       images: images,
       glsl: transition.glsl,
-      uniforms: transition.defaults,
+      uniforms: transition.uniforms,
       duration: 1500,
       delay: 500
     }), document.body);
