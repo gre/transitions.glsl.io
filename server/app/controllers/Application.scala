@@ -78,11 +78,7 @@ object Application extends Controller with GithubOAuthController with MongoContr
     }
   }
 
-  def transitionPreview (id: String) = Cached("transitionPreview_"+id, 60) {
-    Action {
-      Ok.stream(Enumerator.fromFile(Play.getFile("/public/images/preview.jpg")))
-    }
-  }
+  def transitionPreview (id: String) = controllers.Assets.at(path="/public", file = "images/preview.jpg")
 
   def transitionEmbed (id: String) = Action.async { implicit request =>
     models.Transitions.get(id).map { maybeTransition =>

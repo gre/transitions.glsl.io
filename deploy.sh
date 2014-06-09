@@ -1,7 +1,13 @@
 #!/bin/bash
  
-REMOTE=play@glsl.io
-REMOTE_APP=/home/play/glsl.io/
+branch=`git rev-parse --abbrev-ref HEAD`
+# We assume that branch==domain if you are using this script (convention)
+
+REMOTE=play@$branch
+REMOTE_APP=/home/play/$branch/
+
+echo "Will upload to... "$REMOTE":"$REMOTE_APP;
+sleep 2 || exit;
 
 export NODE_ENV="production";
 cd client;
