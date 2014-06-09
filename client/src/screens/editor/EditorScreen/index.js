@@ -65,6 +65,8 @@ var EditorScreen = React.createClass({
   },
   componentWillUnmount: function () {
     window.removeEventListener("resize", this._onResize);
+    this.lastSavingTransition = this.lastSavedTransition = null;
+    window.onbeforeunload = null;
   },
   componentDidUpdate: function () {
     var onbeforeunload = this.hasUnsavingChanges() ? onLeavingAppIfUnsaved : null;
