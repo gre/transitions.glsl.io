@@ -5,6 +5,8 @@ var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
 var SharedCanvas = require("../../../ui/TransitionCanvasCache/SharedCanvas");
 
+// FIXME there is a loading perf bottleneck that we need to fix. Gallery should be bleeding fast to load. We may try our best client-side but also consider server-side thumbnail.
+
 var TransitionsBrowser = React.createClass({
   propTypes: {
     thumbnailWidth: React.PropTypes.number.isRequired,

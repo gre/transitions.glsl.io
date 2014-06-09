@@ -57,6 +57,11 @@ License
 Release Notes
 ---
 
+### Version 1.3 - soon
+- Technical release
+  - Migrate the server to Playframework 2.3.
+  - Migrate the client to React library + modularisation.
+
 ### Version 1.2 - 28 May 2014
 
 - **Gallery**
