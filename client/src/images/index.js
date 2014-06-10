@@ -14,14 +14,14 @@ module.exports = {
     "bigbuckbunny_snapshot1.jpg",
     "a1mV1egnQwOqxZZZvhVo_street.jpg"
   ],
-  resolveFormat: function (imgId) {
+  resolveFormat: function (formatId) {
     var format = (formatId in this.formatsByUsage) ? this.formats[this.formatsByUsage[formatId]] : formatId;
-    if (!format) throw new Error("format not found. getImage("+imgId+", "+formatId+")");
+    if (!format) throw new Error("format not found. "+formatId);
     return format;
   },
   resolveName: function (imgId) {
     var name = typeof imgId === "number" ? this.names[imgId] : imgId;
-    if (!name) throw new Error("image name not found. getImage("+imgId+", "+formatId+")");
+    if (!name) throw new Error("image name not found. "+imgId);
     return name;
   },
   getImage: function (imgId, formatId) {
@@ -29,8 +29,8 @@ module.exports = {
   },
   allImagesForFormat: function (formatId) {
     var self = this;
-    return Q.all(this.urls.map(function (name) {
+    return Q.all(this.names.map(function (name) {
       return self.getImage(name, formatId);
-    });
+    }));
   }
 };

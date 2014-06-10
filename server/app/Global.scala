@@ -27,7 +27,7 @@ object Global extends GlobalSettings {
     implicit val current = app
 
     // FIXME: only clean the db if application version has changed
-    if (app.configuration.getBoolean("cleandb").getOrElse(true)) {
+    if (app.configuration.getBoolean("glslio.cleandb").getOrElse(true)) {
       Transitions.clean()
     }
 
