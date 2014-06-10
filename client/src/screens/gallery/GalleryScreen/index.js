@@ -66,6 +66,7 @@ var GalleryScreen = React.createClass({
     var publishedGetData = function (page) {
       return _.take(_.tail(groups.published, page * pageSize), pageSize);
     };
+    var publishedNbPages = !groups.published ? 0 : Math.ceil(groups.published.length/pageSize);
 
     var index = 0;
     return <div className="gallery-screen">
@@ -78,7 +79,7 @@ var GalleryScreen = React.createClass({
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData}>
+        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages}>
         <Toolbar>
           All published transitions:
           {index++===0 ? createNewTransition : ''}
