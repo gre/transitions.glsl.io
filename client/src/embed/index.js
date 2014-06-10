@@ -1,26 +1,24 @@
-var Q = require("q");
 var Qimage = require("qimage");
 var React = require("react");
-var Vignette = require("../ui/Vignette");
+var LinearPlayer = require("./LinearPlayer");
 
-var transition = window.transition;
+function render (from, to) {
+  return React.renderComponent(LinearPlayer({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    transition: window.transition,
+    from: from,
+    to: to,
+    duration: 2000
+  }), document.body);
+}
 
-Q.all([
-  Qimage("/assets/images/gallery/1.jpg"),
-  Qimage("/assets/images/gallery/2.jpg"),
-  Qimage("/assets/images/gallery/3.jpg")
-])
-  .then(function (images) {
-    return React.renderComponent(Vignette({
-      autostart: true,
-      controlsMode: "mousedown",
-      width: window.innerWidth,
-      height: window.innerHeight,
-      images: images,
-      glsl: transition.glsl,
-      uniforms: transition.uniforms,
-      duration: 1500,
-      delay: 500
-    }), document.body);
-  })
-  .done();
+Qimage("/assets/images/gallery/1.jpg").then(function (from) {
+  return Qimage("/assets/images/gallery/2.jpg").then(function (to) {
+    window.addEventListener("resize", function () {
+      render(from, to);
+    }, false);
+    render(from, to);
+  });
+}).done();
+

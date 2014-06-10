@@ -1,0 +1,48 @@
+.linear-player {
+  position: relative;
+  &.running {
+    header {
+      opacity: 0;
+    }
+  }
+  header {
+    display: block;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    padding: 8px;
+    background: #000;
+    color: #fff;
+    opacity: 0.8;
+    z-index: 2;
+    transition: 0.8s opacity;
+  }
+  .play-button-container {
+    cursor: pointer;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    &:hover {
+      .play-button {
+        background: #000;
+        color: #fc6;
+      }
+    }
+    .play-button {
+      font-size: 24px;
+      line-height: 44px;
+      width: 50px;
+      height: 40px;
+      margin: 0 auto;
+      padding: 0 8px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+    }
+  }
+}
