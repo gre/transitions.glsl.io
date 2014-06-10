@@ -1,6 +1,6 @@
 var _ = require("lodash");
 var Q = require("q");
-var Qimage = require("qimage");
+var Images = require("../../images");
 var Qstart = require("qstart");
 var GalleryScreen = require("./GalleryScreen");
 var Validator = require("glsl-transition-validator");
@@ -11,8 +11,8 @@ var imagesP =
   Q.race([ Qstart.delay(400), imagesRequiredNow.promise ])
   .then(function () {
     return Q.all([
-      Qimage("/assets/images/gallery/1.jpg"),
-      Qimage("/assets/images/gallery/2.jpg")
+      Images.getImage(0, "gallery"),
+      Images.getImage(1, "gallery")
     ]);
   });
 

@@ -1,6 +1,7 @@
 run.sh
 .DS_Store
 logs
+public/images/
 public/embed.min.js
 public/embed.js
 public/bundle.min.js

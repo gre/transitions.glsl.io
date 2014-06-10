@@ -31,7 +31,9 @@ object Global extends GlobalSettings {
       Transitions.clean()
     }
 
-    Akka.system.scheduler.schedule(0 seconds, 30 seconds, Gists.actor, "refresh")
+    val refreshRate = app.configuration.getInt("glslio.refreshRate").getOrElse(30)
+    Logger.info("glslio.refreshRate set to " + refreshRate)
+    Akka.system.scheduler.schedule(0 seconds, refreshRate seconds, Gists.actor, "refresh")
   }
 
 

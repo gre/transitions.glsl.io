@@ -1,6 +1,6 @@
-var Qimage = require("qimage");
 var React = require("react");
 var LinearPlayer = require("./LinearPlayer");
+var Images = require("../images");
 
 function render (from, to) {
   return React.renderComponent(LinearPlayer({
@@ -13,8 +13,8 @@ function render (from, to) {
   }), document.body);
 }
 
-Qimage("/assets/images/gallery/1.jpg").then(function (from) {
-  return Qimage("/assets/images/gallery/2.jpg").then(function (to) {
+Images.getImage(0, "embed").then(function (from) {
+  return Images.getImage(1, "embed").then(function (to) {
     window.addEventListener("resize", function () {
       render(from, to);
     }, false);
