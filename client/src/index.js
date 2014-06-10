@@ -1,45 +1,38 @@
 var _ = require("lodash");
+var Q = require("q");
+if ("production" !== process.env.NODE_ENV) window.React = require("react"); /* Expose React for the react web console */
 var screens = require("./screens");
-var app = require("./app");
-var routes = require("./routes");
-var ClickButton = require("./clickbutton");
-var dom = require("./dom");
+var app = require("./core/app");
+var model = require("./model");
 
-ClickButton({
-  el: document.body,
-  resolveTarget: function (e) {
-    var target = e.target;
-    while (target && target !== document.body && target.nodeName.toUpperCase() !== "A") {
-      target = target.parentNode;
+var run = app.init(screens, {
+
+  '/': function about() {
+    return app.show("about");
+  },
+
+  '/gallery': function gallery () {
+    return Q()
+      .then(model.getTransitions)
+      .then(_.bind(app.show, app, "gallery"));
+  },
+
+  '/transition/:gistId': function openGist (id) {
+    if (id === "new") {
+      id = app.env.rootGist;
     }
-    return target;
+    return Q(id)
+      .then(model.getTransition)
+      .then(_.bind(app.show, app, "editor"));
   },
-  isValidClickEvent: function (e) {
-    var target = this.resolveTarget(e);
-    if (!target) return false;
-    if (!ClickButton.prototype.isValidClickEvent.apply(this, arguments))
-      return false;
-    if (!("href" in target))
-      return false;
-    var href = target.getAttribute("href");
-    if (!href) return false;
-    return href[0] === "/" && !(
-      href === "/logout" ||
-      href === "/authenticate"
-    );
-  },
-  f: function (e) {
-    return routes.route(this.resolveTarget(e).getAttribute("href"));
-  }
-}).bind();
 
-var run = app.init(screens)
-  .then(function(){
-    return routes.init();
-  });
+  '/authenticate': "reload",
 
-run.fin(function () {
-  dom.footer.removeAttribute("hidden");
+  '/logout': "reload"
+
+}, function routeNotFound () {
+  return app.show("error", "Not Found");
 });
+
 run.fail(_.bind(app.show, app, "error")).done();
 run.done();

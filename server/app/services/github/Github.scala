@@ -1,6 +1,7 @@
 package services.github
 
-import WS.WSRequestHolder
+import play.api.libs.ws.WS
+import play.api.libs.ws.WS.WSRequestHolder
 
 import services.auth.OAuth2Token
 
@@ -120,8 +121,7 @@ object Github {
 
     def save(id: String, data: JsValue)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$id")
-        .prepare("PATCH", data)
-        .execute
+        .patch(data)
         .flatMap(result => result.status match {
           case 200 => Future.successful()
           case status =>

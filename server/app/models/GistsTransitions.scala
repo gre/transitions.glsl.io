@@ -139,14 +139,14 @@ object GistsTransitions {
     (__ \ 'owner).json.copyFrom((__ \ 'owner \ 'login).json.pick(string)) and
     (__ \ 'name).json.copyFrom((__ \ 'files).json.pick(extractGlslNameFromFiles)) and
     (__ \ 'glsl).json.copyFrom((__ \ 'files).json.pick(extractGlslFromFiles)) and
-    (__ \ 'defaults).json.copyFrom((__ \ 'files).json.pick(extractDefaultUniformsFromFiles orElse defaultUniforms))
+    (__ \ 'uniforms).json.copyFrom((__ \ 'files).json.pick(extractDefaultUniformsFromFiles orElse defaultUniforms))
   ).reduce
 
 
   def makeTransitionToGistPatchReader (previousEntry: Option[JsValue] = None) = //(
     //(__ \ 'description).json.pickBranch(stringOrNull) and
     (__ \ 'files).json.copyFrom((__).json.pick(Reads {
-      json: JsValue => (json \ "glsl", json \ "name", json \ "defaults") match {
+      json: JsValue => (json \ "glsl", json \ "name", json \ "uniforms") match {
         case (glsl: JsString, JsString(name), defaults: JsObject) =>
           JsSuccess(
             JsObject(Seq(
@@ -167,7 +167,7 @@ object GistsTransitions {
               )))
             ))
           )
-        case _ => JsError("invalid entry. Must have glsl, name and defaults")
+        case _ => JsError("invalid entry. Must have glsl, name and uniforms")
       }
     }))
 }

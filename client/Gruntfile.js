@@ -1,3 +1,4 @@
+
 module.exports = function (grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
@@ -8,8 +9,11 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     jshint: {
-      options: grunt.file.readJSON('.jshintrc'),
-      src: ['src/**.js']
+      options: {
+        jshintrc: ".jshintrc",
+        convertJSX: true
+      },
+      src: ['src/**/*.js']
     },
     uglify: {
       prod: {
@@ -27,7 +31,7 @@ module.exports = function (grunt) {
         dest: '../server/public/bundle.css'
       },
       embed: {
-        src: 'src/embed.styl',
+        src: 'src/embed/index.styl',
         dest: '../server/public/embed.css'
       }
     },
@@ -36,23 +40,27 @@ module.exports = function (grunt) {
         src: 'src/index.js',
         dest: '../server/public/bundle.js',
         options: {
-          transform: ["hbsfy"],
+          transform: ["envify", "reactify"],
           debug: true
         }
       },
       embed: {
-        src: 'src/embed.js',
-        dest: '../server/public/embed.js'
+        src: 'src/embed/index.js',
+        dest: '../server/public/embed.js',
+        options: {
+          transform: ["reactify"],
+          debug: true
+        }
       }
     },
     watch: {
       options: {
         livereload: 35735,
-        debounceDelay: 1000
+        debounceDelay: 700
       },
       js: {
-        files: ['src/**/*.js', 'src/**/*.hbs'],
-        tasks: ['jshint', 'browserify', 'uglify'],
+        files: ['src/**/*.js'],
+        tasks: ['jshint', 'browserify'],
       },
       css: {
         files: ['src/**/*.styl'],

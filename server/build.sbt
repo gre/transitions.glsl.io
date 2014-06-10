@@ -2,14 +2,16 @@ name := "GLSLTransitions"
 
 version := "1.0-SNAPSHOT"
 
+resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+
 libraryDependencies ++= Seq(
+  ws,
   cache,
   "joda-time" % "joda-time" % "2.3",
   "org.jsoup" % "jsoup" % "1.7.3",
-  "org.reactivemongo" %% "reactivemongo" % "0.10.0",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.2",
+  "org.reactivemongo" %% "reactivemongo" % "0.10.5.akka23-SNAPSHOT",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.akka23-SNAPSHOT",
   "eu.henkelmann" % "actuarius_2.10.0" % "0.2.6"
 )
 
-play.Project.playScalaSettings
-// lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala)

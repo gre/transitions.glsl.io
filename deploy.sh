@@ -9,10 +9,16 @@ REMOTE_APP=/home/play/$branch/
 echo "Will upload to... "$REMOTE":"$REMOTE_APP;
 sleep 2 || exit;
 
+cd images;
+./generate.sh || exit -1;
+cd -;
+
+export NODE_ENV="production";
 cd client;
 npm install || exit 1;
 grunt build || exit 2;
-cd ..;
+cd -;
+
 cd server;
 sbt stage || exit 3;
 ssh $REMOTE "cd $REMOTE_APP; ./stop.sh";
