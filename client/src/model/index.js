@@ -1,15 +1,13 @@
 var Qajax = require("qajax");
 var app = require("../core/app");
+var cache = require("../core/cache");
 
 module.exports = {
-  getTransitions: function () {
+  getTransitions: cache.getOrSetAsync("gists", 30000, function () {
     return Qajax("/api/transitions")
       .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
-      .then(function (gists) {
-        return gists;
-      });
-  },
+      .then(Qajax.toJSON);
+  }),
 
   getTransition: function (id) {
     return Qajax("/api/transitions/"+id)
@@ -18,6 +16,7 @@ module.exports = {
   },
 
   createNewTransition: function () {
+    cache.remove("gists");
     return Qajax({
       method: "POST",
       url: "/api/transitions",
@@ -29,6 +28,7 @@ module.exports = {
       .then(Qajax.toJSON);
   },
   saveTransition: function (transition) {
+    cache.remove("gists");
     return Qajax({
       method: "POST",
       url: "/api/transitions/"+transition.id,

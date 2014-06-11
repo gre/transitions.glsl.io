@@ -5,6 +5,9 @@ var screens = require("./screens");
 var app = require("./core/app");
 var model = require("./model");
 
+// Trigger a request for predictive going in gallery
+model.getTransitions();
+
 var run = app.init(screens, {
 
   '/': function about() {
