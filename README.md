@@ -57,10 +57,14 @@ License
 Release Notes
 ---
 
-### Version 1.3 - soon
-- Technical release
-  - Migrate the server to Playframework 2.3.
-  - Migrate the client to React library + modularisation.
+### Version 1.3 - 11 June 2014
+- Big technical release:
+  - Migrate the client codebase to React Library + modularisation.
+  - Upgrade the server to Playframework 2.3.
+- Update images used in the Gallery and the Editor.
+  - Add automation in the images generation into different formats.
+- Gallery and Editor: Pre-load and cache some resources for faster experience.
+- Improve pager of the gallery.
 
 ### Version 1.2 - 28 May 2014
 
