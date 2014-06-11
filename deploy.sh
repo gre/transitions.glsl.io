@@ -21,6 +21,6 @@ cd -;
 
 cd server;
 sbt stage || exit 3;
-ssh $REMOTE "cd $REMOTE_APP; ./stop.sh";
 rsync -va target/ $REMOTE:$REMOTE_APP/target
+ssh $REMOTE "cd $REMOTE_APP; ./stop.sh";
 ssh $REMOTE "cd $REMOTE_APP; ./start.sh";
