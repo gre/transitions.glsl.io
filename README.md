@@ -61,6 +61,8 @@ Release Notes
 - Big technical release:
   - Migrate the client codebase to React Library + modularisation.
   - Upgrade the server to Playframework 2.3.
+  - Website in HTTPS : https://glsl.io/
+  - Opened http://staging.glsl.io/ for beta testing incoming features – it is like GLSL.io but unstable.
 - Update images used in the Gallery and the Editor.
   - Add automation in the images generation into different formats.
 - Gallery and Editor: Pre-load and cache some resources for faster experience.
