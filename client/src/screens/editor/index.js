@@ -3,6 +3,7 @@ var Q = require("q");
 var Qstart = require("qstart");
 var EditorScreen = require("./EditorScreen");
 var Images = require("../../images");
+var resolveTextureUniforms = require("../../images/resolveTextureUniforms");
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
@@ -14,16 +15,19 @@ var imagesP =
 
 function show (transition, env) {
   imagesRequiredNow.resolve();
-  return imagesP.then(_.bind(function (images) {
-    return EditorScreen({
-      key: "transition-"+transition.id,
-      env: env,
-      initialTransition: transition,
-      images: images,
-      previewWidth: 256,
-      previewHeight: 256
-    });
-  }, this));
+  var uniformsResolved = resolveTextureUniforms(transition.uniforms);
+  return uniformsResolved.then(function () {
+    return imagesP.then(_.bind(function (images) {
+      return EditorScreen({
+        key: "transition-"+transition.id,
+        env: env,
+        initialTransition: transition,
+        images: images,
+        previewWidth: 256,
+        previewHeight: 256
+      });
+    }, this));
+  });
 }
 
 function init () {
