@@ -10,16 +10,16 @@ var UniformComponentInput = React.createClass({
     onChange: React.PropTypes.func.isRequired,
     primitiveType: React.PropTypes.string.isRequired
   },
-  onSelectChange: function () {
-    var i = this.refs.select.getDOMNode().selectedIndex;
-    var value = i===0 ? null : textures.names[i-1];
-    if (this.props.value !== value) {
+  onChange: function (e) {
+    var primitive = inputPrimitiveTypes[this.props.primitiveType];
+    var value = primitive.get(e.target);
+    if (!(typeof value==="number" && isNaN(value)) && value !== this.props.value) {
       this.props.onChange(value);
     }
   },
   render: function () {
     if (this.props.primitiveType === "sampler2D") {
-      return <select ref="select" onChange={this.onSelectChange} defaultValue={this.props.value}>
+      return <select className="uniform-component-input" ref="select" onChange={this.onChange} defaultValue={this.props.value}>
         <option key="null" value={null}>(none)</option>
         {_.map(textures.names, function (name) {
           return <option key={name} value={name}>{name}</option>;
@@ -28,14 +28,11 @@ var UniformComponentInput = React.createClass({
     }
     else {
       var primitive = inputPrimitiveTypes[this.props.primitiveType];
-      var onChange = this.props.onChange;
       var props = {
         className: "uniform-component-input",
         key: this.props.id,
         type: primitive.type,
-        onChange: function (e) {
-          onChange(primitive.get(e.target));
-        }
+        onChange: this.onChange
       };
       if ("step" in primitive)
         props.step = primitive.step;
