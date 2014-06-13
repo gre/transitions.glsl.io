@@ -2,6 +2,8 @@ var _ = require("lodash");
 var Q = require("q");
 var textures = require("./textures");
 
+// FIXME make that a module. (class created with a textures load function)
+
 var lazyLoadingImages = {};
 var lazyLoadedImages = {};
 

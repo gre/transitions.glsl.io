@@ -14,7 +14,9 @@ module.exports = {
     "square.png"
   ],
   resolveName: function (imgId) {
-    var name = typeof imgId === "number" ? this.names[imgId] : imgId;
+    var name;
+    if (imgId in this.names) name = this.names[name];
+    if (this.names.indexOf(imgId)!==-1) name = imgId;
     if (!name) throw new Error("texture name not found. "+imgId);
     return name;
   },
