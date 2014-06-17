@@ -34,6 +34,11 @@ function show (screen, args) {
         inner: nodes,
         name: screen
       });
+    })
+    .fail(function (err) {
+      if (screen !== "error") {
+        return show("error", err);
+      }
     });
   return currentlyShowing;
 }

@@ -3,7 +3,7 @@ var Q = require("q");
 var React = require("react");
 var LinearPlayer = require("./LinearPlayer");
 var Images = require("../images");
-var resolveTextureUniforms = require("../images/resolveTextureUniforms");
+var textures = require("../images/textures");
 
 var TRANSITION = window.transition;
 
@@ -19,7 +19,7 @@ function render (transition, from, to) {
 }
 
 Q.all([
-  resolveTextureUniforms(TRANSITION.uniforms).then(function (uniforms) {
+  textures.resolver.resolve(TRANSITION.uniforms).then(function (uniforms) {
     return _.defaults({ uniforms: uniforms }, TRANSITION);
   }),
   Images.getImage(0, "embed"),

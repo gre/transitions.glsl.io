@@ -3,7 +3,7 @@ var Q = require("q");
 var Qstart = require("qstart");
 var EditorScreen = require("./EditorScreen");
 var Images = require("../../images");
-var resolveTextureUniforms = require("../../images/resolveTextureUniforms");
+var textures = require("../../images/textures");
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
@@ -15,7 +15,7 @@ var imagesP =
 
 function show (transition, env) {
   imagesRequiredNow.resolve();
-  var uniformsResolved = resolveTextureUniforms(transition.uniforms);
+  var uniformsResolved = textures.resolver.resolve(transition.uniforms);
   return uniformsResolved.then(function () {
     return imagesP.then(_.bind(function (images) {
       return EditorScreen({

@@ -1,6 +1,8 @@
 var Qimage = require("qimage");
 var Q = require("q");
 
+var images = {};
+
 module.exports = {
   formats: "512x512 600x400 1024x768".split(" "),
   formatsByUsage: {
@@ -25,7 +27,11 @@ module.exports = {
     return name;
   },
   getImage: function (imgId, formatId) {
-    return Qimage("/assets/images/"+this.resolveFormat(formatId)+"/"+this.resolveName(imgId));
+    var url = "/assets/images/"+this.resolveFormat(formatId)+"/"+this.resolveName(imgId);
+    if (!(url in images)) {
+      images[url] = Qimage(url);
+    }
+    return images[url];
   },
   allImagesForFormat: function (formatId) {
     var self = this;

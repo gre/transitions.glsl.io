@@ -2,6 +2,8 @@ var _ = require("lodash");
 var arityForType = require("../UniformEditor/arityForType");
 var primitiveForType = require("../UniformEditor/primitiveForType");
 
+// FIXME use GlslTransitionValidator.ValidateUniform
+
 function uniformTypeCheck (type, value) {
   if (type === "sampler2D") {
     return value === null || typeof value === "string";

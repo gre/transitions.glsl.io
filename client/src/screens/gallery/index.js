@@ -1,10 +1,17 @@
 var _ = require("lodash");
 var Q = require("q");
 var Images = require("../../images");
-var resolveTextureUniforms = require("../../images/resolveTextureUniforms");
+var textures = require("../../images/textures");
 var Qstart = require("qstart");
 var GalleryScreen = require("./GalleryScreen");
-var Validator = require("glsl-transition-validator");
+var validator = require("../../glslio/validator");
+
+function validateTransitionForGallery (transition) {
+  var validation = validator.forGlsl(transition.glsl);
+  var passes = validation.compiles();
+  validation.destroy();
+  return passes;
+}
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
@@ -19,11 +26,10 @@ var imagesP =
 
 function show (transitions, env) {
   imagesRequiredNow.resolve();
-  var validator = new Validator();
-  var validatedTransitions = _.filter(transitions, validator.validate);
+  var validatedTransitions = _.filter(transitions, validateTransitionForGallery);
 
   var transitionsWithTexturesResolved = Q.all(_.map(validatedTransitions, function (transition) {
-    return resolveTextureUniforms(transition.uniforms)
+    return textures.resolver.resolve(transition.uniforms)
       .then(function (uniforms) {
         return _.defaults({ uniforms: uniforms }, transition);
       });

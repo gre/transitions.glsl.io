@@ -1,8 +1,8 @@
 /** @jsx React.DOM */
 var React = require("react");
-var Validator = require("glsl-transition-validator");
 var GlslEditor = require("../GlslEditor");
 var StatusMessage = require("../StatusMessage");
+var validator = require("../../../glslio/validator");
 
 var TransitionEditor = React.createClass({
   propTypes: {
@@ -10,40 +10,43 @@ var TransitionEditor = React.createClass({
     onChangeFailure: React.PropTypes.func.isRequired
   },
   getInitialState: function () {
-    this.validator = new Validator();
     return this.compile(this.props.initialGlsl);
   },
   isCompiling: function () {
     return this.state.compilationStatus === "success";
   },
   compile: function (glsl) {
-    if (!glsl) {
-      return {
+    var validation = validator.forGlsl(glsl);
+    var compile = validation.compile();
+    var result;
+    if (compile.compiles) {
+      result = {
+        uniforms: validation.uniforms(),
+        line: null,
+        compilationStatus: "success",
+        compilationMessage: "Shader successfully compiled"
+      };
+    }
+    else if ('line' in compile) {
+      var line = Math.max(0, compile.line - 1);
+      var msg = compile.message;
+      result = {
+        uniforms: {},
+        line: line,
+        compilationStatus: "error",
+        compilationMessage: "Line " + line + " : " + msg
+      };
+    }
+    else {
+      result = {
         uniforms: {},
         line: 0,
         compilationStatus: "error",
         compilationMessage: "Shader cannot be empty"
       };
     }
-    else {
-      var _ref = this.validator.validate(glsl), ok = _ref[0], line = _ref[1], msg = _ref[2];
-      if (ok) {
-        return {
-          uniforms: ok,
-          line: null,
-          compilationStatus: "success",
-          compilationMessage: "Shader successfully compiled"
-        };
-      } else {
-        line = Math.max(0, line - 1);
-        return {
-          uniforms: {},
-          line: line,
-          compilationStatus: "error",
-          compilationMessage: "Line " + line + " : " + msg
-        };
-      }
-    }
+    validation.destroy();
+    return result;
   },
   onChange: function (glsl) {
     var result = this.compile(glsl);

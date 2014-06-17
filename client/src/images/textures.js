@@ -1,7 +1,10 @@
 var Qimage = require("qimage");
 
+var GlslioTextureResolver = require("glslio-texture-resolver");
+var uniformResolver = new GlslioTextureResolver(Qimage);
+
 module.exports = {
-  names: [
+  names: [ // FIXME: we will need dynamic list query
 //  for t in `ls server/public/textures/`; do echo "\"$t\","; done
     "bilinear-lateral.png",
     "conical-asym.png",
@@ -13,14 +16,5 @@ module.exports = {
     "spiral-3.png",
     "square.png"
   ],
-  resolveName: function (imgId) {
-    var name;
-    if (imgId in this.names) name = this.names[name];
-    if (this.names.indexOf(imgId)!==-1) name = imgId;
-    if (!name) throw new Error("texture name not found. "+imgId);
-    return name;
-  },
-  getImage: function (imgId) {
-    return Qimage("/assets/textures/"+this.resolveName(imgId));
-  }
+  resolver: uniformResolver
 };

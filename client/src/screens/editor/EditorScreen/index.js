@@ -2,7 +2,6 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
-var Validator = require("glsl-transition-validator");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionInfos = require("../TransitionInfos");
@@ -14,9 +13,10 @@ var Toolbar = require("../../../ui/Toolbar");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
+var validator = require("../../../glslio/validator");
 var router = require("../../../core/router");
 var model = require("../../../model");
-var resolveTextureUniforms = require("../../../images/resolveTextureUniforms");
+var textures = require("../../../images/textures");
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
 
@@ -48,10 +48,10 @@ var EditorScreen = React.createClass({
     previewHeight: React.PropTypes.number.isRequired
   },
   getInitialState: function () {
-    this.validator = new Validator();
-    var ok = this.validator.validate(this.props.initialTransition.glsl);
-    var uniformTypes = ok ? ok[0] : {};
-    var uniforms = resolveTextureUniforms.sync(this.props.initialTransition.uniforms);
+    var validation = validator.forGlsl(this.props.initialTransition.glsl);
+    var uniformTypes = validation.compiles() ? validation.uniforms() : {};
+    validation.destroy();
+    var uniforms = textures.resolver.resolveSync(this.props.initialTransition.uniforms);
     return {
       width: this.computeWidth(),
       height: this.computeHeight(),
@@ -122,7 +122,7 @@ var EditorScreen = React.createClass({
     return window.innerHeight - 60;
   },
   setStateWithUniforms: function (state) {
-    return resolveTextureUniforms(state.transition.uniforms)
+    return textures.resolver.resolve(state.transition.uniforms)
       .then(_.bind(function (uniforms) {
         var transition = _.defaults({ uniforms: uniforms }, state.transition);
         return this.setStateQ(_.defaults({ transition: transition, rawTransition: state.transition }, state));
