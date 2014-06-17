@@ -18,7 +18,7 @@ var Header = React.createClass({
       <span className="github">
         <Link className="logout" href="/logout">logout</Link>
         <span> - </span>
-        <Link className="profile" target="_blank" href="https://gist.github.com/{user}">
+        <Link className="profile" target="_blank" href={"https://gist.github.com/"+encodeURIComponent(user)}>
           <i className="fa fa-github"></i>&nbsp;
           {user}
         </Link>
