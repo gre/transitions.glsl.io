@@ -57,11 +57,21 @@ License
 Release Notes
 ---
 
+### Version 1.4 - 18 June 2014
+- #53 : **Sampler2D User Uniforms are now supported!** It means you can use your own texture as parameter of a Transition. [example](https://glsl.io/transition/0141a38779af3a652c22) / thanks to @rectalogic for the feature request.
+- **Bugfixes**
+  - #71 : some `input[type=number]` bugs with React has been fixed
+  - an unpublished transition was visible in the gallery in 1.3 version.
+- **Misc**
+  - #67 : Gallery is now the home page, About page is on `/about`
+  - Externalize the validation of a GLSL Transition into `glsl-transition-validator`
+  - Create new modules (some experimental) – see [https://github.com/glslio](https://github.com/glslio)
+
 ### Version 1.3 - 11 June 2014
 - Big technical release:
-  - Migrate the client codebase to React Library + modularisation.
+  - #69 : Migrate the client codebase to React Library + modularisation.
   - Upgrade the server to Playframework 2.3.
-  - Website in HTTPS : https://glsl.io/
+  - #66 : Website in HTTPS : https://glsl.io/
   - Opened http://staging.glsl.io/ for beta testing incoming features – it is like GLSL.io but unstable.
 - Update images used in the Gallery and the Editor.
   - Add automation in the images generation into different formats.
