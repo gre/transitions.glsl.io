@@ -3,6 +3,7 @@ var React = require("react");
 var _ = require("lodash");
 var inputPrimitiveTypes = require("./primitiveTypes");
 var textures = require("../../../images/textures");
+var NumberInput = require("./NumberInput");
 
 var UniformComponentInput = React.createClass({
   propTypes: {
@@ -13,7 +14,7 @@ var UniformComponentInput = React.createClass({
   onChange: function (e) {
     var primitive = inputPrimitiveTypes[this.props.primitiveType];
     var value = primitive.get(e.target);
-    if (!(typeof value==="number" && isNaN(value)) && value !== this.props.value) {
+    if (value !== this.props.value) {
       this.props.onChange(value);
     }
   },
@@ -41,8 +42,10 @@ var UniformComponentInput = React.createClass({
       else
         props.value = this.props.value || primitive.value;
       props = _.extend({}, this.props, props);
-      var input = React.DOM.input(props);
-      return input;
+      if (props.type === "number")
+        return NumberInput(props);
+      else
+        return React.DOM.input(props);
     }
   }
 });
