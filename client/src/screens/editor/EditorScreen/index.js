@@ -193,7 +193,7 @@ var EditorScreen = React.createClass({
     var name = window.prompt("Please choose a transition name (alphanumeric only):");
     if (name.match(/^[a-zA-Z0-9_ ]+$/)) {
       return this.setStateWithUniforms({
-          transition: _.defaults({ name: name }, this.state.transition)
+          transition: _.defaults({ name: name }, this.state.rawTransition)
         })
         .then(_.bind(this.saveTransition, this))
         .then(_.bind(router.reload, router));
@@ -216,7 +216,7 @@ var EditorScreen = React.createClass({
   },
   onUniformsChange: function (uniforms) {
     this.setStateWithUniforms({
-      transition: _.defaults({ uniforms: uniforms }, this.state.transition)
+      transition: _.defaults({ uniforms: uniforms }, this.state.rawTransition)
     });
   },
   hasUnsavingChanges: function () {
