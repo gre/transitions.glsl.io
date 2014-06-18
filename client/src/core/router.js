@@ -32,7 +32,6 @@ var route = Qdebounce(function (fun, args, next) {
 }, 20);
 
 var Qroute = function (f) {
-  if (f === "reload") f = reload;
   return function () {
     var next = _.last(arguments);
     var args = _.initial(arguments);
