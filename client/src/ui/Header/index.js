@@ -18,7 +18,7 @@ var Header = React.createClass({
       <span className="github">
         <Link className="logout" href="/logout">logout</Link>
         <span> - </span>
-        <Link className="profile" target="_blank" href="https://gist.github.com/{user}">
+        <Link className="profile" target="_blank" href={"https://gist.github.com/"+encodeURIComponent(user)}>
           <i className="fa fa-github"></i>&nbsp;
           {user}
         </Link>
@@ -30,9 +30,9 @@ var Header = React.createClass({
       ;
 
     var navs = _.map([
-      { id: "about", href: "/", name: "About" },
-      { id: "gallery", href: "/gallery", name: "Gallery" },
+      { id: "gallery", href: "/", name: "Gallery" },
       { id: "editor", href: "/transition/new", name: "Editor" },
+      { id: "about", href: "/about", name: "About" }
     ], function (nav) {
       return <Link key={nav.id} className={nav.id+(screenName===nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
     });

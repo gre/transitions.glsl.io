@@ -5,6 +5,8 @@ var Link = require("../../ui/Link");
 var ErrorScreen = React.createClass({
   render: function () {
     var e = this.props.error;
+    if (e && e.stack)
+      console.log(e.stack);
     var msg = e.message || e;
     if (e instanceof window.XMLHttpRequest) {
       msg = e.statusText;

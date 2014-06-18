@@ -2,7 +2,6 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
-var Validator = require("glsl-transition-validator");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionInfos = require("../TransitionInfos");
@@ -14,11 +13,15 @@ var Toolbar = require("../../../ui/Toolbar");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
+var validator = require("../../../glslio/validator");
 var router = require("../../../core/router");
 var model = require("../../../model");
+var textures = require("../../../images/textures");
 
 var ignoredUniforms = ["progress", "resolution", "from", "to"];
-var unsupportedTypes = ["sampler2D", "samplerCube"];
+
+var unsupportedTypes = ["samplerCube"];
+
 function keepCustomUniforms (uniforms) {
   return _.omit(uniforms, function (uniformType, uniformName) {
     return _.contains(ignoredUniforms, uniformName) || _.contains(unsupportedTypes, uniformType);
@@ -45,20 +48,23 @@ var EditorScreen = React.createClass({
     previewHeight: React.PropTypes.number.isRequired
   },
   getInitialState: function () {
-    this.validator = new Validator();
-    var ok = this.validator.validate(this.props.initialTransition.glsl);
-    var uniformTypes = ok ? ok[0] : {};
+    var validation = validator.forGlsl(this.props.initialTransition.glsl);
+    var uniformTypes = validation.compiles() ? validation.uniforms() : {};
+    validation.destroy();
+    var uniforms = textures.resolver.resolveSync(this.props.initialTransition.uniforms);
     return {
       width: this.computeWidth(),
       height: this.computeHeight(),
-      transition: this.props.initialTransition,
+      // FIXME: we should rename rawTransition to transition, and just keep the transformedUniforms
+      rawTransition: this.props.initialTransition,
+      transition: _.defaults({ uniforms: uniforms }, this.props.initialTransition),
       uniformTypes: keepCustomUniforms(uniformTypes),
       saveStatusMessage: null,
       saveStatus: null
     };
   },
   componentWillMount: function () {
-    this.lastSavingTransition = this.lastSavedTransition = this.state.transition;
+    this.lastSavingTransition = this.lastSavedTransition = this.state.rawTransition;
   },
   componentDidMount: function () {
     window.addEventListener("resize", this._onResize=_.bind(this.onResize, this), false);
@@ -77,6 +83,7 @@ var EditorScreen = React.createClass({
     var hasUnsavingChanges = this.hasUnsavingChanges();
     var env = this.props.env;
     var transition = this.state.transition;
+    var rawTransition = this.state.rawTransition;
     var images = this.props.images;
     var previewWidth = this.props.previewWidth;
     var previewHeight = this.props.previewHeight;
@@ -100,7 +107,7 @@ var EditorScreen = React.createClass({
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
           <div className="properties">
-            <UniformsEditor initialUniformValues={transition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
+            <UniformsEditor initialUniformValues={rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
           </div>
         </div>
 
@@ -114,6 +121,13 @@ var EditorScreen = React.createClass({
   computeHeight: function () {
     return window.innerHeight - 60;
   },
+  setStateWithUniforms: function (state) {
+    return textures.resolver.resolve(state.transition.uniforms)
+      .then(_.bind(function (uniforms) {
+        var transition = _.defaults({ uniforms: uniforms }, state.transition);
+        return this.setStateQ(_.defaults({ transition: transition, rawTransition: state.transition }, state));
+      }, this));
+  },
   setSaveStatus: function (status, message) {
     return this.setStateQ({
       saveStatus: status,
@@ -121,7 +135,7 @@ var EditorScreen = React.createClass({
     });
   },
   saveTransition: function () {
-    var transition = _.cloneDeep(this.state.transition);
+    var transition = _.cloneDeep(this.state.rawTransition);
     this.lastSavingTransition =  transition;
     return this.setSaveStatus("info", "Saving...")
       .thenResolve(transition)
@@ -136,7 +150,7 @@ var EditorScreen = React.createClass({
       }, this));
   },
   createNewTransition: function () {
-    var transition = _.cloneDeep(this.state.transition);
+    var transition = _.cloneDeep(this.state.rawTransition);
     this.lastSavingTransition =  transition;
     return this.setSaveStatus("info", "Creating...")
       .thenResolve(transition)
@@ -146,7 +160,7 @@ var EditorScreen = React.createClass({
         return model.saveTransition(transition);
       }, this))
       .then(_.bind(function () {
-        return this.setStateQ({ transition: transition });
+        return this.setStateWithUniforms({ transition: transition });
       }, this))
       .then(_.bind(this.setSaveStatus, this, "success", "Created."))
       .then(function () {
@@ -178,7 +192,7 @@ var EditorScreen = React.createClass({
     // TODO making a proper UI for that. prompt() is the worse but easy solution
     var name = window.prompt("Please choose a transition name (alphanumeric only):");
     if (name.match(/^[a-zA-Z0-9_ ]+$/)) {
-      return this.setStateQ({
+      return this.setStateWithUniforms({
           transition: _.defaults({ name: name }, this.state.transition)
         })
         .then(_.bind(this.saveTransition, this))
@@ -192,24 +206,24 @@ var EditorScreen = React.createClass({
   },
   onGlslChangeSuccess: function (glsl, allUniformTypes) {
     var uniformTypes = keepCustomUniforms(allUniformTypes);
-    this.setState({
+    this.setStateWithUniforms({
       transition: _.defaults({
         glsl: glsl,
-        uniforms: uniformValuesForUniforms(uniformTypes, this.state.transition.uniforms)
+        uniforms: uniformValuesForUniforms(uniformTypes, this.state.rawTransition.uniforms)
       }, this.state.transition),
       uniformTypes: uniformTypes
     });
   },
   onUniformsChange: function (uniforms) {
-    this.setState({
+    this.setStateWithUniforms({
       transition: _.defaults({ uniforms: uniforms }, this.state.transition)
     });
   },
   hasUnsavingChanges: function () {
-    return !_.isEqual(this.lastSavingTransition, this.state.transition);
+    return !_.isEqual(this.lastSavingTransition, this.state.rawTransition);
   },
   hasUnsavedChanges: function () {
-    return !_.isEqual(this.lastSavedTransition, this.state.transition);
+    return !_.isEqual(this.lastSavedTransition, this.state.rawTransition);
   }
 });
 

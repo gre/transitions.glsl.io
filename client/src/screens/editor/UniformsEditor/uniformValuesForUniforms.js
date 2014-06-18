@@ -2,7 +2,12 @@ var _ = require("lodash");
 var arityForType = require("../UniformEditor/arityForType");
 var primitiveForType = require("../UniformEditor/primitiveForType");
 
+// FIXME use GlslTransitionValidator.ValidateUniform
+
 function uniformTypeCheck (type, value) {
+  if (type === "sampler2D") {
+    return value === null || typeof value === "string";
+  }
   var arity = arityForType(type);
   var isArray = _.isArray(value);
   if (arity !== (!isArray ? 1 : value.length)) {
@@ -15,7 +20,7 @@ function uniformTypeCheck (type, value) {
 function defaultValueForType (t) {
   var arity = arityForType(t);
   var primitive = primitiveForType(t);
-  var v = ({ "bool": false, "int": 0, "float": 0.0 })[primitive];
+  var v = ({ "bool": false, "int": 0, "float": 0.0, "sampler2D": null })[primitive];
   if (arity === 1) return v;
   var arr = [];
   for (var i=0; i<arity; ++i) {

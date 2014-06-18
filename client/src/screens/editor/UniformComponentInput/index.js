@@ -2,6 +2,8 @@
 var React = require("react");
 var _ = require("lodash");
 var inputPrimitiveTypes = require("./primitiveTypes");
+var textures = require("../../../images/textures");
+var NumberInput = require("./NumberInput");
 
 var UniformComponentInput = React.createClass({
   propTypes: {
@@ -9,26 +11,42 @@ var UniformComponentInput = React.createClass({
     onChange: React.PropTypes.func.isRequired,
     primitiveType: React.PropTypes.string.isRequired
   },
-  render: function () {
+  onChange: function (e) {
     var primitive = inputPrimitiveTypes[this.props.primitiveType];
-    var onChange = this.props.onChange;
-    var props = {
-      className: "uniform-component-input",
-      key: this.props.id,
-      type: primitive.type,
-      onChange: function (e) {
-        onChange(primitive.get(e.target));
-      }
-    };
-    if ("step" in primitive)
-      props.step = primitive.step;
-    if ("checked" in primitive)
-      props.checked = this.props.value || primitive.checked;
-    else
-      props.value = this.props.value || primitive.value;
-    props = _.extend({}, this.props, props);
-    var input = React.DOM.input(props);
-    return input;
+    var value = primitive.get(e.target);
+    if (value !== this.props.value) {
+      this.props.onChange(value);
+    }
+  },
+  render: function () {
+    if (this.props.primitiveType === "sampler2D") {
+      return <select className="uniform-component-input" ref="select" onChange={this.onChange} defaultValue={this.props.value}>
+        <option key="null" value={null}>(none)</option>
+        {_.map(textures.names, function (name) {
+          return <option key={name} value={name}>{name}</option>;
+        }, this)}
+      </select>;
+    }
+    else {
+      var primitive = inputPrimitiveTypes[this.props.primitiveType];
+      var props = {
+        className: "uniform-component-input",
+        key: this.props.id,
+        type: primitive.type,
+        onChange: this.onChange
+      };
+      if ("step" in primitive)
+        props.step = primitive.step;
+      if ("checked" in primitive)
+        props.checked = this.props.value || primitive.checked;
+      else
+        props.value = this.props.value || primitive.value;
+      props = _.extend({}, this.props, props);
+      if (props.type === "number")
+        return NumberInput(props);
+      else
+        return React.DOM.input(props);
+    }
   }
 });
 

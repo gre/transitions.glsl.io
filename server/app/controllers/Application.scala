@@ -66,6 +66,8 @@ object Application extends Controller with GithubOAuthController with MongoContr
     }
   }
 
+  def redirectDeprecated (path: String) = Action(Redirect(path))
+
   def index (path: String) =
     Action.async { implicit request =>
       app(None)
