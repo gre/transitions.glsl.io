@@ -19,6 +19,9 @@ var cache = {
   remove: function (key) {
     store.remove(key);
   },
+  clear: function () {
+    store.clear();
+  },
   getOrSetAsync: function (id, time, fetcher) {
     var currentFetchingData = null;
     return function () {
