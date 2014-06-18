@@ -58,7 +58,7 @@ Release Notes
 ---
 
 ### Version 1.4 - 18 June 2014
-- #53 : **Sampler2D User Uniforms are now supported!** It means you can use your own texture as parameter of a Transition. [example](https://glsl.io/transition/0141a38779af3a652c22) / thanks to @rectalogic for the feature request.
+- #53 : **Sampler2D User Uniforms are now supported!** It means you can use external textures (currently from a set of glslio textures) as parameter of a Transition. [example](https://glsl.io/transition/0141a38779af3a652c22) / thanks to @rectalogic for the feature request.
 - **Bugfixes**
   - #71 : some `input[type=number]` bugs with React has been fixed
   - an unpublished transition was visible in the gallery in 1.3 version.
