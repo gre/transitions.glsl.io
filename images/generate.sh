@@ -7,11 +7,15 @@ dist="../server/public/images"
 tmp="./tmp_out";
 
 rm -rf $tmp;
+mv $dist $tmp || mkdir $tmp;
+
 for format in $formats; do
   mkdir -p $tmp/$format;
   for name in `ls $in`; do
-    echo "Generating $format/$name";
-    convert $in/$name -resize "$format^" -gravity center -crop "$format+0+0" +repage $tmp/$format/$name;
+    if [ ! -f $tmp/$format/$name ] ; then
+      echo "Generating $format/$name";
+      convert $in/$name -resize "$format^" -gravity center -crop "$format+0+0" +repage $tmp/$format/$name;
+    fi;
   done;
 done;
 
