@@ -48,9 +48,12 @@ var GalleryScreen = React.createClass({
       <i className="fa fa-plus"></i>&nbsp;Create a new Transition
     </Link>;
     var groups = _.groupBy(this.props.transitions, function (transition) {
-      if (transition.owner === this.props.env.user && transition.name === "TEMPLATE")
-        return 'unpublished';
-      return 'published';
+      if (transition.name !== "TEMPLATE")
+        return 'published';
+      else {
+        if (transition.owner === this.props.env.user)
+          return 'unpublished';
+      }
     }, this);
     var pageSize = this.props.pageSize;
 
