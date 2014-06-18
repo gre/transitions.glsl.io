@@ -6,7 +6,11 @@ module.exports = {
   getTransitions: cache.getOrSetAsync("gists", 30000, function () {
     return Qajax("/api/transitions")
       .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON);
+      .then(Qajax.toJSON)
+      .then(function (transitions) {
+        if (transitions.length === 0) throw new Error("no transitions in gallery. Try again.");
+        return transitions;
+      });
   }),
 
   getTransition: function (id) {

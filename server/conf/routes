@@ -2,20 +2,25 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Map static resources from the /public folder to the /assets URL path
+# Assets
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
 
-GET     /authenticate               controllers.Application.authenticate
-GET     /logout                     controllers.Application.logout
+# API
 GET     /api/home                   controllers.Application.homeContent
-
 GET     /api/transitions            controllers.Transitions.all()
 GET     /api/transitions/:id        controllers.Transitions.get(id)
 POST    /api/transitions            controllers.Transitions.fork()
 POST    /api/transitions/:id        controllers.Transitions.save(id)
 
-GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
+# Auth
+GET     /authenticate               controllers.Application.authenticate
+GET     /logout                     controllers.Application.logout
 
+# Redirect deprecated urls
+GET     /gallery                    controllers.Application.redirectDeprecated(path="/")
+
+# Web Application urls
 GET     /                           controllers.Application.index(path = "")
 GET     /transition/:id             controllers.Application.transition(id)
 GET     /transition/:id/preview.jpg controllers.Application.transitionPreview(id)

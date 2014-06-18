@@ -10,14 +10,14 @@ model.getTransitions();
 
 var run = app.init(screens, {
 
-  '/': function about() {
-    return app.show("about");
-  },
-
-  '/gallery': function gallery () {
+  '/': function gallery () {
     return Q()
       .then(model.getTransitions)
       .then(_.bind(app.show, app, "gallery"));
+  },
+
+  '/about': function about() {
+    return app.show("about");
   },
 
   '/transition/:gistId': function openGist (id) {
