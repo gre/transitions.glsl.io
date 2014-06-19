@@ -6,7 +6,7 @@ Technologies
 ---
 
 - **server**: [Play Framework](http://playframework.org) (scala), [Akka](http://akka.io), [ReactiveMongo](http://reactivemongo.org)
-- **client**: [Browserify](http://browserify.org) + multiple [NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
+- **client**: [Browserify](http://browserify.org) + [React](http://facebook.github.io/react/) + much more [NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
 
 Build & Run
 ---
