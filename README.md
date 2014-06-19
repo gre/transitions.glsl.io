@@ -64,6 +64,7 @@ Release Notes
   - an unpublished transition was visible in the gallery in 1.3 version.
 - **Misc**
   - #67 : Gallery is now the home page, About page is on `/about`
+  - `glsl-transition` has been splitted into two packages: `glsl-transition` and `glsl-transition-core`. [See this issue](https://github.com/glslio/glsl-transition/issues/12)
   - Externalize the validation of a GLSL Transition into `glsl-transition-validator`
   - Create new modules (some experimental) – see [https://github.com/glslio](https://github.com/glslio)
 
