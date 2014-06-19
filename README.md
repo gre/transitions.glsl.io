@@ -54,6 +54,11 @@ License
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+ROADMAP
+---
+
+[https://github.com/glslio/glsl.io/issues/60](https://github.com/glslio/glsl.io/issues/60)
+
 Release Notes
 ---
 
