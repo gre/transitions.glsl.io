@@ -21,6 +21,7 @@
     "glsl-transition": "0.6.x",
     "glsl-transition-validator": "0.3.x",
     "glslio-texture-resolver": "0.1.x",
+    "glsldoc": "0.0.x",
     "q": "1.0.x",
     "raf": "2.0.x",
     "qajax": "0.2.x",

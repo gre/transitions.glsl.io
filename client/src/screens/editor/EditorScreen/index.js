@@ -2,6 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
+var GlslContextualHelp = require("../GlslContextualHelp");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionInfos = require("../TransitionInfos");
@@ -60,7 +61,8 @@ var EditorScreen = React.createClass({
       transition: _.defaults({ uniforms: uniforms }, this.props.initialTransition),
       uniformTypes: keepCustomUniforms(uniformTypes),
       saveStatusMessage: null,
-      saveStatus: null
+      saveStatus: null,
+      token: null
     };
   },
   componentWillMount: function () {
@@ -94,6 +96,13 @@ var EditorScreen = React.createClass({
     var editorHeight = height - 40;
     var isPublished = transition.name !== "TEMPLATE";
 
+    var Tabs =
+    // ^ TODO this will be a component
+      <div className="properties">
+        <GlslContextualHelp token={this.state.token} />
+        <UniformsEditor initialUniformValues={rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
+      </div>;
+
     return <div className="editor-screen" style={{width:width,height:height}}>
       <Toolbar>
         <LicenseLabel />
@@ -106,12 +115,10 @@ var EditorScreen = React.createClass({
             <TransitionComments count={transition.comments} href={transition.html_url} />
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
-          <div className="properties">
-            <UniformsEditor initialUniformValues={rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
-          </div>
+          {Tabs}
         </div>
 
-        <TransitionEditor onChangeSuccess={this.onGlslChangeSuccess} onChangeFailure={this.onGlslChangeFailure} initialGlsl={transition.glsl} onSave={this.onSave} width={editorWidth} height={editorHeight} />
+        <TransitionEditor onCursorTokenChange={this.onCursorTokenChange} onChangeSuccess={this.onGlslChangeSuccess} onChangeFailure={this.onGlslChangeFailure} initialGlsl={transition.glsl} onSave={this.onSave} width={editorWidth} height={editorHeight} />
       </div>
     </div>;
   },
@@ -202,6 +209,11 @@ var EditorScreen = React.createClass({
       window.alert("Title must be alphanumeric.");
     }
   },  
+  onCursorTokenChange: function (token) {
+    this.setState({
+      token: token
+    });
+  },
   onGlslChangeFailure: function () {
   },
   onGlslChangeSuccess: function (glsl, allUniformTypes) {

@@ -1,6 +1,8 @@
 
 module.exports = function (grunt) {
 
+  var DEV = "production" !== process.env.NODE_ENV;
+
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
   grunt.registerTask('default', ['build', 'watch']);
@@ -41,7 +43,7 @@ module.exports = function (grunt) {
         dest: '../server/public/bundle.js',
         options: {
           transform: ["envify", "reactify"],
-          debug: true
+          debug: DEV
         }
       },
       embed: {
@@ -49,7 +51,7 @@ module.exports = function (grunt) {
         dest: '../server/public/embed.js',
         options: {
           transform: ["reactify"],
-          debug: true
+          debug: DEV
         }
       }
     },
