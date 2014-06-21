@@ -95,7 +95,7 @@ var TransitionCanvasCache = React.createClass({
     this.canvases = _.memoize(_.bind(this.drawer, this));
   },
   setProgress: function (p) {
-    var i = Math.floor(p * this.props.resolution);
+    var i = Math.max(0, Math.min(Math.round(p * this.props.resolution), this.props.resolution));
     if (this.canvases) {
       var canvas = this.canvases(i);
       if (canvas) {
