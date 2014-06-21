@@ -2,14 +2,23 @@
 var React = require("react");
 var _ = require("lodash");
 var ace = window.ace;
+ace.require("ace/ext/language_tools");
 
 var GlslEditor = React.createClass({
   propTypes: {
     initialGlsl: React.PropTypes.string.isRequired,
-    onChange: React.PropTypes.func.isRequired,
-    onSave: React.PropTypes.func.isRequired,
+    onChange: React.PropTypes.func,
+    onCursorTokenChange: React.PropTypes.func,
+    onSave: React.PropTypes.func,
     width: React.PropTypes.number,
     height: React.PropTypes.number
+  },
+  getDefaultProps: function () {
+    return {
+      onChange: _.noop,
+      onSave: _.noop,
+      onCursorTokenChange: _.noop
+    };
   },
   getInitialState: function () {
     return { glsl: this.props.initialGlsl };
@@ -26,7 +35,6 @@ var GlslEditor = React.createClass({
     this._lastWidth = this.props.width;
     this._lastHeight = this.props.height;
     var node = this.getDOMNode();
-    ace.require("ace/ext/language_tools");
     var editor = ace.edit(node);
     editor.setOptions({
       enableBasicAutocompletion: true
@@ -47,13 +55,22 @@ var GlslEditor = React.createClass({
     session.setMode("ace/mode/glsl");
     session.setUseWrapMode(true);
     editor.focus();
-    this.session = session;
-    this.editor = editor;
+    window.session=this.session = session;
+    window.editor=this.editor = editor;
     session.setValue(this._lastGlsl = this.state.glsl);
     session.on("change", _.bind(function () {
       var glsl = session.getValue();
       this.setState({ glsl: this._lastGlsl = glsl });
       this.props.onChange(this.state.glsl);
+    }, this));
+    this._lastToken = null;
+    session.selection.on("changeCursor", _.bind(function (o, selection) {
+      var lead = selection.lead;
+      var token = session.getTokenAt(lead.row, lead.column);
+      if (!_.isEqual(this._lastToken, token)) {
+        this._lastToken = token;
+        this.props.onCursorTokenChange(token);
+      }
     }, this));
   },
   componentDidUpdate: function () {
