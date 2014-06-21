@@ -8,6 +8,10 @@ var noContent = <div className="glsl-contextual-help none">Nothing found.</div>;
 
 var GlslDocumentationIndexedPerName = _.groupBy(GlslDocumentation, "name");
 
+function prettyType (str) {
+  return str.replace("_", " ");
+}
+
 function findDocumentation (token) {
   var matches = GlslDocumentationIndexedPerName[token.value];
   if (!matches) return null;
@@ -31,10 +35,9 @@ var GlslContextualHelp = React.createClass({
 
     return <div className="glsl-contextual-help">
       <div className="glsl-documentation">
-        <p>
-          <span className="glsl-token-name">{documentation.name} </span>
-          :
-          <span className="glsl-token-type"> {documentation.type}</span>
+        <p className="glsl-token-type-name">
+          <span className="glsl-token-type">{prettyType(documentation.type)}</span>
+          <span className="glsl-token-name">{documentation.name}</span>
         </p>
         <p className="glsl-token-usage hljs" dangerouslySetInnerHTML={{ __html: usageHTML }} />
         <p className="glsl-token-description">{documentation.description}</p>

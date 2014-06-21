@@ -64,14 +64,16 @@ var GlslEditor = React.createClass({
       this.props.onChange(this.state.glsl);
     }, this));
     this._lastToken = null;
-    session.selection.on("changeCursor", _.bind(function (o, selection) {
+    var onCursorTokenChange = _.bind(function (e, selection) {
       var p = selection.getRange().end;
       var token = session.getTokenAt(p.row, p.column);
       if (!_.isEqual(this._lastToken, token)) {
         this._lastToken = token;
         this.props.onCursorTokenChange(token);
       }
-    }, this));
+    }, this);
+    session.selection.on("changeSelection", onCursorTokenChange);
+    session.selection.on("changeCursor", onCursorTokenChange);
   },
   componentDidUpdate: function () {
     var glslChanged = this._lastGlsl !== this.state.glsl;
