@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require("react");
 var GlslDocumentation = require("glsldoc");
+var hljs = require('highlight.js');
 var _ = require("lodash");
 
 var noContent = <div className="glsl-contextual-help none">Nothing found.</div>;
@@ -28,17 +29,18 @@ var GlslContextualHelp = React.createClass({
     var documentation = findDocumentation(token);
     if (!documentation) return noContent;
 
+    var usageHTML = hljs.highlight("glsl", documentation.usage).value;
+
     return <div className="glsl-contextual-help">
-      <dl className="glsl-documentation">
-        <dt>Type</dt>
-        <dd className="glsl-token-type">{documentation.type}</dd>
-        <dt>Name</dt>
-        <dd className="glsl-token-name">{documentation.name}</dd>
-        <dt>Usage</dt>
-        <dd className="glsl-token-usage">{documentation.usage}</dd>
-        <dt>Description</dt>
-        <dd className="glsl-token-description">{documentation.description}</dd>
-      </dl>
+      <div className="glsl-documentation">
+        <p>
+          <span className="glsl-token-name">{documentation.name} </span>
+          :
+          <span className="glsl-token-type"> {documentation.type}</span>
+        </p>
+        <p className="glsl-token-usage hljs" dangerouslySetInnerHTML={{ __html: usageHTML }} />
+        <p className="glsl-token-description">{documentation.description}</p>
+      </div>
     </div>;
   }
 });
