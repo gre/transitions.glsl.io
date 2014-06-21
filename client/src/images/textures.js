@@ -1,7 +1,7 @@
 var Qimage = require("qimage");
 
 var GlslioTextureResolver = require("glslio-texture-resolver");
-var uniformResolver = new GlslioTextureResolver(Qimage);
+var uniformResolver = new GlslioTextureResolver(Qimage.anonymously);
 
 module.exports = {
   names: [ // FIXME: we will need dynamic list query
