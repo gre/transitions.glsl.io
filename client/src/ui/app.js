@@ -3,6 +3,7 @@
 var React = require("react");
 var Header = require("./Header");
 var Footer = require("./Footer");
+var Feedback = require("./Feedback");
 var ScreenContainer = require("./ScreenContainer");
 
 var App = React.createClass({
@@ -16,6 +17,7 @@ var App = React.createClass({
       <Header user={this.props.env.user} screenName={screen.name} />
       <ScreenContainer name={screen.name}>{screen.inner}</ScreenContainer>
       <Footer version={this.props.env.version} />
+      <Feedback />
     </div>;
   }
 });
