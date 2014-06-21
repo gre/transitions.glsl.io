@@ -65,8 +65,8 @@ var GlslEditor = React.createClass({
     }, this));
     this._lastToken = null;
     session.selection.on("changeCursor", _.bind(function (o, selection) {
-      var lead = selection.lead;
-      var token = session.getTokenAt(lead.row, lead.column);
+      var p = selection.getRange().end;
+      var token = session.getTokenAt(p.row, p.column);
       if (!_.isEqual(this._lastToken, token)) {
         this._lastToken = token;
         this.props.onCursorTokenChange(token);

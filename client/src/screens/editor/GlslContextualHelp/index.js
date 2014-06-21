@@ -7,11 +7,9 @@ var _ = require("lodash");
 var noContent = <div className="glsl-contextual-help none">Nothing found.</div>;
 
 var GlslDocumentationIndexedPerName = _.groupBy(GlslDocumentation, "name");
-console.log(GlslDocumentationIndexedPerName);
 
 function findDocumentation (token) {
   var matches = GlslDocumentationIndexedPerName[token.value];
-  console.log(token, matches);
   if (!matches) return null;
   return matches[0]; // We may not have collision. Otherwise we can figure out some heuristics
 }
