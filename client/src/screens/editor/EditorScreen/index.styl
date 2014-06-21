@@ -37,7 +37,34 @@
       .vignette {
         border: none;
       }
-      .properties {
+      .tabs {
+        white-space: nowrap;
+        .tab {
+          line-height: 20px;
+          box-sizing: border-box;
+          padding: 2px 4px;
+          width: 33.33%;
+          display: inline-block;
+          text-align: center;
+          overflow: ellipsis;
+          font-size: 1em;
+          color: #aaa;
+          background: #111;
+          font-size: 0.8em;
+          font-weight: 300;
+          span {
+          }
+          &:hover {
+            background: #000;
+            color: #fff;
+          }
+          &.current, &.current:hover {
+            background: none;
+            color: #aaa;
+          }
+        }
+      }
+      .tabContent {
         padding: 5px 0;
         background: #333;
       }

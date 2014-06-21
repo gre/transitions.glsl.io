@@ -55,8 +55,8 @@ var GlslEditor = React.createClass({
     session.setMode("ace/mode/glsl");
     session.setUseWrapMode(true);
     editor.focus();
-    window.session=this.session = session;
-    window.editor=this.editor = editor;
+    this.session = session;
+    this.editor = editor;
     session.setValue(this._lastGlsl = this.state.glsl);
     session.on("change", _.bind(function () {
       var glsl = session.getValue();

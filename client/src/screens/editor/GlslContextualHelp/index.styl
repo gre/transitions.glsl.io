@@ -1,4 +1,18 @@
 .glsl-contextual-help {
+  .glsl-documentation-no-context, .glsl-documentation {
+    min-height: 160px;
+    box-sizing: border-box;
+  }
+  .glsl-documentation-no-context {
+    p {
+      opacity: 0.6;
+      font-size: 0.8em;
+      padding: 1em;
+      background: #222;
+      border-radius: 0.5em;
+      margin: 0;
+    }
+  }
   .glsl-documentation {
     p {
       margin: 2px 0;
@@ -33,8 +47,14 @@
     .glsl-token-description {
       font-weight: 300;
       font-style: italic;
+      padding: 0.6em;
       font-size: 0.8em;
-      padding: 0.5em 1em 0 0;
+      opacity: 0.7;
+      background: #222;
     }
+  }
+  .links {
+    list-style: none;
+    margin: 0;
   }
 }

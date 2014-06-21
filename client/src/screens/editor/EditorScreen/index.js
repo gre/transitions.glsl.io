@@ -11,6 +11,7 @@ var TransitionComments = require("../TransitionComments");
 var TransitionEditor = require("../TransitionEditor");
 var UniformsEditor = require("../UniformsEditor");
 var Toolbar = require("../../../ui/Toolbar");
+var Button = require("../../../ui/Button");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
@@ -48,6 +49,27 @@ var EditorScreen = React.createClass({
     previewWidth: React.PropTypes.number.isRequired,
     previewHeight: React.PropTypes.number.isRequired
   },
+  tabs: {
+    uniforms: {
+      title: "Params",
+      icon: "fa-tasks",
+      render: function () {
+        return <UniformsEditor initialUniformValues={this.state.rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />;
+      }
+    },
+    doc: {
+      title: "Help",
+      icon: "fa-info",
+      render: function () {
+        return <GlslContextualHelp token={this.state.token} />;
+      }
+    },
+    config: {
+      title: "Config.",
+      icon: "fa-cogs",
+      render: function () { return "Nothing yet."; }
+    }
+  },
   getInitialState: function () {
     var validation = validator.forGlsl(this.props.initialTransition.glsl);
     var uniformTypes = validation.compiles() ? validation.uniforms() : {};
@@ -62,7 +84,8 @@ var EditorScreen = React.createClass({
       uniformTypes: keepCustomUniforms(uniformTypes),
       saveStatusMessage: null,
       saveStatus: null,
-      token: null
+      token: null,
+      tab: _.size(_.keys(uniforms))>0 ? "uniforms" : "doc"
     };
   },
   componentWillMount: function () {
@@ -85,7 +108,6 @@ var EditorScreen = React.createClass({
     var hasUnsavingChanges = this.hasUnsavingChanges();
     var env = this.props.env;
     var transition = this.state.transition;
-    var rawTransition = this.state.rawTransition;
     var images = this.props.images;
     var previewWidth = this.props.previewWidth;
     var previewHeight = this.props.previewHeight;
@@ -96,12 +118,19 @@ var EditorScreen = React.createClass({
     var editorHeight = height - 40;
     var isPublished = transition.name !== "TEMPLATE";
 
-    var Tabs =
-    // ^ TODO this will be a component
-      <div className="properties">
-        <GlslContextualHelp token={this.state.token} />
-        <UniformsEditor initialUniformValues={rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />
-      </div>;
+    var tab = this.tabs[this.state.tab];
+    var tabContent = tab.render.apply(this, arguments);
+    var tabs = _.map(this.tabs, function (t, tid) {
+      var isCurrent = this.state.tab === tid;
+      var f = _.bind(function () {
+        return this.setStateQ({ tab: tid });
+      }, this);
+      var cls = ["tab"];
+      if (isCurrent) cls.push("current");
+      return <Button className={cls.join(" ")} f={f} title={t.title}>
+        <i className={ "fa "+t.icon }></i><span> {t.title}</span>
+      </Button>;
+    }, this);
 
     return <div className="editor-screen" style={{width:width,height:height}}>
       <Toolbar>
@@ -115,7 +144,9 @@ var EditorScreen = React.createClass({
             <TransitionComments count={transition.comments} href={transition.html_url} />
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
-          {Tabs}
+
+          <div className="tabs">{tabs}</div>
+          <div className="tabContent">{tabContent}</div>
         </div>
 
         <TransitionEditor onCursorTokenChange={this.onCursorTokenChange} onChangeSuccess={this.onGlslChangeSuccess} onChangeFailure={this.onGlslChangeFailure} initialGlsl={transition.glsl} onSave={this.onSave} width={editorWidth} height={editorHeight} />
