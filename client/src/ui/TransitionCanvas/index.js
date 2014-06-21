@@ -64,20 +64,20 @@ var TransitionCanvas = React.createClass({
     this.syncUniforms();
   },
   syncUniforms: function () {
-    this.transition.reset();
+    this.transition.core.reset();
     _.each(this.getAllUniforms(), function (value, u) {
-      this.transition.setUniform(u, value);
+      this.transition.core.setUniform(u, value);
     }, this);
     if (!this.running) {
-      this.transition.setUniform("progress", this.props.progress);
-      this.transition.draw();
+      this.transition.core.setUniform("progress", this.props.progress);
+      this.transition.core.draw();
     }
   },
   getAllUniforms: function () {
     return _.extend({ from: this.props.from, to: this.props.to }, this.props.uniforms);
   },
   animate: function (duration) {
-    this.transition.reset();
+    this.transition.core.reset(); // FIXME figure out if this is required and if the transition() shouldn't fix that
     var p = this.transition(this.getAllUniforms(), duration);
     this.running++;
     p.fin(_.bind(function () {

@@ -18,7 +18,7 @@
   "dependencies": {
     "react": "0.10.0",
     "director": "git://github.com/gre/director.git",
-    "glsl-transition": "0.5.x",
+    "glsl-transition": "0.6.x",
     "glsl-transition-validator": "0.3.x",
     "glslio-texture-resolver": "0.1.x",
     "q": "1.0.x",
@@ -29,19 +29,19 @@
     "qstart": "0.1.0",
     "lodash": "2.4.1",
     "highlight.js": "8.0.0",
-    "raf": "2.0.0",
+    "raf": "2.0.1",
     "store": "1.3.16"
   },
   "devDependencies": {
-    "matchdep": "~0.3.0",
-    "grunt": "~0.4.1",
-    "grunt-cli": "~0.1.6",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-stylus": "~0.17.0",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-contrib-jshint": "git://github.com/gre/grunt-contrib-jshint#jsx-support",
-    "grunt-browserify": "~2.1.0",
+    "matchdep": "0.3.0",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-contrib-stylus": "0.17.0",
+    "grunt-contrib-uglify": "0.5.0",
+    "grunt-jsxhint": "0.0.2",
+    "grunt-browserify": "2.1.0",
     "envify": "1.2.1",
-    "reactify": "~0.13.1"
+    "reactify": "0.13.1"
   }
 }

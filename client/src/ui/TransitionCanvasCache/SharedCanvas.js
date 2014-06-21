@@ -47,13 +47,13 @@ SharedCache.prototype = {
       this.transitions[id].destroy();
     }
     var res = _.bind(function (p, uniforms) {
-      if (transition.reset()) {
+      if (transition.core.reset()) {
         _.each(uniforms, function (value, u) {
-          transition.setUniform(u, value);
+          transition.core.setUniform(u, value);
         });
       }
-      transition.setUniform("progress", p);
-      transition.draw();
+      transition.core.setUniform("progress", p);
+      transition.core.draw();
       return this.canvasTransition;
     }, this);
     this.transitions[id] = {
