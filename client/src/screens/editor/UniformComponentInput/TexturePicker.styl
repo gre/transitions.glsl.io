@@ -21,8 +21,18 @@
       border-color: transparent white transparent transparent;
     }
     .picker-container {
-      padding: 10px 0;
       overflow: auto;
+    }
+    .textures {
+      overflow: auto;
+      .texture.current img {
+        outline: 2px solid #000;
+      }
+      img {
+        float: left;
+        margin: 5px 0 0 5px;
+        border: 2px solid transparent;
+      }
     }
   }
   .picker-input {
@@ -39,8 +49,8 @@
   .overview {
     width: 20%;
     display: inline-block;
-  }
-  img {
-    margin-left: 8px;
+    img {
+      margin-left: 8px;
+    }
   }
 }

@@ -55,8 +55,10 @@ var TexturePicker = React.createClass({
     
     var textureButtons = _.map(textures.names, function (name) {
       var onPickerChoice = _.bind(this.onPickerChoice, this, name);
-      return <Button className="texture" f={onPickerChoice}>
-        <img src={resolveUrl(name)} style={{ width: "40px", height: "40px" }} />
+      var isCurrent = name === value;
+      console.log(name, value);
+      return <Button className={"texture"+(isCurrent ? " current" : "")} f={onPickerChoice}>
+        <img src={resolveUrl(name)} style={{ width: "44px", height: "44px" }} />
       </Button>;
     }, this);
 
@@ -71,7 +73,9 @@ var TexturePicker = React.createClass({
       </Button>
       <div className={"picker with-overlay"+(this.state.opened ? " visible" : "")}>
         <div className="picker-container">
-          {textureButtons}
+          <div className="textures">
+            {textureButtons}
+          </div>
         </div>
       </div>
     </div>;
