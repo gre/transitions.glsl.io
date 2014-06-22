@@ -23,18 +23,28 @@ var Vignette = React.createClass({
     autostart: React.PropTypes.bool,
     startonleave: React.PropTypes.bool,
     defaultProgress: React.PropTypes.number,
-    getTransitionViewer: React.PropTypes.func,
     controlsMode: React.PropTypes.oneOf(["hover", "mousedown"]),
     cache: React.PropTypes.shape({
       drawer: React.PropTypes.func.isRequired,
       resolution: React.PropTypes.number,
       delay: React.PropTypes.number
-    })
+    }),
+    onTransitionPerformed: React.PropTypes.func
+  },
+
+  getDefaultProps: function () {
+    return {
+      controlsMode: "hover",
+      autostart: false,
+      startonleave: false,
+      defaultProgress: 0.4,
+      onTransitionPerformed: _.noop
+    };
   },
 
   getInitialState: function () {
     return {
-      progress: this.props.defaultProgress || 0.4,
+      progress: this.props.defaultProgress,
       i: 0,
       cursorEnabled: this.props.controlsMode !== "mousedown"
     };
@@ -160,6 +170,10 @@ var Vignette = React.createClass({
     return (function loop () {
       if (!self.running) return;
       return Q.fcall(_.bind(transition.animate, transition, transitionDuration||1500))
+        .then(function (result) {
+          self.props.onTransitionPerformed(result);
+          return result;
+        })
         .delay(transitionPause||100)
         .then(function () {
           self.nextFromTo();
