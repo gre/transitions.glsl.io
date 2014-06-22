@@ -79,7 +79,7 @@ var TransitionsBrowser = React.createClass({
         cache: {
           drawer: this.cache.getTransitionDrawer(transition.id),
           resolution: 64,
-          delay: 30 + i * 50
+          delay: 30 + i * 40
         }
       });
     }, this);

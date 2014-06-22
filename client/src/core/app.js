@@ -73,7 +73,7 @@ module.exports = {
     });
   },
   get env () {
-    return app.state.env;
+    return !app ? initialEnv : app.state.env;
   },
   set env (e) {
     app.setStateQ({
