@@ -16,5 +16,6 @@ module.exports = {
     "spiral-3.png",
     "square.png"
   ],
-  resolver: uniformResolver
+  resolver: uniformResolver,
+  resolveUrl: GlslioTextureResolver.resolveUrl
 };

@@ -129,7 +129,7 @@ var EditorScreen = React.createClass({
       }, this);
       var cls = ["tab"];
       if (isCurrent) cls.push("current");
-      return <Button className={cls.join(" ")} f={f} title={t.title}>
+      return <Button key={tid} className={cls.join(" ")} f={f} title={t.title}>
         <i className={ "fa "+t.icon }></i><span> {t.title}</span>
       </Button>;
     }, this);
