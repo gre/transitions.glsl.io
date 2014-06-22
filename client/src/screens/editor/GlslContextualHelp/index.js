@@ -5,10 +5,21 @@ var hljs = require('highlight.js');
 var _ = require("lodash");
 var Link = require("../../../ui/Link");
 
+var escapeHTML = require("react/lib/escapeTextForBrowser");
+
 var GlslDocumentationIndexedPerName = _.groupBy(GlslDocumentation, "name");
 
 function prettyType (str) {
   return str.replace("_", " ");
+}
+
+function highlightGlslHTML (glsl) {
+  try {
+    return hljs.highlight("glsl", glsl).value;
+  }
+  catch (e) {
+    return escapeHTML(glsl);
+  }
 }
 
 function findDocumentation (token) {
@@ -42,7 +53,9 @@ var GlslContextualHelp = React.createClass({
           <span className="glsl-token-type">{prettyType(documentation.type)}</span>
           <span className="glsl-token-name">{documentation.name}</span>
         </p>
-        <p className="glsl-token-usage hljs" dangerouslySetInnerHTML={{ __html: hljs.highlight("glsl", documentation.usage).value }} />
+        { !documentation.usage ? '' :
+        <p className="glsl-token-usage hljs" dangerouslySetInnerHTML={{ __html: highlightGlslHTML(documentation.usage) }} />
+        }
         <p className="glsl-token-description">{documentation.description}</p>
       </div>
     );
