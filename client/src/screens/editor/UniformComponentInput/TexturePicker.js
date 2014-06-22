@@ -26,7 +26,9 @@ var TexturePicker = React.createClass({
   },
   getInitialState: function () {
     return {
-      opened: false
+      opened: false,
+      url: this.props.value,
+      urlInvalid: false
     };
   },
   onPickerLeave: function () {
@@ -42,10 +44,33 @@ var TexturePicker = React.createClass({
   },
   onPickerChoice: function (name) {
     this.setState({
-      opened: false
+      urlInvalid: false,
+      opened: false,
+      url: name
     });
     app.overlay(null);
-    this.props.onChange(name);
+    return this.props.onChange(name);
+  },
+  onUrlEdit: function (e) {
+    var url = e.target.value;
+    // Because the user can paste without http(s) or without the i.imgur, we force that. Those are the only which seems to support CORS properly (and we also want HTTPS)
+    var matches = url.match(/.*imgur.com(.*)/);
+    if (matches) {
+      url = "https://i.imgur.com" + matches[1];
+    }
+    this.setState({
+      url: url
+    });
+  },
+  onUrlSend: function () {
+    var self = this;
+    var url = self.state.url;
+    return textures.resolver.loadTexture(url)
+      .then(function () {
+        return self.onPickerChoice(url);
+      }, function () {
+        self.setState({ urlInvalid: true });
+      });
   },
   render: function () {
     var maybeUrl = this.props.value && resolveUrl(this.props.value);
@@ -56,7 +81,6 @@ var TexturePicker = React.createClass({
     var textureButtons = _.map(textures.names, function (name) {
       var onPickerChoice = _.bind(this.onPickerChoice, this, name);
       var isCurrent = name === value;
-      console.log(name, value);
       return <Button className={"texture"+(isCurrent ? " current" : "")} f={onPickerChoice}>
         <img src={resolveUrl(name)} style={{ width: "44px", height: "44px" }} />
       </Button>;
@@ -75,6 +99,11 @@ var TexturePicker = React.createClass({
         <div className="picker-container">
           <div className="textures">
             {textureButtons}
+          </div>
+          <strong>Or use an imgur.com URL:</strong>
+          <div className={"url"+(this.state.urlInvalid ? " invalid" : "")}>
+            <input type="text" value={this.state.url} onChange={this.onUrlEdit} />
+            <Button f={this.onUrlSend}>Use</Button>
           </div>
         </div>
       </div>
