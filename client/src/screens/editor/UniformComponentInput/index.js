@@ -13,14 +13,14 @@ var UniformComponentInput = React.createClass({
   },
   onChange: function (e) {
     var primitive = inputPrimitiveTypes[this.props.primitiveType];
-    var value = primitive.get(e.target);
+    var value = primitive ? primitive.get(e.target) : e;
     if (value !== this.props.value) {
       this.props.onChange(value);
     }
   },
   render: function () {
     if (this.props.primitiveType === "sampler2D") {
-      return <TexturePicker key={this.props.id} onChange={this.onChange} value={this.props.value} />;
+      return <TexturePicker className="uniform-component-input" key={this.props.id} onChange={this.onChange} value={this.props.value} />;
     }
     else {
       var primitive = inputPrimitiveTypes[this.props.primitiveType];
