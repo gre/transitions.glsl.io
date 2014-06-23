@@ -43,7 +43,7 @@ var Article = React.createClass({
     var node = this.refs.content.getDOMNode();
     // Highlight codes of the Article
     _.each(node.querySelectorAll("pre code"), function (code) {
-      code.innerHTML = hljs.highlight("javascript", code.innerHTML).value;
+      code.innerHTML = hljs.highlight("javascript", code.innerText).value;
       code.className += " hljs";
     });
   }
