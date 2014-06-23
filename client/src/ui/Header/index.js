@@ -32,7 +32,7 @@ var Header = React.createClass({
     var navs = _.map([
       { id: "gallery", href: "/", name: "Gallery" },
       { id: "editor", href: "/transition/new", name: "Editor" },
-      { id: "about", href: "/about", name: "About" }
+      { id: "blog", href: "/blog", name: "Blog" }
     ], function (nav) {
       return <Link key={nav.id} className={nav.id+(screenName===nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
     });

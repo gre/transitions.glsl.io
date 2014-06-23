@@ -34,13 +34,40 @@ object Application extends Controller with GithubOAuthController with MongoContr
 
   var version = Play.current.configuration.getString("application.version").get
 
-  // OMG I love this code
-  def homeContent = Cached((_:RequestHeader)=>"homeContent", 120) {
+  import play.api.libs.json._
+  import play.api.libs.json.Json._
+  import play.api.libs.functional.syntax._
+  import play.api.libs.json.Reads._
+
+
+  val ArticleTitle = """(\d{4})-(\d{2})-(\d{2})-(.*)[.]md""".r
+
+  val articlesGistReader = Reads { json: JsValue =>
+    val transformer = new ActuariusTransformer()
+    (json \ "files").asOpt[JsObject].map(files => JsSuccess(JsArray(files.fields.sortBy(_._1).reverse.flatMap { case (filename, obj) =>
+      (filename, obj \ "content") match {
+        case (ArticleTitle(year, month, day, title), JsString(content)) =>
+          Some(Json.obj(
+            "year" -> year.toInt,
+            "month" -> month.toInt,
+            "day" -> day.toInt,
+            "title" -> title.replaceAll("_", " "),
+            "content" -> transformer.apply(content)
+          ))
+        case _ =>
+          None
+      }
+    }))).getOrElse(JsError("Invalid Gist JSON"))
+  }
+
+  def articles = Cached((_:RequestHeader) => "articles", 120) {
     Action.async {
-        GistWS.get("600d8a793ca7901a25f2")
-        .map(json => (json \ "files" \ "article.md" \ "content").as[String])
-        .map(new ActuariusTransformer().apply)
-        .map(Ok(_))
+        GistWS.get("4c57de495ca405bffd5a")
+        .map(_.transform(articlesGistReader))
+        .map(_.fold(
+          err => InternalServerError,
+          json => Ok(json)
+        ))
     }
   }
 

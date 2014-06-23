@@ -26,8 +26,8 @@ var run = app.init(screens, {
       .then(_.bind(app.show, app, "gallery"));
   },
 
-  '/about': function about() {
-    return app.show("about");
+  '/blog': function blog() {
+    return app.show("blog");
   },
 
   '/transition/:gistId': function openGist (id) {
