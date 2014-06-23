@@ -1,5 +1,3 @@
-var textures = require("../../../images/textures");
-
 module.exports = {
   "float": {
     type: "number",
@@ -17,12 +15,5 @@ module.exports = {
     type: "checkbox",
     checked: false,
     get: function (input) { return input.checked; }
-  },
-  "sampler2D": {
-    get: function (select) {
-      var i = select.selectedIndex;
-      var value = i===0 ? null : textures.names[i-1];
-      return value;
-    }
   }
 };

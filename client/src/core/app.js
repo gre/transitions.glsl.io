@@ -8,32 +8,39 @@ var React = require("react");
 var router = require("./router");
 var App = require("../ui/app");
 
-var env = _.clone(window.ENV);
+var app;
+
+var initialEnv = _.clone(window.ENV);
+
 var screens;
 var currentlyShowing = Q();
 var current;
-
-function render (env, screen) {
-  var d = Q.defer();
-  React.renderComponent(App({
-    env: env,
-    screen: screen
-  }), document.body, d.resolve);
-  return d.promise;
-}
 
 function show (screen, args) {
   currentlyShowing = 
     Q.fcall(function(){
       current = screen;
       var s = screens[screen];
-      return s.show(args, env);
+      return s.show(args, app ? app.state.env : initialEnv);
     })
     .then(function (nodes) {
-      return render(env, {
+      var s = {
         inner: nodes,
         name: screen
-      });
+      };
+      if (!app) {
+        var d = Q.defer();
+        app = React.renderComponent(App({
+          initialEnv: initialEnv,
+          initialScreen: s
+        }), document.body, d.resolve);
+        return d.promise;
+      }
+      else {
+        return app.setStateQ({
+          screen: s
+        });
+      }
     })
     .fail(function (err) {
       if (screen !== "error") {
@@ -60,12 +67,17 @@ function init (_screens, _routes, routeNotFound) {
 module.exports = {
   init: init,
   show: show,
+  overlay: function (cbOrBool) {
+    return app.setStateQ({
+      overlay: cbOrBool
+    });
+  },
   get env () {
-    return env;
+    return !app ? initialEnv : app.state.env;
   },
   set env (e) {
-    env = e;
-    if (current)
-      render(env, screens[current]).done();
+    app.setStateQ({
+      env: e
+    }).done();
   }
 };

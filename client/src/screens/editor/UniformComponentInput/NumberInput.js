@@ -14,6 +14,12 @@ var NumberInput = React.createClass({
     step: React.PropTypes.number,
     value: React.PropTypes.number
   },
+  getDefaultProps: function () {
+    return {
+      onChange: _.noop,
+      step: 1
+    };
+  },
   getInitialState: function () {
     return {
       value: this.props.value

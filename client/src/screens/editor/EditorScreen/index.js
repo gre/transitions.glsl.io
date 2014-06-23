@@ -2,6 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
+var Fps = require("../Fps");
 var GlslContextualHelp = require("../GlslContextualHelp");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
@@ -85,7 +86,8 @@ var EditorScreen = React.createClass({
       saveStatusMessage: null,
       saveStatus: null,
       token: null,
-      tab: _.size(_.keys(uniforms))>0 ? "uniforms" : "doc"
+      tab: _.size(_.keys(uniforms))>0 ? "uniforms" : "doc",
+      fps: null
     };
   },
   componentWillMount: function () {
@@ -127,7 +129,7 @@ var EditorScreen = React.createClass({
       }, this);
       var cls = ["tab"];
       if (isCurrent) cls.push("current");
-      return <Button className={cls.join(" ")} f={f} title={t.title}>
+      return <Button key={tid} className={cls.join(" ")} f={f} title={t.title}>
         <i className={ "fa "+t.icon }></i><span> {t.title}</span>
       </Button>;
     }, this);
@@ -142,8 +144,9 @@ var EditorScreen = React.createClass({
         <div className="view">
           <div className="leftPanel">
             <TransitionComments count={transition.comments} href={transition.html_url} />
+            <Fps fps={this.state.fps} />
           </div>
-          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} />
+          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} />
 
           <div className="tabs">{tabs}</div>
           <div className="tabContent">{tabContent}</div>
@@ -260,6 +263,12 @@ var EditorScreen = React.createClass({
   onUniformsChange: function (uniforms) {
     this.setStateWithUniforms({
       transition: _.defaults({ uniforms: uniforms }, this.state.rawTransition)
+    });
+  },
+  onTransitionPerformed: function (stats) {
+    var fps = Math.round(1000 * stats.frames / stats.elapsedTime);
+    this.setState({
+      fps: fps
     });
   },
   hasUnsavingChanges: function () {

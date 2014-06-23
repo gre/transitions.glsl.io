@@ -2,8 +2,8 @@
 var React = require("react");
 var _ = require("lodash");
 var inputPrimitiveTypes = require("./primitiveTypes");
-var textures = require("../../../images/textures");
 var NumberInput = require("./NumberInput");
+var TexturePicker = require("./TexturePicker");
 
 var UniformComponentInput = React.createClass({
   propTypes: {
@@ -13,19 +13,14 @@ var UniformComponentInput = React.createClass({
   },
   onChange: function (e) {
     var primitive = inputPrimitiveTypes[this.props.primitiveType];
-    var value = primitive.get(e.target);
+    var value = primitive ? primitive.get(e.target) : e;
     if (value !== this.props.value) {
       this.props.onChange(value);
     }
   },
   render: function () {
     if (this.props.primitiveType === "sampler2D") {
-      return <select className="uniform-component-input" ref="select" onChange={this.onChange} defaultValue={this.props.value}>
-        <option key="null" value={null}>(none)</option>
-        {_.map(textures.names, function (name) {
-          return <option key={name} value={name}>{name}</option>;
-        }, this)}
-      </select>;
+      return <TexturePicker className="uniform-component-input" key={this.props.id} onChange={this.onChange} value={this.props.value} />;
     }
     else {
       var primitive = inputPrimitiveTypes[this.props.primitiveType];

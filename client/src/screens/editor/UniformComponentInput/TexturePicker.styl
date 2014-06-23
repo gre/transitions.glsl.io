@@ -1,0 +1,77 @@
+.texture-picker {
+  vertical-align: middle;
+  position: relative;
+  .picker {
+    &:not(.visible) {
+      display: none;
+    }
+    position: absolute;
+    left: 100%;
+    top: -75px;
+    width: 250px;
+    height: 150px;
+    color: #222;
+    background: #fff;
+    border-radius: 4px;
+    &:before {
+      content: " ";
+      position: absolute;
+      top: 67px;
+      left: -32px;
+      border: 16px solid;
+      border-color: transparent white transparent transparent;
+    }
+    .picker-container {
+      height: inherit;
+      overflow: auto;
+    }
+    .textures {
+      overflow: auto;
+      .texture.current img {
+        outline: 2px solid #000;
+      }
+      img {
+        float: left;
+        margin: 5px 0 0 5px;
+        border: 1px solid transparent;
+      }
+    }
+    .url {
+      &.invalid input {
+        border-color: #f00;
+      }
+      input {
+        width: 80%;
+        font-size: 0.7em;
+        border: 1px solid #aaa;
+      }
+      .button {
+        text-align: center;
+        width: 20%;
+        display: inline-block;
+        color: #aaa;
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+  }
+  .picker-input {
+    width: 80%;
+    background: #fff;
+    color: #000;
+    display: inline-block;
+    border-radius: 3px;
+    line-height: 20px;
+    font-size: 0.6em;
+    padding: 1px 8px;
+    overflow: ellipsis;
+  }
+  .overview {
+    width: 20%;
+    display: inline-block;
+    img {
+      margin-left: 8px;
+    }
+  }
+}

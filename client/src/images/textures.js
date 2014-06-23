@@ -6,15 +6,16 @@ var uniformResolver = new GlslioTextureResolver(Qimage.anonymously);
 module.exports = {
   names: [ // FIXME: we will need dynamic list query
 //  for t in `ls server/public/textures/`; do echo "\"$t\","; done
-    "bilinear-lateral.png",
-    "conical-asym.png",
-    "conical-sym.png",
-    "linear-sawtooth-lateral-4.png",
-    "radial-tri-lateral-4.png",
-    "spiral-1.png",
-    "spiral-2.png",
-    "spiral-3.png",
-    "square.png"
+    "luma/bilinear-lateral.png",
+    "luma/conical-asym.png",
+    "luma/conical-sym.png",
+    "luma/linear-sawtooth-lateral-4.png",
+    "luma/radial-tri-lateral-4.png",
+    "luma/spiral-1.png",
+    "luma/spiral-2.png",
+    "luma/spiral-3.png",
+    "luma/square.png"
   ],
-  resolver: uniformResolver
+  resolver: uniformResolver,
+  resolveUrl: GlslioTextureResolver.resolveUrl
 };
