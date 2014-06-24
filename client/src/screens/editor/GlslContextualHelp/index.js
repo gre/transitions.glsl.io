@@ -1,16 +1,17 @@
 /** @jsx React.DOM */
 var React = require("react");
-var GlslDocumentation = require("glsldoc");
 var hljs = require('highlight.js');
 var _ = require("lodash");
 var Link = require("../../../ui/Link");
+
+var GlslDocumentation = _.union(require("glsldoc"), require("./extraDocumentation.json"));
 
 var escapeHTML = require("react/lib/escapeTextForBrowser");
 
 var GlslDocumentationIndexedPerName = _.groupBy(GlslDocumentation, "name");
 
 function prettyType (str) {
-  return str.replace("_", " ");
+  return str.replace(/_/g, " ");
 }
 
 function highlightGlslHTML (glsl) {
