@@ -3,6 +3,8 @@ module.exports = function (grunt) {
 
   var DEV = "production" !== process.env.NODE_ENV;
 
+  var PUBLIC_DEST = DEV ? "../server/public" : "../server/public";
+
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
   grunt.registerTask('default', ['build', 'watch']);
@@ -19,28 +21,28 @@ module.exports = function (grunt) {
     },
     uglify: {
       prod: {
-        src: '../server/public/bundle.js',
-        dest: '../server/public/bundle.min.js'
+        src: PUBLIC_DEST+'/bundle.js',
+        dest: PUBLIC_DEST+'/bundle.min.js'
       },
       embed: {
-        src: '../server/public/embed.js',
-        dest: '../server/public/embed.min.js'
+        src: PUBLIC_DEST+'/embed.js',
+        dest: PUBLIC_DEST+'/embed.min.js'
       }
     },
     stylus: {
       app: {
         src: 'src/index.styl',
-        dest: '../server/public/bundle.css'
+        dest: PUBLIC_DEST+'/bundle.css'
       },
       embed: {
         src: 'src/embed/index.styl',
-        dest: '../server/public/embed.css'
+        dest: PUBLIC_DEST+'/embed.css'
       }
     },
     browserify: {
       app: {
         src: 'src/index.js',
-        dest: '../server/public/bundle.js',
+        dest: PUBLIC_DEST+'/bundle.js',
         options: {
           transform: ["envify", "reactify"],
           debug: DEV
@@ -48,7 +50,7 @@ module.exports = function (grunt) {
       },
       embed: {
         src: 'src/embed/index.js',
-        dest: '../server/public/embed.js',
+        dest: PUBLIC_DEST+'/embed.js',
         options: {
           transform: ["reactify"],
           debug: DEV
@@ -57,10 +59,8 @@ module.exports = function (grunt) {
     },
     watch: {
       options: {
-      /*
         livereload: 35735,
         debounceDelay: 700
-        */
       },
       js: {
         files: ['src/**/*.js'],
