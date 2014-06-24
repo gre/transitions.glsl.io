@@ -48,9 +48,9 @@ object Application extends Controller with GithubOAuthController with MongoContr
       (filename, obj \ "content") match {
         case (ArticleTitle(year, month, day, title), JsString(content)) =>
           Some(Json.obj(
-            "year" -> year.toInt,
-            "month" -> month.toInt,
-            "day" -> day.toInt,
+            "year" -> year,
+            "month" -> month,
+            "day" -> day,
             "title" -> title.replaceAll("_", " "),
             "content" -> transformer.apply(content)
           ))

@@ -15,6 +15,24 @@ function clearCacheAndReload () {
   return reload();
 }
 
+function validLinksForArticle (a) {
+  var encodedTitle = encodeURIComponent(a.title.replace(/ /g, "_"));
+  return [
+    a.year+"/"+a.month+"/"+encodedTitle,
+    a.year+"/"+a.month+"/"+a.day+"/"+encodedTitle,
+    encodedTitle
+  ];
+}
+
+function articlesWithLinks () {
+  return model.articles()
+    .then(function (articles) {
+      return _.map(articles, function (a) {
+        return _.extend({ url: "/blog/"+validLinksForArticle(a)[0] }, a);
+      });
+    });
+}
+
 // Trigger a request for predictive going in gallery
 model.getTransitions();
 
@@ -27,7 +45,18 @@ var run = app.init(screens, {
   },
 
   '/blog': function blog() {
-    return app.show("blog");
+    return articlesWithLinks()
+      .then(_.bind(app.show, app, "blog"));
+  },
+
+  '/blog/?(.*)?': function blog (path) {
+    return articlesWithLinks()
+      .then(function (articles) {
+        return _.find(articles, function (a) {
+          return _.contains(validLinksForArticle(a), path);
+        }) || Q.reject(new Error("Article Not Found"));
+      })
+      .then(_.bind(app.show, app, "blog"));
   },
 
   '/transition/:gistId': function openGist (id) {

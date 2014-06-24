@@ -2,7 +2,15 @@ var Qajax = require("qajax");
 var app = require("../core/app");
 var cache = require("../core/cache");
 
+// TODO rename to 'api'
+
 module.exports = {
+  articles: cache.getOrSetAsync("articles", 30000, function () {
+    return Qajax("/api/blog/articles")
+      .then(Qajax.filterSuccess)
+      .then(Qajax.toJSON);
+  }),
+
   getTransitions: cache.getOrSetAsync("gists", 30000, function () {
     return Qajax("/api/transitions")
       .then(Qajax.filterSuccess)

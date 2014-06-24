@@ -1,13 +1,13 @@
-var Qajax = require("qajax");
+var Article = require("./article");
 var Articles = require("./articles");
 
-function show () {
-  return Qajax("/api/blog/articles")
-    .then(Qajax.filterSuccess)
-    .then(Qajax.toJSON)
-    .then(function (articles) {
-      return Articles({ articles: articles });
-    });
+function show (data) {
+  if (data instanceof Array) {
+    return Articles({ articles: data });
+  }
+  else {
+    return Article(data);
+  }
 }
 
 function init () {

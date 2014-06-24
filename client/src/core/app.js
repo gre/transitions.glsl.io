@@ -24,6 +24,7 @@ function show (screen, args) {
       return s.show(args, app ? app.state.env : initialEnv);
     })
     .then(function (nodes) {
+      window.scrollTo(0, 0);
       var s = {
         inner: nodes,
         name: screen
