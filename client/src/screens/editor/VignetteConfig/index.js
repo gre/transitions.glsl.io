@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require("react");
 var NumberInput = require("../../../ui/NumberInput");
-//var _ = require("lodash");
+var Button = require("../../../ui/Button");
 
 var ConfigField = React.createClass({
   render: function () {
@@ -21,7 +21,8 @@ var VignetteConfig = React.createClass({
     bezierEasing: React.PropTypes.array.isRequired,
     onDurationChange: React.PropTypes.func.isRequired,
     onDelayChange: React.PropTypes.func.isRequired,
-    onBezierEasingChange: React.PropTypes.func.isRequired
+    onBezierEasingChange: React.PropTypes.func.isRequired,
+    onResetConfig: React.PropTypes.func.isRequired
   },
   onDelayChange: function (e) {
     this.props.onDelayChange(parseInt(e.target.value, 10));
@@ -53,6 +54,10 @@ var VignetteConfig = React.createClass({
       </ConfigField>
       <ConfigField title="Pause Delay">
         <NumberInput onChange={this.onDelayChange} type="range" step={100} min={0} max={1000} value={this.props.transitionDelay} />
+      </ConfigField>
+
+      <ConfigField>
+        <Button className="action" f={this.props.onResetConfig}>Reset</Button>
       </ConfigField>
   
       <div className="extra">

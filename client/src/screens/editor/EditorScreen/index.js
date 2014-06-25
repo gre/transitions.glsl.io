@@ -2,6 +2,8 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
+var store = require("store");
+
 var BezierEasing = require("bezier-easing");
 var Fps = require("../Fps");
 var GlslContextualHelp = require("../GlslContextualHelp");
@@ -77,7 +79,8 @@ var EditorScreen = React.createClass({
           bezierEasing={this.state.bezierEasing}
           onDurationChange={this.onDurationChange}
           onDelayChange={this.onDelayChange}
-          onBezierEasingChange={this.onBezierEasingChange}>
+          onBezierEasingChange={this.onBezierEasingChange}
+          onResetConfig={this.onResetConfig}>
           This panel configures the way you see a Transition in the Editor.
           Configuration are persisted in localStorage of your browser.
         </VignetteConfig>;
@@ -90,6 +93,18 @@ var EditorScreen = React.createClass({
     var uniformTypes = validation.compiles() ? validation.uniforms() : {};
     validation.destroy();
     var uniforms = textures.resolver.resolveSync(this.props.initialTransition.uniforms);
+    var bezierEasing;
+    try {
+      bezierEasing = store.get("editor.bezierEasing");
+      BezierEasing.apply(null, bezierEasing); // validate
+    } catch (e) {
+      bezierEasing = [0, 0, 1, 1];
+    }
+    var transitionDuration = store.get("editor.transitionDuration");
+    if (!transitionDuration || isNaN(transitionDuration)) transitionDuration = 1500;
+    var transitionDelay = store.get("editor.transitionDelay");
+    if (isNaN(transitionDelay)) transitionDelay = 200;
+
     return {
       width: this.computeWidth(),
       height: this.computeHeight(),
@@ -102,9 +117,9 @@ var EditorScreen = React.createClass({
       token: null,
       tab: _.size(_.keys(uniforms))>0 ? "uniforms" : "doc",
       fps: null,
-      bezierEasing: [0, 0, 1, 1],
-      transitionDuration: 1500,
-      transitionDelay: 100
+      bezierEasing: bezierEasing,
+      transitionDuration: transitionDuration,
+      transitionDelay: transitionDelay
     };
   },
   componentWillMount: function () {
@@ -233,18 +248,32 @@ var EditorScreen = React.createClass({
       }, this));
   },
   onDurationChange: function (duration) {
+    store.set("editor.transitionDuration", duration);
     this.setState({
       transitionDuration: duration
     });
   },
   onDelayChange: function (delay) {
+    store.set("editor.transitionDelay", delay);
     this.setState({
       transitionDelay: delay
     });
   },
   onBezierEasingChange: function (bezierEasing) {
+    store.set("editor.bezierEasing", bezierEasing);
     this.setState({
       bezierEasing: bezierEasing
+    });
+  },
+  onResetConfig: function () {
+    store.remove("editor.transitionDuration");
+    store.remove("editor.transitionDelay");
+    store.remove("editor.bezierEasing");
+    var initial = this.getInitialState();
+    this.setState({
+      transitionDuration: initial.transitionDuration,
+      transitionDelay: initial.transitionDelay,
+      bezierEasing: initial.bezierEasing
     });
   },
   onResize: function () {
