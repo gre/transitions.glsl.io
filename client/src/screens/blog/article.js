@@ -35,7 +35,7 @@ var Article = React.createClass({
     return <article key={this.props.url}>
       <header>
         <h1 className="title"><Link href={this.props.url}>{this.props.title}</Link></h1>
-        <time datetime={year+"-"+month+"-"+day}>{MONTHS[month]} {day}, {year}</time>
+        <time dateTime={year+"-"+month+"-"+day}>{MONTHS[month]} {day}, {year}</time>
       </header>
       <section ref="content" className="content" dangerouslySetInnerHTML={{__html: this.props.content}} />
     </article>;

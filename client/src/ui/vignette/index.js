@@ -173,15 +173,17 @@ var Vignette = React.createClass({
     };
     this.running = true;
     return (function loop () {
+      if (!self.isMounted()) self.stop();
       if (!self.running) return;
       return Q.fcall(_.bind(transition.animate, transition, self.props.transitionDuration, self.props.transitionEasing))
         .then(function (result) {
-          self.props.onTransitionPerformed(result);
+          if (result) self.props.onTransitionPerformed(result);
           return result;
         })
         .delay(self.props.transitionDelay)
         .then(function () {
-          self.nextFromTo();
+          if (!self.isMounted()) self.stop();
+          else self.nextFromTo();
         })
         .then(loop)
         .fail(function(e){

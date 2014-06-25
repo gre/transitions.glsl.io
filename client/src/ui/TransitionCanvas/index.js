@@ -77,7 +77,7 @@ var TransitionCanvas = React.createClass({
     return _.extend({ from: this.props.from, to: this.props.to }, this.props.uniforms);
   },
   animate: function (duration, easing) {
-    this.transition.core.reset(); // FIXME figure out if this is required and if the transition() shouldn't fix that
+    // this.transition.core.reset(); // FIXME figure out if this is required and if the transition() shouldn't fix that
     var p = this.transition(this.getAllUniforms(), duration, easing);
     this.running++;
     p.fin(_.bind(function () {
