@@ -2,7 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var inputPrimitiveTypes = require("./primitiveTypes");
-var NumberInput = require("./NumberInput");
+var NumberInput = require("../../../ui/NumberInput");
 var TexturePicker = require("./TexturePicker");
 
 var UniformComponentInput = React.createClass({

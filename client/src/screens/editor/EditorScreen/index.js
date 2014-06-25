@@ -2,8 +2,10 @@
 var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
+var BezierEasing = require("bezier-easing");
 var Fps = require("../Fps");
 var GlslContextualHelp = require("../GlslContextualHelp");
+var VignetteConfig = require("../VignetteConfig");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionInfos = require("../TransitionInfos");
@@ -68,9 +70,21 @@ var EditorScreen = React.createClass({
     config: {
       title: "Config.",
       icon: "fa-cogs",
-      render: function () { return "Nothing yet."; }
+      render: function () {
+        return <VignetteConfig
+          transitionDelay={this.state.transitionDelay}
+          transitionDuration={this.state.transitionDuration}
+          bezierEasing={this.state.bezierEasing}
+          onDurationChange={this.onDurationChange}
+          onDelayChange={this.onDelayChange}
+          onBezierEasingChange={this.onBezierEasingChange}>
+          This panel configures the way you see a Transition in the Editor.
+          Configuration are persisted in localStorage of your browser.
+        </VignetteConfig>;
+      }
     }
   },
+
   getInitialState: function () {
     var validation = validator.forGlsl(this.props.initialTransition.glsl);
     var uniformTypes = validation.compiles() ? validation.uniforms() : {};
@@ -87,7 +101,10 @@ var EditorScreen = React.createClass({
       saveStatus: null,
       token: null,
       tab: _.size(_.keys(uniforms))>0 ? "uniforms" : "doc",
-      fps: null
+      fps: null,
+      bezierEasing: [0, 0, 1, 1],
+      transitionDuration: 1500,
+      transitionDelay: 100
     };
   },
   componentWillMount: function () {
@@ -146,7 +163,7 @@ var EditorScreen = React.createClass({
             <TransitionComments count={transition.comments} href={transition.html_url} />
             <Fps fps={this.state.fps} />
           </div>
-          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} />
+          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} transitionDelay={this.state.transitionDelay} transitionDuration={this.state.transitionDuration} transitionEasing={this.getEasing()} />
 
           <div className="tabs">{tabs}</div>
           <div className="tabContent">{tabContent}</div>
@@ -156,11 +173,14 @@ var EditorScreen = React.createClass({
       </div>
     </div>;
   },
+  getEasing: function () {
+    return BezierEasing.apply(this, this.state.bezierEasing);
+  },
   computeWidth: function () {
-    return window.innerWidth;
+    return Math.max(600, window.innerWidth);
   },
   computeHeight: function () {
-    return window.innerHeight - 60;
+    return Math.max(550, window.innerHeight - 60);
   },
   setStateWithUniforms: function (state) {
     return textures.resolver.resolve(state.transition.uniforms)
@@ -211,6 +231,21 @@ var EditorScreen = React.createClass({
         this.lastSavingTransition = null;
         return this.setSaveStatus("error", "Create failed.");
       }, this));
+  },
+  onDurationChange: function (duration) {
+    this.setState({
+      transitionDuration: duration
+    });
+  },
+  onDelayChange: function (delay) {
+    this.setState({
+      transitionDelay: delay
+    });
+  },
+  onBezierEasingChange: function (bezierEasing) {
+    this.setState({
+      bezierEasing: bezierEasing
+    });
   },
   onResize: function () {
     this.setState({

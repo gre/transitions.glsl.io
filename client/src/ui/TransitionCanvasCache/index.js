@@ -103,7 +103,7 @@ var TransitionCanvasCache = React.createClass({
       }
     }
   },
-  animate: function (duration) {
+  animate: function (duration, easing) {
     var d = Q.defer();
     var start = Date.now();
     var self = this;
@@ -116,10 +116,10 @@ var TransitionCanvasCache = React.createClass({
       var p = (Date.now() - start) / duration;
       if (p<1) {
         requestAnimationFrame(loop);
-        self.setProgress(p);
+        self.setProgress(easing(p));
       }
       else {
-        self.setProgress(1);
+        self.setProgress(easing(1));
         d.resolve();
       }
     }, this));

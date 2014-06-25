@@ -23,6 +23,9 @@ var Vignette = React.createClass({
     autostart: React.PropTypes.bool,
     startonleave: React.PropTypes.bool,
     defaultProgress: React.PropTypes.number,
+    transitionDuration: React.PropTypes.number,
+    transitionDelay: React.PropTypes.number,
+    transitionEasing: React.PropTypes.func,
     controlsMode: React.PropTypes.oneOf(["hover", "mousedown"]),
     cache: React.PropTypes.shape({
       drawer: React.PropTypes.func.isRequired,
@@ -38,7 +41,10 @@ var Vignette = React.createClass({
       autostart: false,
       startonleave: false,
       defaultProgress: 0.4,
-      onTransitionPerformed: _.noop
+      onTransitionPerformed: _.noop,
+      transitionDuration: 1500,
+      transitionDelay: 100,
+      transitionEasing: _.identity
     };
   },
 
@@ -159,7 +165,6 @@ var Vignette = React.createClass({
     });
   },
   start: function () {
-    var transitionDuration = this.refs.duration, transitionPause = this.refs.delay;
     var transition = this.refs.transition;
     var self = this;
     var args = arguments;
@@ -169,12 +174,12 @@ var Vignette = React.createClass({
     this.running = true;
     return (function loop () {
       if (!self.running) return;
-      return Q.fcall(_.bind(transition.animate, transition, transitionDuration||1500))
+      return Q.fcall(_.bind(transition.animate, transition, self.props.transitionDuration, self.props.transitionEasing))
         .then(function (result) {
           self.props.onTransitionPerformed(result);
           return result;
         })
-        .delay(transitionPause||100)
+        .delay(self.props.transitionDelay)
         .then(function () {
           self.nextFromTo();
         })
