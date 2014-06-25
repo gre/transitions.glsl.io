@@ -2,7 +2,7 @@ name := "GLSLTransitions"
 
 version := "1.0-SNAPSHOT"
 
-resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
 libraryDependencies ++= Seq(
   ws,
