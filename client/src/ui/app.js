@@ -46,7 +46,7 @@ var App = React.createClass({
       <ScreenContainer name={screen.name}>{screen.inner}</ScreenContainer>
       <Footer version={env.version} />
       <Feedback />
-      <div onClick={this.onOverlayClose} className={"overlay "+(overlay ? "visible": "")}></div>
+      <div onClick={this.onOverlayClose} id="overlay" className={overlay ? "visible": ""}></div>
     </div>;
   }
 });
