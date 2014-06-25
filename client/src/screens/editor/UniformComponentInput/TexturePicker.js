@@ -81,16 +81,16 @@ var TexturePicker = React.createClass({
     var textureButtons = _.map(textures.names, function (name) {
       var onPickerChoice = _.bind(this.onPickerChoice, this, name);
       var isCurrent = name === value;
-      return <Button className={"texture"+(isCurrent ? " current" : "")} f={onPickerChoice}>
+      return <Button key={name} className={"texture"+(isCurrent ? " current" : "")} f={onPickerChoice}>
         <img src={resolveUrl(name)} style={{ width: "44px", height: "44px" }} />
       </Button>;
     }, this);
 
     return <div className={cls.join(" ")}>
-      <Button className="picker-input" f={this.openPicker}>
+      <Button key="picker-input" className="picker-input" f={this.openPicker}>
         {value ? value+"" : "(none)"}
       </Button>
-      <Button className="overview" f={this.openPicker}>
+      <Button key="overview" className="overview" f={this.openPicker}>
       { !maybeUrl ? '' :
         <img src={maybeUrl} style={{ width: "24px", height: "24px" }} />
       }
