@@ -8,6 +8,7 @@ GET     /favicon.ico                controllers.Assets.at(path="/public", file =
 
 # API
 GET     /api/blog/articles          controllers.Application.articles
+GET     /api/user/:user/transitions controllers.Transitions.forUser(user)
 GET     /api/transitions            controllers.Transitions.all()
 GET     /api/transitions/:id        controllers.Transitions.get(id)
 POST    /api/transitions            controllers.Transitions.fork()

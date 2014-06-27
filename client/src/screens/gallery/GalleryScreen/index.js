@@ -47,48 +47,26 @@ var GalleryScreen = React.createClass({
     var createNewTransition = <Link className="new-transition" href="/transition/new">
       <i className="fa fa-plus"></i>&nbsp;Create a new Transition
     </Link>;
-    var groups = _.groupBy(this.props.transitions, function (transition) {
-      if (transition.name !== "TEMPLATE")
-        return 'published';
-      else {
-        if (transition.owner === this.props.env.user)
-          return 'unpublished';
-      }
-    }, this);
     var pageSize = this.props.pageSize;
 
-    var unpublishedHasData = function () {
-      return true;
+    var transitions = this.props.transitions;
+    var hasData = function (page) {
+      return 0 <= page && page * pageSize < transitions.length;
     };
-    var unpublishedGetData = function () {
-      return groups.unpublished;
+    var getData = function (page) {
+      return _.take(_.tail(transitions, page * pageSize), pageSize);
     };
-    var publishedHasData = function (page) {
-      return 0 <= page && page * pageSize < groups.published.length;
-    };
-    var publishedGetData = function (page) {
-      return _.take(_.tail(groups.published, page * pageSize), pageSize);
-    };
-    var publishedNbPages = !groups.published ? 0 : Math.ceil(groups.published.length/pageSize);
+    var nbPages = Math.ceil(transitions.length/pageSize);
 
-    var index = 0;
     return <div className="gallery-screen">
-      {!groups.unpublished ? '': this.transferPropsTo(
-        <TransitionsBrowser key="unpublished" width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
-        <Toolbar>
-          Your unpublished transitions:
-          {index++===0 ? createNewTransition : ''}
-        </Toolbar>
-        </TransitionsBrowser>)
-      }
-      {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages}>
+      {this.transferPropsTo(
+        <TransitionsBrowser width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages}>
         <Toolbar>
           All published transitions:
-          {index++===0 ? createNewTransition : ''}
+          {createNewTransition}
         </Toolbar>
-        </TransitionsBrowser>)
-      }
+        </TransitionsBrowser>
+      )}
     </div>;
   }
 });

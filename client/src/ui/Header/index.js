@@ -29,11 +29,17 @@ var Header = React.createClass({
       </Link>
       ;
 
-    var navs = _.map([
+    var links = [
       { id: "gallery", href: "/", name: "Gallery" },
       { id: "editor", href: "/transition/new", name: "Editor" },
       { id: "blog", href: "/blog", name: "Blog" }
-    ], function (nav) {
+    ];
+
+    if (this.props.user) {
+      links.unshift({ id: "user", href: "/user/"+this.props.user, name: "My Transitions" });
+    }
+
+    var navs = _.map(links, function (nav) {
       return <Link key={nav.id} className={nav.id+(screenName===nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;
     });
 

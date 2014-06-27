@@ -24,8 +24,14 @@ import services.github.Github.{GithubError}
 
 object Transitions extends Controller with MongoController with GithubOAuthController {
 
+  def forUser (user: String) = Action.async { req =>
+    TransitionsModel.all(Some(user), user==req.session.get("login").getOrElse(""))
+      .map(JsArray(_))
+      .map(Ok(_))
+  }
+
   def all () = Action.async { req =>
-    TransitionsModel.all(req.session.get("login"))
+    TransitionsModel.all()
       .map(JsArray(_))
       .map(Ok(_))
   }

@@ -24,22 +24,18 @@ object Transitions {
   val rootGist = glslio.Global.rootGist
   val rootGistFileName = Play.application.configuration.getString("glslio.rootGistFilename").getOrElse("TEMPLATE")
 
-  def all(maybeUser: Option[String] = None) = {
-    val criteria = maybeUser.map { user =>
-      Json.obj(
-        "id" -> Json.obj("$ne" -> rootGist),
-        "$or" -> Json.arr(
-          Json.obj("name" -> Json.obj("$ne" -> rootGistFileName)),
-          Json.obj("owner" -> user)))
-    }.getOrElse {
-      Json.obj(
-        "id" -> Json.obj("$ne" -> rootGist),
-        "name" -> Json.obj("$ne" -> rootGistFileName))
-    }
+  def all(
+    maybeUser: Option[String] = None,
+    withUnpublished: Boolean = false,
+    sort: JsObject = Json.obj("created_at" -> -1)
+  ) = {
+    val criteria = Json.obj("id" -> Json.obj("$ne" -> rootGist)) ++
+      maybeUser.map { user => Json.obj("owner" -> user) }.getOrElse(Json.obj()) ++
+      (if (!withUnpublished) Json.obj("name" -> Json.obj("$ne" -> rootGistFileName)) else Json.obj());
 
     collection
       .find(criteria)
-      .sort(Json.obj("updated_at" -> -1))
+      .sort(sort)
       .cursor[JsObject]
       .collect[Seq]()
   }

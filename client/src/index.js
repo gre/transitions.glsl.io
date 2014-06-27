@@ -33,15 +33,24 @@ function articlesWithLinks () {
     });
 }
 
-// Trigger a request for predictive going in gallery
-model.getTransitions();
-
 var run = app.init(screens, {
 
   '/': function gallery () {
     return Q()
-      .then(model.getTransitions)
+      .then(model.getGalleryTransitions)
       .then(_.bind(app.show, app, "gallery"));
+  },
+
+  '/user/:user': function user (u) {
+    return Q(u)
+      .then(model.getUserTransitions)
+      .then(function (transitions) {
+        return {
+          transitions: transitions,
+          user: u
+        };
+      })
+      .then(_.bind(app.show, app, "user"));
   },
 
   '/blog': function blog() {

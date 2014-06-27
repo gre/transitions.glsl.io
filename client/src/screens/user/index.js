@@ -2,7 +2,7 @@ var _ = require("lodash");
 var Q = require("q");
 var Images = require("../../images");
 var Qstart = require("qstart");
-var GalleryScreen = require("./GalleryScreen");
+var UserScreen = require("./UserScreen");
 
 var imagesRequiredNow = Q.defer();
 var imagesP =
@@ -15,16 +15,17 @@ var imagesP =
     ]);
   });
 
-function show (transitions, env) {
+function show (params, env) {
   imagesRequiredNow.resolve();
   return imagesP.then(_.bind(function (images) {
-    return GalleryScreen({
+    return UserScreen({
       env: env,
-      pageSize: 12,
       images: images,
+      user: params.user,
+      transitions: params.transitions,
+      pageSize: 12,
       thumbnailWidth: 300,
-      thumbnailHeight: 200,
-      transitions: transitions
+      thumbnailHeight: 200
     });
   }, this));
 }
@@ -36,3 +37,4 @@ function init () {
 }
 
 module.exports = init;
+
