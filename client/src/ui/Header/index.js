@@ -29,15 +29,12 @@ var Header = React.createClass({
       </Link>
       ;
 
-    var links = [
+    var links = _.compact([
       { id: "gallery", href: "/", name: "Gallery" },
+      !this.props.user ? null : { id: "user", href: "/user/"+this.props.user, name: "My Transitions" },
       { id: "editor", href: "/transition/new", name: "Editor" },
       { id: "blog", href: "/blog", name: "Blog" }
-    ];
-
-    if (this.props.user) {
-      links.unshift({ id: "user", href: "/user/"+this.props.user, name: "My Transitions" });
-    }
+    ]);
 
     var navs = _.map(links, function (nav) {
       return <Link key={nav.id} className={nav.id+(screenName===nav.id ? " current" : "")} href={nav.href}>{nav.name}</Link>;

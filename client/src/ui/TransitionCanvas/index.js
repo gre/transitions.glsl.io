@@ -60,8 +60,13 @@ var TransitionCanvas = React.createClass({
       this.Transition.abort();
       this.transition.destroy();
     }
-    this.transition = this.Transition(glsl);
-    this.syncUniforms();
+    try {
+      this.transition = this.Transition(glsl);
+      this.syncUniforms();
+    }
+    catch (e) {
+      console.error(e);
+    }
   },
   syncUniforms: function () {
     this.transition.core.reset();
