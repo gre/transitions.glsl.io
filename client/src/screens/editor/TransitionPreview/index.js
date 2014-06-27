@@ -10,6 +10,7 @@ var TransitionPreview = React.createClass({
     var transition = this.props.transition;
     return this.transferPropsTo(
       <Vignette autostart={true} glsl={transition.glsl} uniforms={transition.uniforms}>
+        {this.props.children}
       </Vignette>
     );
   }

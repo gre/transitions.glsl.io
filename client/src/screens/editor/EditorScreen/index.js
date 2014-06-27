@@ -10,6 +10,7 @@ var GlslContextualHelp = require("../GlslContextualHelp");
 var VignetteConfig = require("../VignetteConfig");
 var LicenseLabel = require("../LicenseLabel");
 var TransitionPreview = require("../TransitionPreview");
+var ValidationIndicator = require("../ValidationIndicator");
 var TransitionInfos = require("../TransitionInfos");
 var TransitionActions = require("../TransitionActions");
 var TransitionComments = require("../TransitionComments");
@@ -119,7 +120,8 @@ var EditorScreen = React.createClass({
       fps: null,
       bezierEasing: bezierEasing,
       transitionDuration: transitionDuration,
-      transitionDelay: transitionDelay
+      transitionDelay: transitionDelay,
+      validationErrors: []
     };
   },
   componentWillMount: function () {
@@ -127,6 +129,8 @@ var EditorScreen = React.createClass({
   },
   componentDidMount: function () {
     window.addEventListener("resize", this._onResize=_.bind(this.onResize, this), false);
+    this.checkDetailedValidation = _.debounce(_.bind(this._checkDetailedValidation, this), 100);
+    this.checkDetailedValidation();
   },
   componentWillUnmount: function () {
     window.removeEventListener("resize", this._onResize);
@@ -138,6 +142,29 @@ var EditorScreen = React.createClass({
     if (onbeforeunload !== window.onbeforeunload)
       window.onbeforeunload = onbeforeunload;
   },
+
+  _checkDetailedValidation: function () {
+    if (this.isMounted()) return;
+    var transition = this.state.transition;
+    var validation = validator.forGlsl(transition.glsl);
+    var uniforms = transition.uniforms;
+    var reasons = [];
+    if (!validation.compiles())
+      reasons.push("Transition does not compile");
+    else {
+      if (validation.isValidFrom(uniforms))
+        reasons.push("From image is not correctly displayed when progress=0");
+      if (validation.isValidTo(uniforms))
+        reasons.push("To image is not correctly displayed when progress=1");
+    }
+    if (!_.isEqual(this.state.validationErrors, reasons)) {
+      this.setState({
+        validationErrors: reasons
+      });
+    }
+    validation.destroy();
+  },
+
   render: function () {
     var hasUnsavingChanges = this.hasUnsavingChanges();
     var env = this.props.env;
@@ -178,7 +205,9 @@ var EditorScreen = React.createClass({
             <TransitionComments count={transition.comments} href={transition.html_url} />
             <Fps fps={this.state.fps} />
           </div>
-          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} transitionDelay={this.state.transitionDelay} transitionDuration={this.state.transitionDuration} transitionEasing={this.getEasing()} />
+          <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} transitionDelay={this.state.transitionDelay} transitionDuration={this.state.transitionDuration} transitionEasing={this.getEasing()}>
+            <ValidationIndicator errors={this.state.validationErrors} />
+          </TransitionPreview>
 
           <div className="tabs">{tabs}</div>
           <div className="tabContent">{tabContent}</div>
@@ -313,8 +342,10 @@ var EditorScreen = React.createClass({
     });
   },
   onGlslChangeFailure: function () {
+    this.checkDetailedValidation();
   },
   onGlslChangeSuccess: function (glsl, allUniformTypes) {
+    this.checkDetailedValidation();
     var uniformTypes = keepCustomUniforms(allUniformTypes);
     this.setStateWithUniforms({
       transition: _.defaults({
