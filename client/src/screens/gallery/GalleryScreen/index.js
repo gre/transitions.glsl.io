@@ -44,9 +44,15 @@ var GalleryScreen = React.createClass({
   },
   render: function () {
     var width = this.getThumbnailFullWidth() * this.state.previewsPerLine;
-    var createNewTransition = <Link className="new-transition" href="/transition/new">
-      <i className="fa fa-plus"></i>&nbsp;Create a new Transition
-    </Link>;
+    var createNewTransition = this.props.env.user ?
+      <Link className="new-transition" href="/transition/new">
+        <i className="fa fa-plus"></i>&nbsp;Create a new Transition
+      </Link>
+    :
+      <Link className="new-transition" href="/authenticate">
+        Connect to Create a new Transition
+      </Link>
+    ;
     var pageSize = this.props.pageSize;
 
     var transitions = this.props.transitions;
