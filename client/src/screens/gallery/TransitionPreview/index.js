@@ -12,6 +12,7 @@ var TransitionPreview = React.createClass({
     var href = "/transition/"+this.props.id;
     return this.transferPropsTo(
       <Vignette defaultProgress={0.4} href={href}>
+        {this.props.children}
         <span className="title">
           <em>{this.props.name}</em>
           <span> by </span>

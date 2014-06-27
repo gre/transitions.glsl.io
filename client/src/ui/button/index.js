@@ -52,8 +52,9 @@ var Button = React.createClass({
       cls.push(this.props.className);
     if (this.props.disabled) cls.push("disabled");
     if (this.isActive()) cls.push(this.props.activeCls);
+    this.props.className = cls.join(" ");
     return this.transferPropsTo(
-      <a onClick={this.onClick} className={cls.join(" ")}>{this.props.children}</a>
+      <a onClick={this.onClick}>{this.props.children}</a>
     );
   }
 });

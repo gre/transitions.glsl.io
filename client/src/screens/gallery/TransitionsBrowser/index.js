@@ -16,7 +16,13 @@ var TransitionsBrowser = React.createClass({
     getData: React.PropTypes.func.isRequired,
     numberOfPages: React.PropTypes.number,
     images: React.PropTypes.array.isRequired,
-    paginated: React.PropTypes.bool
+    paginated: React.PropTypes.bool,
+    childrenForTransition: React.PropTypes.func
+  },
+  getDefaultProps: function () {
+    return {
+      childrenForTransition: _.noop
+    };
   },
   getInitialState: function() {
     return {
@@ -80,7 +86,8 @@ var TransitionsBrowser = React.createClass({
           drawer: this.cache.getTransitionDrawer(transition.id),
           resolution: 64,
           delay: 30 + i * 40
-        }
+        },
+        children: this.props.childrenForTransition(transition)
       });
     }, this);
     return <div className="transitions-browser">

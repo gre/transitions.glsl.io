@@ -2,6 +2,7 @@
 var React = require("react");
 var _ = require("lodash");
 var TransitionsBrowser = require("../../gallery/TransitionsBrowser");
+var TransitionComments = require("../../editor/TransitionComments");
 var Link = require("../../../ui/Link");
 var Toolbar = require("../../../ui/Toolbar");
 
@@ -29,6 +30,11 @@ var UserScreen = React.createClass({
     return {
       previewsPerLine: this.getPreviewsPerLine()
     };
+  },
+  childrenForTransition: function (transition) {
+    if (this.props.env.user && transition.comments) {
+      return <TransitionComments count={transition.comments} href={transition.html_url} />;
+    }
   },
   getThumbnailFullWidth: function () {
     return this.props.thumbnailWidth + 12;
@@ -77,7 +83,7 @@ var UserScreen = React.createClass({
     var index = 0;
     return <div className="user-screen">
       {!groups.unpublished ? '': this.transferPropsTo(
-        <TransitionsBrowser key="unpublished" width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData}>
+        <TransitionsBrowser key="unpublished" width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData} childrenForTransition={this.childrenForTransition}>
         <Toolbar>
           Your unpublished transitions:
           {index++===0 ? createNewTransition : ''}
@@ -85,7 +91,7 @@ var UserScreen = React.createClass({
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages}>
+        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages} childrenForTransition={this.childrenForTransition}>
         { isMe ? 
         <Toolbar>
           Your published transitions:
