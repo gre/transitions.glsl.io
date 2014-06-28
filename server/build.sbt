@@ -14,4 +14,9 @@ libraryDependencies ++= Seq(
   "eu.henkelmann" % "actuarius_2.10.0" % "0.2.6"
 )
 
+// workaround for the reloading bug
+watchSources := (watchSources.value
+  --- baseDirectory.value / "app/assets" ** "*"
+  --- baseDirectory.value / "public"     ** "*").get
+
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
