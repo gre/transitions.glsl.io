@@ -76,6 +76,8 @@ Release Notes
    - The gallery is the same for all: only contains published transitions
    - A "My Transitions" screen displays all user transitions by category: invalid / unpublished / published + comments count
   - #70 : the gallery is now also paginated in the url
+- **Blog**
+  - Add a blog system based on Gists
 
 ### Version 1.4 - 18 June 2014
 - #53 : **Sampler2D User Uniforms are now supported!** It means you can use external textures (currently from a set of glslio textures) as parameter of a Transition. [example](https://glsl.io/transition/0141a38779af3a652c22) / thanks to @rectalogic for the feature request.
