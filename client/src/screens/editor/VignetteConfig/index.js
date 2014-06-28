@@ -2,6 +2,7 @@
 var React = require("react");
 var NumberInput = require("../../../ui/NumberInput");
 var Button = require("../../../ui/Button");
+var BezierEditor = require("../../../ui/BezierEditor");
 
 var ConfigField = React.createClass({
   render: function () {
@@ -30,24 +31,15 @@ var VignetteConfig = React.createClass({
   onDurationChange: function (e) {
     this.props.onDurationChange(parseInt(e.target.value, 10));
   },
-  onBezierEasingChange: function (e) {
-    var arr = [];
-    var split = e.target.value.split(" ");
-    split.forEach(function (str) {
-      var n = parseFloat(str, 10);
-      if (!isNaN(n))
-        arr.push(n);
-    });
-    if (split.length === 4 && arr.length === 4 && 0<=arr[2]&&arr[2]<=1 && 0<=arr[0]&&arr[0]<=1) {
-      this.props.onBezierEasingChange(arr);
-    }
-  },
   render: function () {
     return <div className="vignette-config">
       <h2>Transition configuration</h2>
       <ConfigField title="Bezier Easing">
-        <input type="text" onChange={this.onBezierEasingChange} defaultValue={this.props.bezierEasing.join(" ")} />
-        <em style={{ fontSize: "0.6em", opacity: 0.5 }}>(proper UI soon)</em>
+        <BezierEditor
+          width={135}
+          height={150}
+          value={this.props.bezierEasing}
+          onChange={this.props.onBezierEasingChange} />
       </ConfigField>
       <ConfigField title="Duration">
         <NumberInput onChange={this.onDurationChange} type="range" step={100} min={100} max={4000} value={this.props.transitionDuration} />

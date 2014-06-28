@@ -1,0 +1,52 @@
+.bezier-editor {
+  background: #fff;
+  .grid {
+    .bg {
+      fill: #fff;
+    }
+    .tenth {
+      stroke: #eee;
+      stroke-width: 1px;
+    }
+    .half {
+      stroke: #ccc;
+      stroke-width: 1px;
+    }
+  }
+  .axis {
+    .legend {
+      font-family: sans-serif;
+      font-size: 8px;
+    }
+    &.bottom .legend {
+      dominant-baseline: text-before-edge;
+      text-anchor: end;
+    }
+    &.left .legend {
+      text-anchor: start;
+    }
+    .ticks {
+      stroke: #333;
+      stroke-width: 1px;
+    }
+  }
+  .bezierPath {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+  }
+  .handle {
+    circle {
+      fill: #f00;
+      stroke: #000;
+      stroke-width: 2px;
+    }
+    &.active circle {
+      stroke: #f00;
+    }
+    line {
+      stroke: #c00;
+      stroke-width: 1px;
+    }
+  }
+}
