@@ -41,7 +41,7 @@
     "grunt-contrib-stylus": "0.17.0",
     "grunt-contrib-uglify": "0.5.0",
     "grunt-jsxhint": "0.0.2",
-    "grunt-browserify": "2.1.0",
+    "grunt-browserify": "2.1.1",
     "envify": "1.2.1",
     "reactify": "0.13.1"
   }
