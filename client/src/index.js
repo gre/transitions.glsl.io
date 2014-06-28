@@ -33,6 +33,29 @@ function articlesWithLinks () {
     });
 }
 
+function needAuthentification (f) {
+  return function () {
+    if (app.env.user) {
+      return f.apply(this, arguments);
+    }
+    else {
+      window.location.href = "/authenticate";
+    }
+  };
+}
+
+function user (u) {
+  return Q(u)
+    .then(model.getUserTransitions)
+    .then(function (transitions) {
+      return {
+        transitions: transitions,
+        user: u
+      };
+    })
+    .then(_.bind(app.show, app, "user"));
+}
+
 var run = app.init(screens, {
 
   '/': function gallery () {
@@ -41,17 +64,11 @@ var run = app.init(screens, {
       .then(_.bind(app.show, app, "gallery"));
   },
 
-  '/user/:user': function user (u) {
-    return Q(u)
-      .then(model.getUserTransitions)
-      .then(function (transitions) {
-        return {
-          transitions: transitions,
-          user: u
-        };
-      })
-      .then(_.bind(app.show, app, "user"));
-  },
+  '/user/:user': user,
+
+  '/me': needAuthentification(function () {
+    return user(app.env.user);
+  }),
 
   '/blog': function blog() {
     return articlesWithLinks()

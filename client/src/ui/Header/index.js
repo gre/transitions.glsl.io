@@ -18,7 +18,7 @@ var Header = React.createClass({
       <span className="github">
         <Link className="logout" href="/logout">logout</Link>
         <span> - </span>
-        <Link className="profile" target="_blank" href={"https://gist.github.com/"+encodeURIComponent(user)}>
+        <Link className="profile" target="_blank" href="/me">
           <i className="fa fa-github"></i>&nbsp;
           {user}
         </Link>
@@ -31,7 +31,7 @@ var Header = React.createClass({
 
     var links = _.compact([
       { id: "gallery", href: "/", name: "Gallery" },
-      !this.props.user ? null : { id: "user", href: "/user/"+this.props.user, name: "My Transitions" },
+      !this.props.user ? null : { id: "user", href: "/me", name: "My Transitions" },
       { id: "editor", href: "/transition/new", name: "Editor" },
       { id: "blog", href: "/blog", name: "Blog" }
     ]);
