@@ -3,7 +3,10 @@ var React = require("react");
 var _ = require("lodash");
 var Q = require("q");
 var store = require("store");
+var GlslTransitionValidator = require("glsl-transition-validator");
+var validator = require("../../../glslio/validator");
 
+var validateTransition = require("../../../glslio/validateTransition");
 var BezierEasing = require("bezier-easing");
 var Fps = require("../Fps");
 var GlslContextualHelp = require("../GlslContextualHelp");
@@ -21,7 +24,6 @@ var Button = require("../../../ui/Button");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
-var validator = require("../../../glslio/validator");
 var router = require("../../../core/router");
 var model = require("../../../model");
 var textures = require("../../../images/textures");
@@ -126,16 +128,21 @@ var EditorScreen = React.createClass({
   },
   componentWillMount: function () {
     this.lastSavingTransition = this.lastSavedTransition = this.state.rawTransition;
+    this.validator = new GlslTransitionValidator(this.props.images[0], this.props.images[1], 50, 30);
   },
   componentDidMount: function () {
     window.addEventListener("resize", this._onResize=_.bind(this.onResize, this), false);
     this.checkDetailedValidation = _.debounce(_.bind(this._checkDetailedValidation, this), 100);
-    this.checkDetailedValidation();
+    this.checkDetailedValidation(this.state.transition);
   },
   componentWillUnmount: function () {
     window.removeEventListener("resize", this._onResize);
     this.lastSavingTransition = this.lastSavedTransition = null;
     window.onbeforeunload = null;
+    if (this.validator) {
+      this.validator.destroy();
+      this.validator = null;
+    }
   },
   componentDidUpdate: function () {
     var onbeforeunload = this.hasUnsavingChanges() ? onLeavingAppIfUnsaved : null;
@@ -143,26 +150,14 @@ var EditorScreen = React.createClass({
       window.onbeforeunload = onbeforeunload;
   },
 
-  _checkDetailedValidation: function () {
-    if (this.isMounted()) return;
-    var transition = this.state.transition;
-    var validation = validator.forGlsl(transition.glsl);
-    var uniforms = transition.uniforms;
-    var reasons = [];
-    if (!validation.compiles())
-      reasons.push("Transition does not compile");
-    else {
-      if (validation.isValidFrom(uniforms))
-        reasons.push("From image is not correctly displayed when progress=0");
-      if (validation.isValidTo(uniforms))
-        reasons.push("To image is not correctly displayed when progress=1");
-    }
+  _checkDetailedValidation: function (transition) {
+    if (!this.isMounted()) return;
+    var reasons = validateTransition(this.validator, transition);
     if (!_.isEqual(this.state.validationErrors, reasons)) {
       this.setState({
         validationErrors: reasons
       });
     }
-    validation.destroy();
   },
 
   render: function () {
@@ -341,17 +336,20 @@ var EditorScreen = React.createClass({
       token: token
     });
   },
-  onGlslChangeFailure: function () {
-    this.checkDetailedValidation();
+  onGlslChangeFailure: function (glsl) {
+    this.checkDetailedValidation(_.defaults({
+      glsl: glsl
+    }, this.state.transition));
   },
   onGlslChangeSuccess: function (glsl, allUniformTypes) {
-    this.checkDetailedValidation();
     var uniformTypes = keepCustomUniforms(allUniformTypes);
-    this.setStateWithUniforms({
-      transition: _.defaults({
+    var transition = _.defaults({
         glsl: glsl,
         uniforms: uniformValuesForUniforms(uniformTypes, this.state.rawTransition.uniforms)
-      }, this.state.transition),
+      }, this.state.transition);
+    this.checkDetailedValidation(transition);
+    this.setStateWithUniforms({
+      transition: transition,
       uniformTypes: uniformTypes
     });
   },

@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 
   var DEV = "production" !== process.env.NODE_ENV;
 
-  var PUBLIC_DEST = DEV ? "../server/public" : "../server/public";
+  var PUBLIC_DEST = "../server/public";
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
@@ -60,7 +60,7 @@ module.exports = function (grunt) {
     watch: {
       options: {
         livereload: 35735,
-        debounceDelay: 700
+        debounceDelay: 1000
       },
       js: {
         files: ['src/**/*.js'],

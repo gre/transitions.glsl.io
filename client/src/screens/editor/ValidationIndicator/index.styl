@@ -1,6 +1,30 @@
+.vignette {
+  .validation-indicator {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 5;
+  }
+}
+
 .validation-indicator {
+  padding: 5px;
   &.error {
     color: #F33;
+    ul {
+      font-size: 0.8em;
+    }
+  }
+  .icon {
+    float: right;
+    padding: 5px;
+  }
+  ul {
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+    background: rgba(255,255,255,0.8);
+    border: 1px solid #F00;
   }
 }
 

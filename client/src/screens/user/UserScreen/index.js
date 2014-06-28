@@ -10,13 +10,14 @@ function getWidth () {
   return window.innerWidth-20;
 }
 
+// FIXME : we may split into 2 screen for less if() checks : 'public user' and 'my gallery'
 var UserScreen = React.createClass({
 
   propTypes: {
     user: React.PropTypes.string.isRequired,
     images: React.PropTypes.array.isRequired,
     env: React.PropTypes.object.isRequired,
-    transitions: React.PropTypes.array.isRequired,
+    groups: React.PropTypes.object.isRequired,
     pageSize: React.PropTypes.number.isRequired
   },
 
@@ -55,16 +56,16 @@ var UserScreen = React.createClass({
     var createNewTransition = <Link className="new-transition" href="/transition/new">
       <i className="fa fa-plus"></i>&nbsp;Create a new Transition
     </Link>;
-    var groups = _.groupBy(this.props.transitions, function (transition) {
-      if (transition.name !== "TEMPLATE")
-        return 'published';
-      else {
-        if (transition.owner === this.props.env.user)
-          return 'unpublished';
-      }
-    }, this);
+    var groups = this.props.groups;
     var pageSize = this.props.pageSize;
 
+    var invalidHasData = function () {
+      return true;
+    };
+    var invalidGetData = function () {
+      return groups.invalid;
+    };
+    var nbInvalids = groups.invalid && groups.invalid.length || 0;
     var unpublishedHasData = function () {
       return true;
     };
@@ -82,6 +83,17 @@ var UserScreen = React.createClass({
     var isMe = this.props.env.user === this.props.user;
     var index = 0;
     return <div className="user-screen">
+      {!groups.invalid ? '': this.transferPropsTo(
+        <TransitionsBrowser key="invalid" width={width} paginated={false} getWidth={getWidth} hasData={invalidHasData} getData={invalidGetData} childrenForTransition={this.childrenForTransition}>
+        <Toolbar>
+          <span className="invalids">
+          <i className="fa fa-warning"></i>&nbsp;
+          {nbInvalids} Transition{nbInvalids>1?'s':''} detected invalid, please fix {nbInvalids>1?'them':'it'}:
+          </span>
+          {index++===0 ? createNewTransition : ''}
+        </Toolbar>
+        </TransitionsBrowser>)
+      }
       {!groups.unpublished ? '': this.transferPropsTo(
         <TransitionsBrowser key="unpublished" width={width} paginated={false} getWidth={getWidth} hasData={unpublishedHasData} getData={unpublishedGetData} childrenForTransition={this.childrenForTransition}>
         <Toolbar>
