@@ -48,7 +48,7 @@ function needAuthentification (f) {
   };
 }
 
-function user (u) {
+function user (u, me) {
   var page = parseInt(this.query.page||0, 10);
   if (isNaN(page)) page = 0;
   return Q(u)
@@ -57,10 +57,11 @@ function user (u) {
       return {
         transitions: transitions,
         user: u,
+        publicPage: !me,
         page: page
       };
     })
-    .then(_.bind(app.show, app, "user"));
+    .then(_.bind(app.show, app, me ? "me" : "user"));
 }
 
 var run = app.init(screens, {
@@ -82,7 +83,7 @@ var run = app.init(screens, {
   '/user/:user': user,
 
   '/me': needAuthentification(function () {
-    return user.call(this, app.env.user);
+    return user.call(this, app.env.user, true);
   }),
 
   '/blog': function blog() {

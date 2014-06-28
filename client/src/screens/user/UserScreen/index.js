@@ -10,7 +10,6 @@ function getWidth () {
   return window.innerWidth-20;
 }
 
-// FIXME : we may split into 2 screen for less if() checks : 'public user' and 'my gallery'
 var UserScreen = React.createClass({
 
   propTypes: {
@@ -19,7 +18,8 @@ var UserScreen = React.createClass({
     env: React.PropTypes.object.isRequired,
     groups: React.PropTypes.object.isRequired,
     pageSize: React.PropTypes.number.isRequired,
-    page: React.PropTypes.number.isRequired
+    page: React.PropTypes.number.isRequired,
+    publicPage: React.PropTypes.bool.isRequired
   },
 
   componentDidMount: function() {
@@ -81,8 +81,36 @@ var UserScreen = React.createClass({
     };
     var publishedNbPages = !groups.published ? 0 : Math.ceil(groups.published.length/pageSize);
 
-    var isMe = this.props.env.user === this.props.user;
+    var usertoolbar = 
+      <Toolbar>
+        <img src={"https://avatars.githubusercontent.com/"+this.props.user+"?s=40"} />
+        <h2>
+        Transitions of
+        <Link href={"https://gist.github.com/"+this.props.user}>
+          <span> { this.props.user }</span>
+        </Link>
+      </h2>
+      </Toolbar>
+      ;
+
     var index = 0;
+
+    if (!_.keys(groups).length) {
+      return <div className="user-screen">
+        { !this.props.publicPage ? 
+          <Toolbar>
+            You have not created Transitions yet.
+            {index++===0 ? createNewTransition : ''}
+          </Toolbar>
+          :
+          usertoolbar
+        }
+        <div className="notransitions">
+          No transition yet.
+        </div>
+      </div>;
+    }
+
     return <div className="user-screen">
       {!groups.invalid ? '': this.transferPropsTo(
         <TransitionsBrowser key="invalid" width={width} paginated={false} getWidth={getWidth} hasData={invalidHasData} getData={invalidGetData} childrenForTransition={this.childrenForTransition}>
@@ -105,15 +133,13 @@ var UserScreen = React.createClass({
       }
       {!groups.published ? '': this.transferPropsTo(
         <TransitionsBrowser page={this.props.page} key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages} childrenForTransition={this.childrenForTransition}>
-        { isMe ? 
+        { !this.props.publicPage ? 
         <Toolbar>
           Your published transitions:
           {index++===0 ? createNewTransition : ''}
         </Toolbar>
         :
-        <Toolbar>
-          <h2>Transitions of <Link href={"https://gre.github.com/"+this.props.user}>{ this.props.user }</Link></h2>
-        </Toolbar>
+        usertoolbar
         }
         </TransitionsBrowser>)
       }

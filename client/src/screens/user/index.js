@@ -19,13 +19,12 @@ var imagesP =
 
 function show (params, env) {
   imagesRequiredNow.resolve();
-  var isMe = env.user === params.user;
 
   return imagesP.then(_.bind(function (images) {
     var validator = new GlslTransitionValidator(images[0], images[1], 50, 30);
     
     var groups = _.groupBy(params.transitions, function (transition) {
-      if (isMe && validateTransition(validator, transition).length) {
+      if (!params.publicPage && validateTransition(validator, transition).length) {
         return 'invalid';
       }
       if (transition.name !== "TEMPLATE")
@@ -44,6 +43,7 @@ function show (params, env) {
       user: params.user,
       page: params.page,
       groups: groups,
+      publicPage: params.publicPage,
       pageSize: 12,
       thumbnailWidth: 300,
       thumbnailHeight: 200
