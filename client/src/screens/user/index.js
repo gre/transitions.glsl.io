@@ -30,7 +30,7 @@ function show (params, env) {
       if (transition.name !== "TEMPLATE")
         return 'published';
       else {
-        if (transition.owner === env.user)
+        if (!params.publicPage && transition.owner === env.user)
           return 'unpublished';
       }
     }, this);

@@ -34,7 +34,7 @@ var UserScreen = React.createClass({
     };
   },
   childrenForTransition: function (transition) {
-    if (this.props.env.user && transition.comments) {
+    if (!this.props.publicPage && transition.comments) {
       return <TransitionComments count={transition.comments} href={transition.html_url} />;
     }
   },
