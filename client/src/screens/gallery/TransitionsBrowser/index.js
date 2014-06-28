@@ -4,6 +4,7 @@ var _ = require("lodash");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
 var SharedCanvas = require("../../../ui/TransitionCanvasCache/SharedCanvas");
+var app = require("../../../core/app");
 
 // FIXME there is a loading perf bottleneck that we need to fix. Gallery should be bleeding fast to load. We may try our best client-side but also consider server-side thumbnail.
 
@@ -21,12 +22,13 @@ var TransitionsBrowser = React.createClass({
   },
   getDefaultProps: function () {
     return {
+      page: 0,
       childrenForTransition: _.noop
     };
   },
   getInitialState: function() {
     return {
-      page: 0
+      page: this.props.page
     };
   },
 
@@ -37,10 +39,16 @@ var TransitionsBrowser = React.createClass({
     return this.props.hasData(this.state.page - 1);
   },
   nextPage: function () {
-    this.setState({ page: this.state.page + 1 });
+    var page = this.state.page + 1;
+    // FIXME this should just change the URL and we should let React doing the work.
+    // This can simplify a lot of code everywhere (state would be a params, coming from the URL)
+    app.router.overridesUrl(app.router.url.pathname+"?page="+page); // FIXME
+    this.setState({ page: page });
   },
   prevPage: function () {
-    this.setState({ page: this.state.page - 1 });
+    var page = this.state.page - 1;
+    app.router.overridesUrl(app.router.url.pathname+(page ? "?page="+page : '')); // FIXME
+    this.setState({ page: page });
   },
   componentWillMount: function() {
     this.cache = SharedCanvas.create(this.props.thumbnailWidth, this.props.thumbnailHeight);

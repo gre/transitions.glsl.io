@@ -14,7 +14,8 @@ var GalleryScreen = React.createClass({
   propTypes: {
     env: React.PropTypes.object.isRequired,
     transitions: React.PropTypes.array.isRequired,
-    pageSize: React.PropTypes.number.isRequired
+    pageSize: React.PropTypes.number.isRequired,
+    page: React.PropTypes.number.isRequired
   },
 
   componentDidMount: function() {
@@ -66,7 +67,7 @@ var GalleryScreen = React.createClass({
 
     return <div className="gallery-screen">
       {this.transferPropsTo(
-        <TransitionsBrowser width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages}>
+        <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages}>
         <Toolbar>
           All published transitions:
           {createNewTransition}

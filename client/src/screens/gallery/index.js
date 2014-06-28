@@ -15,7 +15,7 @@ var imagesP =
     ]);
   });
 
-function show (transitions, env) {
+function show (args, env) {
   imagesRequiredNow.resolve();
   return imagesP.then(_.bind(function (images) {
     return GalleryScreen({
@@ -24,7 +24,8 @@ function show (transitions, env) {
       images: images,
       thumbnailWidth: 300,
       thumbnailHeight: 200,
-      transitions: transitions
+      transitions: args.transitions,
+      page: args.page
     });
   }, this));
 }

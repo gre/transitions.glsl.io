@@ -10,6 +10,10 @@ function reload () {
   return app.reload();
 }
 
+function redirect (url) {
+  window.location.href = url;
+}
+
 function clearCacheAndReload () {
   cache.clear();
   return reload();
@@ -39,18 +43,21 @@ function needAuthentification (f) {
       return f.apply(this, arguments);
     }
     else {
-      window.location.href = "/authenticate";
+      return redirect("/authenticate");
     }
   };
 }
 
 function user (u) {
+  var page = parseInt(this.query.page||0, 10);
+  if (isNaN(page)) page = 0;
   return Q(u)
     .then(model.getUserTransitions)
     .then(function (transitions) {
       return {
         transitions: transitions,
-        user: u
+        user: u,
+        page: page
       };
     })
     .then(_.bind(app.show, app, "user"));
@@ -59,15 +66,23 @@ function user (u) {
 var run = app.init(screens, {
 
   '/': function gallery () {
+    var page = parseInt(this.query.page||0, 10);
+    if (isNaN(page)) page = 0;
     return Q()
       .then(model.getGalleryTransitions)
+      .then(function (transitions) {
+        return {
+          transitions: transitions,
+          page: page
+        };
+      })
       .then(_.bind(app.show, app, "gallery"));
   },
 
   '/user/:user': user,
 
   '/me': needAuthentification(function () {
-    return user(app.env.user);
+    return user.call(this, app.env.user);
   }),
 
   '/blog': function blog() {

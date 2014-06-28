@@ -1,4 +1,5 @@
 
+var Url = require("url");
 var Router = require("director").Router;
 
 var _ = require("lodash");
@@ -6,10 +7,12 @@ var Q = require("q");
 var Qdebounce = require("qdebounce");
 
 var currentPromise;
+var _url;
 var _router;
+var _ignoreNext = false; // FIXME this is for a workaround – to be removed
 
 function routeFunction (r) {
-  if (window.onbeforeunload) {
+  if (!_ignoreNext && window.onbeforeunload) {
     if (!window.confirm(window.onbeforeunload())) {
       return currentPromise;
     }
@@ -18,13 +21,22 @@ function routeFunction (r) {
   return currentPromise;
 }
 
+function computeUrl () {
+  return Url.parse(window.location.href, true);
+}
+
 function reload () {
   return routeFunction(window.location.pathname);
 }
 
-var route = Qdebounce(function (fun, args, next) {
-  console.log(window.location.pathname+" -> "+fun.name, args);
-  currentPromise = Q.fapply(fun, args);
+var route = Qdebounce(function (f, ctx, args, next) {
+  console.log(ctx.path+" -> "+f.name, args);
+  if (_ignoreNext) {
+    currentPromise = Q();
+    _ignoreNext = false;
+  }
+  else
+    currentPromise = Q.fapply(_.bind(f, ctx), args);
   currentPromise.fin(function () {
     next(false);
   });
@@ -35,12 +47,14 @@ var Qroute = function (f) {
   return function () {
     var next = _.last(arguments);
     var args = _.initial(arguments);
-    return route(f, args, next);
+    var ctx = (_url = computeUrl());
+    return route(f, ctx, args, next);
   };
 };
 
 module.exports = {
   init: function (routes, notFound) {
+    _url = computeUrl();
     _router = Router(_.mapValues(routes, Qroute)).configure({
       /*jshint -W106 */
       run_handler_in_init: true,
@@ -57,5 +71,12 @@ module.exports = {
     });
   },
   reload: reload,
-  route: routeFunction
+  route: routeFunction,
+  overridesUrl: function (url) { // FIXME this is a workaround for now
+    _ignoreNext = true;
+    routeFunction(url);
+  },
+  get url () {
+    return _url;
+  }
 };

@@ -18,7 +18,8 @@ var UserScreen = React.createClass({
     images: React.PropTypes.array.isRequired,
     env: React.PropTypes.object.isRequired,
     groups: React.PropTypes.object.isRequired,
-    pageSize: React.PropTypes.number.isRequired
+    pageSize: React.PropTypes.number.isRequired,
+    page: React.PropTypes.number.isRequired
   },
 
   componentDidMount: function() {
@@ -103,7 +104,7 @@ var UserScreen = React.createClass({
         </TransitionsBrowser>)
       }
       {!groups.published ? '': this.transferPropsTo(
-        <TransitionsBrowser key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages} childrenForTransition={this.childrenForTransition}>
+        <TransitionsBrowser page={this.props.page} key="published" width={width} paginated={true} getWidth={getWidth} hasData={publishedHasData} getData={publishedGetData} numberOfPages={publishedNbPages} childrenForTransition={this.childrenForTransition}>
         { isMe ? 
         <Toolbar>
           Your published transitions:

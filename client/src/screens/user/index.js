@@ -42,6 +42,7 @@ function show (params, env) {
       env: env,
       images: images,
       user: params.user,
+      page: params.page,
       groups: groups,
       pageSize: 12,
       thumbnailWidth: 300,

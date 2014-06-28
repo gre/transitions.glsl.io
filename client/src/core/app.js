@@ -68,6 +68,7 @@ function init (_screens, _routes, routeNotFound) {
 module.exports = {
   init: init,
   show: show,
+  router: router,
   overlay: function (cbOrBool) {
     return app.setStateQ({
       overlay: cbOrBool
