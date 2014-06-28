@@ -180,7 +180,9 @@ var Vignette = React.createClass({
           if (result) self.props.onTransitionPerformed(result);
           return result;
         })
-        .delay(self.props.transitionDelay)
+        .then(function () {
+          return Q.delay(self.props.transitionDelay);
+        })
         .then(function () {
           if (!self.isMounted()) self.stop();
           else self.nextFromTo();

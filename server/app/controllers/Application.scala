@@ -71,11 +71,9 @@ object Application extends Controller with GithubOAuthController with MongoContr
     }
   }
 
+  // FIXME, logout should be done with an AJAX in the future
   def logout = Action { req =>
-    var redirectUrl =
-      req.headers.get(REFERER)
-      .filter(!_.endsWith("/logout"))
-      .getOrElse("/")
+    var redirectUrl = "/";
     Redirect(redirectUrl).withSession()
   }
 
