@@ -2,6 +2,7 @@
 var React = require("react");
 var TransitionCanvas = require("../ui/TransitionCanvas");
 var PromisesMixin = require("../mixins/Promises");
+var GlslTransitionCore = require("glsl-transition-core");
 
 var PlayButton = React.createClass({
   render: function () {
@@ -38,22 +39,35 @@ var LinearPlayer = React.createClass({
 
     return <div className={"linear-player "+(this.state.running ? "running" : "")} style={{width:width+"px", height:height+"px"}}>
       <header>
-        <strong>{ transition.name }</strong>
+        <a className="name" href={"/transition/"+transition.id} target="_blank">{ transition.name }</a>
         <span> by </span>
-        <em>{ transition.owner }</em>
+        <a className="owner" href={"/user/"+transition.owner} target="_blank">{ transition.owner }</a>
       </header>
-      <TransitionCanvas ref="transition"
-        progress={0.4}
-        width={width}
-        height={height}
-        glsl={transition.glsl}
-        uniforms={transition.uniforms}
-        from={from}
-        to={to}
-      />
-      { !this.state.running ?
-      <PlayButton onClick={this.start} y={Math.floor(38+(height-40-38)/2)}>▶</PlayButton>
-      : ''}
+      { !GlslTransitionCore.isSupported() ?
+        <div className="error">
+          <h2>
+          WebGL is not supported.
+          </h2>
+          <p>
+            Supported browsers: Chrome, Firefox, IE 11+, iOS 8+, Android 4+, Opera,...
+          </p>
+        </div>
+        :
+        <div>
+          <TransitionCanvas ref="transition"
+            progress={0.4}
+            width={width}
+            height={height}
+            glsl={transition.glsl}
+            uniforms={transition.uniforms}
+            from={from}
+            to={to}
+          />
+          { !this.state.running ?
+          <PlayButton onClick={this.start} y={Math.floor(38+(height-40-38)/2)}>▶</PlayButton>
+          : ''}
+        </div>
+      }
     </div>;
   },
   start: function () {
