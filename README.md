@@ -78,6 +78,9 @@ Release Notes
   - #70 : the gallery is now also paginated in the url
 - **Blog**
   - Add a blog system based on Gists
+- **Misc**
+  - Replace the "Found a bug" in the footer by a "Feedback" button at the right. More visible.
+  - If something break by trying to open a page, the error screen is opened and a direct link is able to pre-fill a Github issue (with JS stacktrace and contextual information)
 
 ### Version 1.4 - 18 June 2014
 - #53 : **Sampler2D User Uniforms are now supported!** It means you can use external textures (currently from a set of glslio textures) as parameter of a Transition. [example](https://glsl.io/transition/0141a38779af3a652c22) / thanks to @rectalogic for the feature request.
