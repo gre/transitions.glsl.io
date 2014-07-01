@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "reactivemongo" % "0.10.5.akka23-SNAPSHOT",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.akka23-SNAPSHOT",
   "eu.henkelmann" % "actuarius_2.10.0" % "0.2.6"
+  // "rhino" % "js" % "1.7R2"
 )
 
 // workaround for the reloading bug

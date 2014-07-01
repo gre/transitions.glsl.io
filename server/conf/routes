@@ -13,6 +13,7 @@ GET     /api/transitions            controllers.Transitions.all()
 GET     /api/transitions/:id        controllers.Transitions.get(id)
 POST    /api/transitions            controllers.Transitions.fork()
 POST    /api/transitions/:id        controllers.Transitions.save(id)
+GET     /api/snapshots/transitions  controllers.Snapshots.all
 
 # Auth
 GET     /authenticate               controllers.Application.authenticate
