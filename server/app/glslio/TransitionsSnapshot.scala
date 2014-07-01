@@ -1,8 +1,10 @@
 package glslio
 
-import concurrent._
+import scala.util._
+import scala.concurrent._
 
 import play.api.Play.current
+import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 
 import play.api.libs.json._
@@ -19,7 +21,13 @@ object TransitionsSnapshot {
   val string = Reads.of[JsString]
 
   val minifyGlsl: Reads[JsString] = Reads { case JsString(str) =>
-    minifier(str).map(minified => JsSuccess(JsString(minified))).getOrElse(JsError())
+    minifier(str) match {
+      case Success(minified) => JsSuccess(JsString(minified))
+      case Failure(e) => {
+        Logger.debug(e.toString, e)
+        JsError(e.toString)
+      }
+    }
   }
 
   val transitionTransformer = (
@@ -34,10 +42,18 @@ object TransitionsSnapshot {
   ).reduce
 
   def snapshot(): Future[JsValue] = {
+    Logger.debug("snapshotting...")
     Transitions.all().map { case transitions =>
       val transformed = transitions.flatMap { case transition =>
-        transition.validate(transitionTransformer).asOpt
+        val validation = transition.validate(transitionTransformer)
+        validation.fold( err => {
+            Logger.warn("failed for transition "+(transition \ "id"))
+            Logger.warn(""+err)
+            None
+          }, result => Some(result)
+        )
       }
+      Logger.info("snapshot results of "+transformed.size+" out of "+transitions.size)
       JsArray(transformed)
     }
   }
