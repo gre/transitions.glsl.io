@@ -4,7 +4,7 @@ cd `dirname $0`
 
 NOW_VERSION=`date '+%Y.%-m.%-d'`
 SERVER=${1-"https://glsl.io"}
-VERSION=${1-$NOW_VERSION}
+VERSION=${2-$NOW_VERSION}
 
 cd target || exit 1
 
@@ -15,8 +15,10 @@ curl $SERVER/api/snapshots/transitions > transitions.json || exit 3
 
 node test.js || exit 4
 
+echo versionning...$VERSION
 npm version $VERSION || exit 5
 
 npm publish || exit 6
 
+git add transitions.json
 git commit -a -m"$VERSION" && git push origin master

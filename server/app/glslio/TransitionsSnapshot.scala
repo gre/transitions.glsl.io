@@ -46,6 +46,7 @@ object TransitionsSnapshot {
     Transitions.all().map { case transitions =>
       val transformed = transitions.flatMap { case transition =>
         val validation = transition.validate(transitionTransformer)
+        // FIXME: probably need to incrementally detect if something has changed. MongoDB could be used
         validation.fold( err => {
             Logger.warn("failed for transition "+(transition \ "id"))
             Logger.warn(""+err)
