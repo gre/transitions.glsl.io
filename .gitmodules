@@ -1,0 +1,3 @@
+[submodule "scripts/publish-transitions/target"]
+	path = scripts/publish-transitions/target
+	url = git@github.com:glslio/glsl-transitions.git
