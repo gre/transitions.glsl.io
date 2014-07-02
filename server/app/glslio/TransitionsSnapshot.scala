@@ -20,16 +20,6 @@ object TransitionsSnapshot {
 
   val string = Reads.of[JsString]
 
-  val minifyGlsl: Reads[JsString] = Reads { case JsString(str) =>
-    minifier(str) match {
-      case Success(minified) => JsSuccess(JsString(minified))
-      case Failure(e) => {
-        Logger.debug(e.toString, e)
-        JsError(e.toString)
-      }
-    }
-  }
-
   val transitionTransformer = (
     (__ \ 'id).json.pickBranch(string) and
     (__ \ 'owner).json.pickBranch(string) and
@@ -37,26 +27,26 @@ object TransitionsSnapshot {
     (__ \ 'created_at).json.pickBranch(string) and
     (__ \ 'updated_at).json.pickBranch(string) and
     (__ \ 'name).json.pickBranch(string) and
-    (__ \ 'glsl).json.pickBranch(minifyGlsl) and
+    (__ \ 'glsl).json.pickBranch(string) and
     (__ \ 'uniforms).json.pickBranch(Reads.of[JsObject])
   ).reduce
 
-  def snapshot(): Future[JsValue] = {
-    Logger.debug("snapshotting...")
-    Transitions.all().map { case transitions =>
-      val transformed = transitions.flatMap { case transition =>
-        val validation = transition.validate(transitionTransformer)
-        // FIXME: probably need to incrementally detect if something has changed. MongoDB could be used
-        validation.fold( err => {
-            Logger.warn("failed for transition "+(transition \ "id"))
-            Logger.warn(""+err)
-            None
-          }, result => Some(result)
-        )
-      }
-      Logger.info("snapshot results of "+transformed.size+" out of "+transitions.size)
-      JsArray(transformed)
-    }
-  }
+  def snapshot(): Future[JsValue] = Transitions.all().flatMap { transitionsRaw =>
+    val transitionsFutures = transitionsRaw
+      .flatMap(transition => transition.validate(transitionTransformer).fold(
+        err => {
+          Logger.warn("failed for transition "+(transition \ "id"))
+          Logger.warn(""+err)
+          None
+        },
+        result => Some(result)
+      ))
+      .map(minifier.apply)
+      .map(_.map(Some(_)).recover { case e =>
+        Logger.warn("Transition fails to minify:", e)
+        None
+      })
+    Future.sequence(transitionsFutures).map(_.flatten)
+  }.map(JsArray(_))
 
 }
