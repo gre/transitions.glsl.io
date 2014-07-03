@@ -11,6 +11,8 @@ module.exports = {
     "embed": 2
   },
   names: [
+    "ic1dX3kBQjGNaPQb8Xel_1920x1280.jpg",
+    "wdXqHcTwSTmLuKOGz92L_Landscape.jpg",
     "hBd6EPoQT2C8VQYv65ys_White_Sands.jpg",
     "ikZyw45kT4m16vHkHe7u_9647713235_29ce0305d2_o.jpg",
     "bigbuckbunny_snapshot1.jpg",
