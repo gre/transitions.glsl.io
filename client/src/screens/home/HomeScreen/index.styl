@@ -1,8 +1,21 @@
 .home-screen {
-  margin: 5px 10px;
+  font-weight: 300;
+  width: 600px;
+  margin: 0 auto;
+  padding: 5px 0px;
   text-align: center;
   .vignette {
     display: inline-block;
+  }
+  .logo {
+    font-weight: bold;
+    span:first-child {
+      color: #000;
+    }
+    span:last-child {
+      color: #000;
+      /*color: #da0;*/
+    }
   }
   h2 {
     .logo {
@@ -10,7 +23,10 @@
     }
     font-weight: normal;
   }
-  p {
-    font-weight: 300;
+  dl {
+    text-align:left;
+    dt {
+      font-weight: bold;
+    }
   }
 }
