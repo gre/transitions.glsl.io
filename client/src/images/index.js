@@ -8,6 +8,7 @@ module.exports = {
   formatsByUsage: {
     "editor": 0,
     "gallery": 1,
+    "home": 2,
     "embed": 2
   },
   names: [

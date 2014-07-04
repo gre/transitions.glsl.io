@@ -66,7 +66,18 @@ function user (u, me) {
 
 var run = app.init(screens, {
 
-  '/': function gallery () {
+  '/': function home () {
+    return Q()
+      .then(model.getGalleryTransitions) // FIXME in the future we may use the snapshot version
+      .then(function (transitions) {
+        return {
+          transitions: transitions
+        };
+      })
+      .then(_.bind(app.show, app, "home"));
+  },
+
+  '/gallery': function gallery () {
     var page = parseInt(this.query.page||0, 10);
     if (isNaN(page)) page = 0;
     return Q()

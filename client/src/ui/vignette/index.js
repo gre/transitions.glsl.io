@@ -26,7 +26,7 @@ var Vignette = React.createClass({
     transitionDuration: React.PropTypes.number,
     transitionDelay: React.PropTypes.number,
     transitionEasing: React.PropTypes.func,
-    controlsMode: React.PropTypes.oneOf(["hover", "mousedown"]),
+    controlsMode: React.PropTypes.oneOf(["hover", "mousedown", "none"]),
     cache: React.PropTypes.shape({
       drawer: React.PropTypes.func.isRequired,
       resolution: React.PropTypes.number,
@@ -52,7 +52,7 @@ var Vignette = React.createClass({
     return {
       progress: this.props.defaultProgress,
       i: 0,
-      cursorEnabled: this.props.controlsMode !== "mousedown"
+      cursorEnabled: this.props.controlsMode === "hover"
     };
   },
 
@@ -72,7 +72,7 @@ var Vignette = React.createClass({
     );
 
     return (
-    <div className="vignette" style={{width: this.props.width+"px", height: this.props.height+"px"}}>
+    <div className={"vignette "+("mode-"+this.props.controlsMode)} style={{width: this.props.width+"px", height: this.props.height+"px"}}>
       {transitionCanvas}
       {this.props.children}
       <OverlayElement href={this.props.href} className="overlay" ref="overlay" onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
@@ -123,14 +123,14 @@ var Vignette = React.createClass({
   },
 
   onMouseMove: function (e) {
-    if (this.props.controlsMode !== "mousedown" || this.state.cursorEnabled) {
+    if (this.props.controlsMode === "hover" || this.state.cursorEnabled) {
       e.preventDefault();
       this.setProgress(this.progressForEvent(e));
     }
   },
 
   onMouseEnter: function (e) {
-    if (this.props.controlsMode !== "mousedown") {
+    if (this.props.controlsMode === "hover") {
       if (this.props.autostart || this.props.startonleave)
         this.stop();
       this.setProgress(this.progressForEvent(e));

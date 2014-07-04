@@ -30,7 +30,8 @@ var Header = React.createClass({
       ;
 
     var links = _.compact([
-      { id: "gallery", href: "/", name: "Gallery" },
+      { id: "home", href: "/", name: "Home" },
+      { id: "gallery", href: "/gallery", name: "Gallery" },
       !this.props.user ? null : { id: "me", href: "/me", name: "My Transitions" },
       { id: "editor", href: "/transition/new", name: "Editor" },
       { id: "blog", href: "/blog", name: "Blog" }
@@ -41,7 +42,7 @@ var Header = React.createClass({
     });
 
     return <header className="app-header">
-      <Logo />
+      <Logo header={true} />
       <nav>
         {navs}
       </nav>
