@@ -18,16 +18,17 @@ function videoAction (action) {
     return d.promise;
     */
     video[action]();
-    return Q.delay(10).thenResolve(video);
+    return Q.delay(20).thenResolve(video);
   };
 }
 
+var load = videoAction("load");
 var pause = videoAction("pause");
 var play = videoAction("play");
 var setVideo = function (name, value) {
   return function (video) {
     video[name] = value;
-    return Q.delay(10).thenResolve(video);
+    return Q.delay(20).thenResolve(video);
   };
 };
 
@@ -77,7 +78,16 @@ var VideoLinearPlayer = React.createClass({
   },
   _playVideo: function (video) {
     // return pause(video).then(setVideo("currentTime", 0)).then(play);
-    return setVideo("loop", true)(video).then(play);
+    return setVideo("loop", true)(video).then(play).then(function () {
+      // workaround to force the replay (bug in the first load on slow connections)
+      
+      if (video.ended || video.paused || video.currentTime >= video.duration) {
+        return pause(video)
+          .then(load) // trigger a new load may help
+          .then(setVideo("currentTime", 0))
+          .then(play);
+      }
+    });
   },
   start: function () {
     var self = this;
