@@ -1,5 +1,6 @@
 var Qvideo = require("./qvideo");
 var Q = require("q");
+var _ = require("lodash");
 
 var videos;
 
@@ -13,7 +14,9 @@ module.exports = {
   },
   all: function () {
     if (!videos) {
-      videos = Q.all(this.data.sintel.map(Qvideo));
+      videos = Q.all(_.map(this.data.sintel, function (url) {
+        return Qvideo(url, { event: "canplaythrough" });
+      }));
     }
     return videos;
   }

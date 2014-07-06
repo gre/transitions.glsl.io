@@ -18,7 +18,7 @@ var LinearPlayer = React.createClass({
     height: React.PropTypes.number.isRequired,
     transition: React.PropTypes.object.isRequired,
     running: React.PropTypes.bool.isRequired,
-    start: React.PropTypes.func.isRequired
+    start: React.PropTypes.func
   },
   render: function () {
     var transition = this.props.transition;
@@ -43,7 +43,7 @@ var LinearPlayer = React.createClass({
         :
         <div>
           {this.props.children}
-          { !this.props.running ?
+          { !this.props.running && this.props.start ?
           <PlayButton onClick={this.props.start} y={Math.floor(38+(height-40-38)/2)}>▶</PlayButton>
           : ''}
         </div>

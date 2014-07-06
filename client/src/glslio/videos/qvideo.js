@@ -1,10 +1,19 @@
 var Q = require("q");
 
-function Qvideo (url) {
+/**
+ * options.event different level of load:
+ *  - "loadedmetadata"
+ *  - "loadeddata"
+ *  - "canplay"
+ *  - "canplaythrough" (default)
+ */
+function Qvideo (url, options) {
+  if (typeof options !== "object") options={};
+  if (!options.event) options.event = "canplaythrough";
   var d = Q.defer();
   var video = document.createElement('video');
   video.src = url;
-  video.addEventListener('canplaythrough', function () {
+  video.addEventListener(options.event, function () {
     d.resolve(video);
   }, true);
   video.onerror = function (e) {

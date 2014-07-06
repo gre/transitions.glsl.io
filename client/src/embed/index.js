@@ -1,6 +1,7 @@
 var _ = require("lodash");
 var Q = require("q");
 var React = require("react");
+var Loading = require("./Loading");
 var ImageLinearPlayer = require("./ImageLinearPlayer");
 var VideoLinearPlayer = require("./VideoLinearPlayer");
 var Images = require("../images");
@@ -19,21 +20,33 @@ function getTransition () {
 if (url.query.video) {
 
   var render = function (transition, videos) {
-    return React.renderComponent(VideoLinearPlayer({
+    var params = {
       width: window.innerWidth,
       height: window.innerHeight,
       transition: transition,
       videos: videos,
       duration: 2500
-    }), document.body);
+    };
+    var comp;
+
+    if (!videos) {
+      comp = Loading(params);
+    }
+    else {
+      comp = VideoLinearPlayer(params);
+    }
+    return React.renderComponent(comp, document.body);
   };
 
-  Q.all([ getTransition(), Videos.all() ])
-    .spread(function (transition, videos) {
-      videos.push(videos[0]);
-      var draw = _.bind(render, this, transition, videos);
-      // window.addEventListener("resize", draw, false);
-      draw();
+  getTransition()
+    .then(function (transition) {
+      render(transition, null);
+      return Videos.all().then(function (videos) {
+        videos.push(videos[0]);
+        var draw = _.bind(render, this, transition, videos);
+        // window.addEventListener("resize", draw, false);
+        draw();
+      });
     })
     .done();
 }
