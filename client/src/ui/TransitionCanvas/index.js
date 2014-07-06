@@ -5,6 +5,7 @@ var GlslTransition = require("glsl-transition");
 
 var validSampler2D = React.PropTypes.oneOfType([
   React.PropTypes.instanceOf(window.HTMLImageElement),
+  React.PropTypes.instanceOf(window.HTMLVideoElement),
   React.PropTypes.instanceOf(window.HTMLCanvasElement)
 ]);
 
