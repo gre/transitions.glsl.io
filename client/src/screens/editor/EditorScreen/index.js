@@ -21,6 +21,7 @@ var TransitionEditor = require("../TransitionEditor");
 var UniformsEditor = require("../UniformsEditor");
 var Toolbar = require("../../../ui/Toolbar");
 var Button = require("../../../ui/Button");
+var Popup = require("../../../ui/Popup");
 var PromisesMixin = require("../../../mixins/Promises");
 var uniformValuesForUniforms = require("../UniformsEditor/uniformValuesForUniforms");
 
@@ -61,6 +62,7 @@ var EditorScreen = React.createClass({
     uniforms: {
       title: "Params",
       icon: "fa-tasks",
+      tabw: 2,
       render: function () {
         return <UniformsEditor initialUniformValues={this.state.rawTransition.uniforms} uniforms={this.state.uniformTypes} onUniformsChange={this.onUniformsChange} />;
       }
@@ -68,6 +70,7 @@ var EditorScreen = React.createClass({
     doc: {
       title: "Help",
       icon: "fa-info",
+      tabw: 2,
       render: function () {
         return <GlslContextualHelp token={this.state.token} />;
       }
@@ -75,6 +78,7 @@ var EditorScreen = React.createClass({
     config: {
       title: "Config.",
       icon: "fa-cogs",
+      tabw: 2,
       render: function () {
         return <VignetteConfig
           transitionDelay={this.state.transitionDelay}
@@ -88,7 +92,88 @@ var EditorScreen = React.createClass({
           Configuration are persisted in localStorage of your browser.
         </VignetteConfig>;
       }
+    },
+    share: {
+      title: "",
+      icon: "fa-share-alt",
+      tabw: 1,
+      render: function () {
+        var transition = this.state.transition;
+        var saved = transition.id;
+        var isRoot = transition.id === this.props.env.rootGist;
+        if (!saved) {
+          return <div className="extra">The transition need to be saved to be able to Share it.</div>;
+        }
+        else if (isRoot) {
+          return <div className="extra">
+            This transition is the Template transition.
+            Create transitions by forking it and Share them!
+          </div>;
+        }
+        else {
+          var baseUrl = window.location.origin;
+          var url = baseUrl+"/transition/"+transition.id;
+          var text = "Checkout "+(transition.name.substring(0,30))+" by "+(transition.owner.substring(0,20))+" on @glslio";
+          var embedUrl = url+"/embed";
+          return <div>
+            <dl>
+              <dt>
+                Share on:
+              </dt>
+              <dd className="share-sn">
+                <Popup
+                  name="Facebook"
+                  href={"https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url)}
+                  width={600}
+                  height={300}
+                  scrollbars={true}>
+                    <i className="fa fa-facebook"></i>
+                </Popup>
+
+                <Popup
+                  name="Twitter"
+                  href={"https://twitter.com/intent/tweet?url="+encodeURIComponent(url)+"&text="+encodeURIComponent(text)}
+                  width={600}
+                  height={300}
+                  scrollbars={true}>
+                    <i className="fa fa-twitter"></i>
+                </Popup>
+
+                <Popup
+                  name="Google Plus"
+                  href={"https://plus.google.com/u/0/share?url="+encodeURIComponent(url)}
+                  width={480}
+                  height={360}
+                  scrollbars={true}>
+                    <i className="fa fa-google-plus"></i>
+                </Popup>
+              </dd>
+
+              <dt>
+                Share this link:
+              </dt>
+              <dd>
+                <input type="text" value={url} onClick={this.selectInputHandler} />
+              </dd>
+
+              <dt>
+                Embed it:
+                <Popup className="preview-link" href={embedUrl} width={512} height={384}>Preview</Popup>
+              </dt>
+              <dd>
+              <textarea onClick={this.selectInputHandler}>
+              {'<iframe width="512" height="384" src="'+embedUrl+'" frameborder="0"></iframe>'}
+              </textarea>
+              </dd>
+            </dl>
+          </div>;
+        }
+      }
     }
+  },
+
+  selectInputHandler: function (e) {
+    e.target.select();
   },
 
   getInitialState: function () {
@@ -176,14 +261,16 @@ var EditorScreen = React.createClass({
 
     var tab = this.tabs[this.state.tab];
     var tabContent = tab.render.apply(this, arguments);
+    var sumW = _.reduce(_.pluck(this.tabs, "tabw"), function (sum, a) { return sum+a; });
     var tabs = _.map(this.tabs, function (t, tid) {
       var isCurrent = this.state.tab === tid;
+      var tabwidth = (t.tabw*100/sumW)+"%";
       var f = _.bind(function () {
         return this.setStateQ({ tab: tid });
       }, this);
       var cls = ["tab"];
       if (isCurrent) cls.push("current");
-      return <Button key={tid} className={cls.join(" ")} f={f} title={t.title}>
+      return <Button key={tid} className={cls.join(" ")} style={{width:tabwidth}} f={f} title={t.title}>
         <i className={ "fa "+t.icon }></i><span> {t.title}</span>
       </Button>;
     }, this);
