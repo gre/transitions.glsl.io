@@ -24,12 +24,13 @@ if (url.query.video) {
       height: window.innerHeight,
       transition: transition,
       videos: videos,
-      duration: 5000
+      duration: 2500
     }), document.body);
   };
 
   Q.all([ getTransition(), Videos.all() ])
     .spread(function (transition, videos) {
+      videos.push(videos[0]);
       var draw = _.bind(render, this, transition, videos);
       // window.addEventListener("resize", draw, false);
       draw();

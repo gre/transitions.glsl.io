@@ -1,8 +1,35 @@
 /** @jsx React.DOM */
 var React = require("react");
+var Q = require("q");
 var TransitionCanvas = require("../../ui/TransitionCanvas");
 var PromisesMixin = require("../../mixins/Promises");
 var LinearPlayer = require("../LinearPlayer");
+
+function videoAction (action) {
+  return function (video) {
+    /*
+    // Smarter way but don't seem to work properly
+    var d = Q.defer();
+    video.addEventListener(action, d.resolve, false);
+    video[action]();
+    d.promise.then(function () {
+      video.removeEventListener(action, d.resolve);
+    });
+    return d.promise;
+    */
+    video[action]();
+    return Q.delay(10).thenResolve(video);
+  };
+}
+
+var pause = videoAction("pause");
+var play = videoAction("play");
+var setVideo = function (name, value) {
+  return function (video) {
+    video[name] = value;
+    return Q.delay(10).thenResolve(video);
+  };
+};
 
 var VideoLinearPlayer = React.createClass({
   mixins: [ PromisesMixin ],
@@ -25,7 +52,6 @@ var VideoLinearPlayer = React.createClass({
     var height = this.props.height;
     var from = this.props.videos[this.state.video];
     var to = this.props.videos[this.state.video+1];
-    console.log(from, to);
 
     return (
       <LinearPlayer
@@ -37,7 +63,7 @@ var VideoLinearPlayer = React.createClass({
         start={this.start}>
 
         <TransitionCanvas ref="transition"
-          progress={0.4}
+          progress={0.1}
           width={width}
           height={height}
           glsl={transition.glsl}
@@ -50,17 +76,20 @@ var VideoLinearPlayer = React.createClass({
     );
   },
   _playVideo: function (video) {
-    video.pause();
-    video.currentTime = 0;
-    video.play();
+    // return pause(video).then(setVideo("currentTime", 0)).then(play);
+    return setVideo("loop", true)(video).then(play);
   },
   start: function () {
     var self = this;
     this.setStateQ({ video: 0, running: true })
       .then(function loop () {
-        self._playVideo(self.props.videos[self.state.video]);
-        self._playVideo(self.props.videos[self.state.video+1]);
-        return self.refs.transition.animate(self.props.duration)
+        return Q.all([
+          self._playVideo(self.props.videos[self.state.video]),
+          self._playVideo(self.props.videos[self.state.video+1])
+        ])
+          .then(function(){
+            return self.refs.transition.animate(self.props.duration);
+          })
           .then(function () {
             var video = self.state.video + 1;
             if (video+1 >= self.props.videos.length) {
@@ -72,7 +101,10 @@ var VideoLinearPlayer = React.createClass({
           });
       })
       .fin(function () {
-        self.setState({ video: 0, running: false });
+        return Q.all(self.props.videos.map(pause));
+      })
+      .fin(function(){
+        return self.setState({ video: 0, running: false });
       })
       .done();
   },
