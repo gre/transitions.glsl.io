@@ -9,8 +9,8 @@ REMOTE_APP=/home/play/$branch/
 echo "Will upload to... "$REMOTE":"$REMOTE_APP;
 sleep 2 || exit;
 
-cd images;
-./generate.sh || exit -1;
+cd scripts;
+./pre-deploy.sh || exit -1;
 cd -;
 
 export NODE_ENV="production";

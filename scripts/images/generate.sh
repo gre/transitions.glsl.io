@@ -3,7 +3,7 @@
 formats="512x512 600x400 1024x768"
 
 in="./raw";
-dist="../server/public/images"
+dist="../../server/public/images"
 tmp="./tmp_out";
 
 rm -rf $tmp;
