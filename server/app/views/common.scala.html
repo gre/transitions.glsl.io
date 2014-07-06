@@ -1,0 +1,50 @@
+@(version: String, maybeTransition: Option[play.api.libs.json.JsValue])(head: Html)(body: Html)
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GLSL.io – Open Collection of GLSL Transitions</title>
+  <meta name="description" content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software." />
+  <meta name="keywords" content="WebGL,GLSL,Transitions,JavaScript" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  @* we should instead have a class abstracted for a "PageMetaInfos" *@
+  @maybeTransition.map { transition =>
+    <meta name="twitter:card"           content="player">
+    <meta name="twitter:title"          content="GLSL.io – @{(transition\"name").as[String]}">
+    <meta name="twitter:creator"        content="@@glslio">
+    <meta name="twitter:site"           content="@@glslio">
+    <meta name="twitter:description"    content="GLSL.io transition – @{(transition\"name").as[String]}">
+    <meta name="twitter:image:src"      content="https://glsl.io/transition/@{(transition\"id").as[String]}/preview.jpg">
+    <meta name="twitter:domain"         content="glsl.io">
+    <meta name="twitter:player"         content="https://glsl.io/transition/@{(transition\"id").as[String]}/embed">
+    <meta name="twitter:player:width"   content="435">
+    <meta name="twitter:player:height"  content="290">
+
+    <meta property="og:type"            content="article" />
+    <meta property="og:title"           content="GLSL.io transition – @{(transition\"name").as[String]}" />
+    <meta property="og:description"     content="GLSL.io transition – @{(transition\"name").as[String]}" />
+    <meta property="og:url"             content="https://glsl.io/transition/@{(transition\"id").as[String]}/embed" />
+    <meta property="og:image"           content="https://glsl.io/transition/@{(transition\"id").as[String]}/preview.jpg" />
+    <meta property="og:site_name"       content="GLSL.io" />
+  }.getOrElse {
+    <meta name="twitter:card"           content="summary">
+    <meta name="twitter:site"           content="GLSL.io">
+    <meta name="twitter:title"          content="GLSL.io, an Open Collection of GLSL Transitions.">
+    <meta name="twitter:description"    content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software.">
+    <meta name="twitter:creator"        content="@@glslio">
+    <meta name="twitter:image"          content="https://glsl.io/transition/assets/glslio_1080p.png">
+
+    <meta property="og:type"            content="website" />
+    <meta property="og:title"           content="GLSL.io, an Open Collection of GLSL Transitions." />
+    <meta property="og:description"     content="The GLSL.io initiative aims to build an Open Collection of GLSL Transitions. It aims to be highly community-driven and free-software." />
+    <meta property="og:image"           content="https://glsl.io/transition/assets/glslio_1080p.png" />
+    <meta property="og:site_name"       content="GLSL.io" />
+  }
+  @head
+</head>
+@body
+</html>
+
