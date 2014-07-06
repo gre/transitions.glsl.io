@@ -1,9 +1,22 @@
 .app-header {
   background: #000;
   color: #fff;
-  height: 40px;
+  min-height: 40px;
   line-height: 40px;
   padding: 0 10px;
+  .notsupported {
+    display: block;
+    background: #aaa;
+    margin: 0 -10px;
+    text-align: center;
+    color: #a00;
+    a {
+      color: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
   h1 {
     margin: 0;
     padding: 0;

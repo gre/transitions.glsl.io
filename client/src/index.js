@@ -5,6 +5,7 @@ var screens = require("./screens");
 var app = require("./core/app");
 var cache = require("./core/cache");
 var model = require("./model");
+var GlslTransition = require("glsl-transition");
 
 function reload () {
   return app.reload();
@@ -67,14 +68,19 @@ function user (u, me) {
 var run = app.init(screens, {
 
   '/': function home () {
-    return Q()
-      .then(model.getGalleryTransitions) // FIXME in the future we may use the snapshot version
-      .then(function (transitions) {
-        return {
-          transitions: transitions
-        };
-      })
-      .then(_.bind(app.show, app, "home"));
+    if (GlslTransition.isSupported()) {
+      return Q()
+        .then(model.getGalleryTransitions) // FIXME in the future we may use the snapshot version
+        .then(function (transitions) {
+          return {
+            transitions: transitions
+          };
+        })
+        .then(_.bind(app.show, app, "home"));
+    }
+    else {
+      redirect("/blog");
+    }
   },
 
   '/gallery': function gallery () {

@@ -4,6 +4,7 @@ var React = require("react");
 var _ = require("lodash");
 var Link = require("../Link");
 var Logo = require("../Logo");
+var GlslTransition = require("glsl-transition");
 
 var Header = React.createClass({
   propTypes: {
@@ -13,6 +14,7 @@ var Header = React.createClass({
   render: function () {
     var screenName = this.props.screenName;
     var user = this.props.user;
+    var webglsupported = GlslTransition.isSupported();
 
     var userPart = user ?
       <span className="github">
@@ -47,6 +49,15 @@ var Header = React.createClass({
         {navs}
       </nav>
       {userPart}
+      {webglsupported ? '' : <div className="notsupported">
+        <i className="fa fa-warning"></i>
+        &nbsp;
+        <Link href="http://get.webgl.org/" target="_blank">
+          WebGL is not supported by your current browser.
+        </Link>
+        &nbsp;
+        <i className="fa fa-warning"></i>
+      </div>}
     </header>;
   }
 });
