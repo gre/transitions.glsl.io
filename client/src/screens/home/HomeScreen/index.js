@@ -1,8 +1,9 @@
 /** @jsx React.DOM */
 var React = require("react");
-var Vignette = require("../../../ui/Vignette");
+var Slideshow = require("../../../ui/Slideshow");
 var GLSLio = require("../../../ui/Logo");
 var Link = require("../../../ui/Link");
+var Fps = require("../../editor/Fps");
 
 var HomeScreen = React.createClass({
 
@@ -14,41 +15,28 @@ var HomeScreen = React.createClass({
 
   getInitialState: function () {
     return {
-      transitionIndex: 0
+      fps: null,
+      videoTransition: this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)]
     };
   },
 
-  onTransitionPerformed: function (stats) {
-    console.log(stats.frames && "fps: "+Math.round(1000*stats.frames/stats.elapsedTime) || stats);
-    this.setState({
-      transitionIndex: (this.state.transitionIndex+1) % this.props.transitions.length
-    });
+  onSlideChange: function (stats) {
+    var fps = stats.frames ? Math.round(1000*stats.frames/stats.elapsedTime) : null;
+    if (this.state.fps !== fps) {
+      this.setState({ fps: fps });
+    }
   },
 
   render: function () {
-    var transition = this.props.transitions[this.state.transitionIndex];
     return <div className="home-screen">
       <h2>
         WebGL Transitions for your images slideshow
       </h2>
       <p>
         This slideshow shows all transitions created by <GLSLio /> contributors!
+
+        <Slideshow width={512} height={384} images={this.props.images} transitions={this.props.transitions} onSlideChange={this.onSlideChange} />
       </p>
-      <Vignette
-        images={this.props.images}
-        autostart={true}
-        controlsMode="none"
-        width={512}
-        height={384}
-        glsl={transition.glsl}
-        uniforms={transition.uniforms}
-        onTransitionPerformed={this.onTransitionPerformed}>
-        <span className="title">
-          <em>{transition.name}</em>
-          <span> by </span>
-          <strong>{transition.owner}</strong>
-          </span>
-      </Vignette>
 
       <h3>GLSL Transitions are...</h3>
 
@@ -58,17 +46,30 @@ var HomeScreen = React.createClass({
         <dd>
         Incredible Transition Effects running at 60 FPS in your browser.
         </dd>
+        <dd>
+        The current slideshow transition is running at: <Fps fps={this.state.fps} />
+        </dd>
 
         <dt><i className="fa fa-magic"></i> Incredible Effects</dt>
         <dd>
         GLSL is really <strong>the</strong> ultimate language to implement Transitions in.
         There is really no limitation on effects you can perform with.
         </dd>
-
-        <dt><i className="fa fa-cogs"></i> Entirely Customisable</dt>
         <dd>
-          A transition exposes "uniform" that is helpful to customize the effect parameters.
-          Transition Duration and Transition Easing Function are also customisable.
+        <Link href="/gallery">
+          <img src="/assets/examples.png" style={{width: "500px"}} alt="" />
+        </Link>
+        </dd>
+
+        <dt><i className="fa fa-film"></i> Video Ready!</dt>
+        <dd>
+          GLSL Transitions focus on defining a transition between 2 sources.
+        </dd>
+        <dd>
+          Those can be images, videos or anything 2D!
+          {/* TODO we want this to work without iframe */}
+<iframe width={512} height={288} src={"/transition/"+this.state.videoTransition.id+"/embed?video=1"} frameBorder="0" seamless="seamless"></iframe>
+
         </dd>
 
         <dt><i className="fa fa-puzzle-piece"></i> Multi-environnment</dt>
@@ -77,10 +78,10 @@ var HomeScreen = React.createClass({
           We are working to make GLSL Transitions working in Video Editors.
         </dd>
 
-        <dt><i className="fa fa-film"></i> Multi-usage</dt>
+        <dt><i className="fa fa-cogs"></i> Entirely Customisable</dt>
         <dd>
-          GLSL Transitions focus on defining a transition between 2 sources.
-          Those can be images, videos or anything 2D!
+          A transition exposes "uniform" that is helpful to customize the effect parameters.
+          Transition Duration and Transition Easing Function are also customisable.
         </dd>
 
         <dt><i className="fa fa-cloud-download"></i> Easy to use</dt>

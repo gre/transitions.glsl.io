@@ -13,7 +13,7 @@ var Fps = React.createClass({
     var fps = this.props.fps;
     return <div className={"fps "+(fps ? "dec-"+dec(fps): "none")}>
       <i className="fa fa-tachometer"></i>&nbsp;
-      <span className="count">{fps ? fps : "??"}</span>
+      <span className="count">{fps ? fps : "--"}</span>
     </div>;
   }
 });
