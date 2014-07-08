@@ -23,7 +23,6 @@ var Popup = React.createClass({
     var params = _.map(_.pick(this.props, function(value, key) {
       return _.contains(popupParams, key);
     }), function (value, key) { return key+"="+value; }).join(",");
-    console.log(params);
     return window.open(url, name, params);
   },
   render: function () {
