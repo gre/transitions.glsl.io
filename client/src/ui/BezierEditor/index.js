@@ -13,7 +13,7 @@ var BezierEditor = React.createClass({
   },
   getDefaultProps: function () {
     return {
-      value: [ 0, 0, 1, 1 ],
+      value: [0.25, 0.25, 0.75, 0.75 ],
       onChange: _.noop,
       width: 300,
       height: 300,

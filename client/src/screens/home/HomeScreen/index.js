@@ -1,5 +1,8 @@
 /** @jsx React.DOM */
 var React = require("react");
+var BezierEasing = require("bezier-easing");
+var NumberInput = require("../../../ui/NumberInput");
+var BezierEditor = require("../../../ui/BezierEditor");
 var Slideshow = require("../../../ui/Slideshow");
 var GLSLio = require("../../../ui/Logo");
 var Link = require("../../../ui/Link");
@@ -16,7 +19,9 @@ var HomeScreen = React.createClass({
   getInitialState: function () {
     return {
       fps: null,
-      videoTransition: this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)]
+      videoTransition: this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)],
+      easing: [0.25, 0.25, 0.75, 0.75],
+      duration: 1500
     };
   },
 
@@ -27,6 +32,14 @@ var HomeScreen = React.createClass({
     }
   },
 
+  onDurationChange: function (i) { // FIXME this should be the int value here...
+    this.setState({ duration: parseInt(i.target.value, 10) });
+  },
+
+  setEasing: function (easing) {
+    this.setState({ easing: easing });
+  },
+
   render: function () {
     return <div className="home-screen">
       <h2>
@@ -35,7 +48,7 @@ var HomeScreen = React.createClass({
       <p>
         This slideshow shows all transitions created by <GLSLio /> contributors!
 
-        <Slideshow width={512} height={384} images={this.props.images} transitions={this.props.transitions} onSlideChange={this.onSlideChange} />
+        <Slideshow width={512} height={384} images={this.props.images} transitions={this.props.transitions} onSlideChange={this.onSlideChange} transitionEasing={BezierEasing.apply(null, this.state.easing)} transitionDuration={this.state.duration} />
       </p>
 
       <h3>GLSL Transitions are...</h3>
@@ -90,6 +103,15 @@ var HomeScreen = React.createClass({
         <dd>
           A transition exposes "uniform" that is helpful to customize the effect parameters.
           Transition Duration and Transition Easing Function are also customisable.
+        </dd>
+        <dd className="duration">
+        <strong>Duration:</strong>
+        <span className="value">{this.state.duration}ms</span>
+        <NumberInput onChange={this.onDurationChange} type="range" step={50} min={100} max={3000} value={this.state.duration} />
+        </dd>
+        <dd>
+        <strong>Easing:</strong>
+        <BezierEditor value={this.state.easing} onChange={this.setEasing} width={500} height={300} handleRadius={8} padding={[20, 100, 20, 100]} />
         </dd>
       </dl>
 

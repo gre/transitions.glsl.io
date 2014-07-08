@@ -7,7 +7,6 @@ var Slideshow = React.createClass({
 
   propTypes: {
     transitions: React.PropTypes.array.isRequired,
-    images: React.PropTypes.array.isRequired,
     onSlideChange: React.PropTypes.func
   },
 
@@ -32,12 +31,9 @@ var Slideshow = React.createClass({
 
   render: function () {
     var transition = this.props.transitions[this.state.transitionIndex];
-    return <Vignette
-      images={this.props.images}
+    return this.transferPropsTo(<Vignette
       autostart={true}
       controlsMode="none"
-      width={this.props.width}
-      height={this.props.height}
       glsl={transition.glsl}
       uniforms={transition.uniforms}
       onTransitionPerformed={this.onTransitionPerformed}>
@@ -46,7 +42,7 @@ var Slideshow = React.createClass({
         <span> by </span>
         <strong>{transition.owner}</strong>
         </span>
-    </Vignette>;
+    </Vignette>);
   }
 });
 

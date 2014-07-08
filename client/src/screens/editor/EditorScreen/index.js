@@ -186,7 +186,7 @@ var EditorScreen = React.createClass({
       bezierEasing = store.get("editor.bezierEasing");
       BezierEasing.apply(null, bezierEasing); // validate
     } catch (e) {
-      bezierEasing = [0, 0, 1, 1];
+      bezierEasing = [0.25, 0.25, 0.75, 0.75];
     }
     var transitionDuration = store.get("editor.transitionDuration");
     if (!transitionDuration || isNaN(transitionDuration)) transitionDuration = 1500;
