@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 var React = require("react");
-var Button = require("../../../ui/button");
+var Button = require("../../../ui/Button");
 
 var TransitionsBrowserPager = React.createClass({
   propTypes: {
