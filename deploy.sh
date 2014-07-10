@@ -3,8 +3,8 @@
 branch=`git rev-parse --abbrev-ref HEAD`
 # We assume that branch==domain if you are using this script (convention)
 
-REMOTE=$branch
-REMOTE_APP=/root/
+REMOTE=play@$branch
+REMOTE_APP=/home/play/
 
 echo "Will upload to... "$REMOTE":"$REMOTE_APP;
 sleep 2 || exit;
