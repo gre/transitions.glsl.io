@@ -39,13 +39,20 @@ var VideoLinearPlayer = React.createClass({
     width: React.PropTypes.number.isRequired,
     height: React.PropTypes.number.isRequired,
     duration: React.PropTypes.number.isRequired,
-    transition: React.PropTypes.object.isRequired
+    transition: React.PropTypes.object.isRequired,
+    autoplay: React.PropTypes.bool,
+    loop: React.PropTypes.bool
   },
   getInitialState: function () {
     return {
       running: false,
       video: 0
     };
+  },
+  componentDidMount: function () {
+    if (this.props.autoplay) {
+      this.start();
+    }
   },
   render: function () {
     var transition = this.props.transition;
@@ -114,7 +121,12 @@ var VideoLinearPlayer = React.createClass({
         return Q.all(self.props.videos.map(pause));
       })
       .fin(function(){
-        return self.setState({ video: 0, running: false });
+        if (self.props.loop) {
+          return self.start();
+        }
+        else {
+          return self.setState({ video: 0, running: false });
+        }
       })
       .done();
   },

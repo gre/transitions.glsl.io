@@ -22,7 +22,7 @@
       /*color: #da0;*/
     }
   }
-  .duration {
+  .slider {
     span.value {
       float: right;
       font-family: monospace;
@@ -60,7 +60,7 @@
     padding: 10px 0 10px 40px;
     nav {
       text-align: center;
-      font-size: 32px;
+      font-size: 30px;
       padding: 20px 0;
       a {
         padding: 0px 8px;
@@ -81,7 +81,47 @@
       min-height: 300px;
       header {
         font-weight: bold;
-        margin-bottom: 4px;
+        font-size: 1.6em;
+        margin-bottom: 0.2em;
+      }
+      div.highlight {
+        margin: 1em 0;
+        font-weight: bold;
+      }
+      blockquote {
+        margin-top: 50px;
+        color: #ea5;
+        font-size: 1.2em;
+        a {
+          color: #c83;
+        }
+      }
+      .randomize {
+        text-align: center;
+        font-size: 1.6em;
+        font-weight: normal;
+        margin: 10px 0;
+        a {
+          text-decoration: none;
+          padding: 10px;
+        }
+      }
+      .contributors {
+        a {
+          text-decoration: none;
+          &:hover {
+            color: #222;
+          }
+        }
+        a:after {
+          &:hover {
+            color: inherit;
+          }
+          content: ", ";
+        }
+        a:last-child:after {
+          content: "";
+        }
       }
     }
     .pager {

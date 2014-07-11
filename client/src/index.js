@@ -69,11 +69,14 @@ var run = app.init(screens, {
 
   '/': function home () {
     if (GlslTransition.isSupported()) {
+      var page = parseInt(this.query.page||0, 10);
+      if (isNaN(page)) page = 0;
       return Q()
         .then(model.getGalleryTransitions) // FIXME in the future we may use the snapshot version
         .then(function (transitions) {
           return {
-            transitions: transitions
+            transitions: transitions,
+            page: page
           };
         })
         .then(_.bind(app.show, app, "home"));

@@ -25,7 +25,9 @@ if (url.query.video) {
       height: window.innerHeight,
       transition: transition,
       videos: videos,
-      duration: 2500
+      duration: 2500,
+      loop: !!url.query.loop,
+      autoplay: !!url.query.autoplay
     };
     var comp;
 

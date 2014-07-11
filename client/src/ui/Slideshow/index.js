@@ -30,7 +30,7 @@ var Slideshow = React.createClass({
   },
 
   render: function () {
-    var transition = this.props.transitions[this.state.transitionIndex];
+    var transition = this.props.transitions[this.state.transitionIndex] || this.props.transitions[0];
     return this.transferPropsTo(<Vignette
       autostart={true}
       controlsMode="none"

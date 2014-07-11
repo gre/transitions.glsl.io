@@ -17,7 +17,8 @@ function show (args, env) {
     return HomeScreen({
       env: env,
       images: images,
-      transitions: args.transitions
+      transitions: args.transitions,
+      page: args.page
     });
   });
 }
