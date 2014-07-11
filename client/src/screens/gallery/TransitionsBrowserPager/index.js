@@ -21,10 +21,16 @@ var TransitionsBrowserPager = React.createClass({
   onKeyup: function (e) {
     if (!this.props.keyboardControls) return;
     if (e.which === 37) {
-      if (this.props.prev) this.props.prev();
+      if (this.props.prev) {
+        e.preventDefault();
+        this.props.prev();
+      }
     }
     else if (e.which === 39) {
-      if (this.props.next) this.props.next();
+      if (this.props.next) {
+        e.preventDefault();
+        this.props.next();
+      }
     }
   },
   render: function () {
