@@ -13,12 +13,12 @@ var TransitionsBrowserPager = React.createClass({
     keyboardControls: React.PropTypes.bool
   },
   componentDidMount: function () {
-    window.addEventListener("keyup", this.onKeyup, false);
+    window.addEventListener("keydown", this.onKeydown, false);
   },
   componentWillUnmount: function () {
-    window.removeEventListener("keyup", this.onKeyup);
+    window.removeEventListener("keydown", this.onKeydown);
   },
-  onKeyup: function (e) {
+  onKeydown: function (e) {
     if (!this.props.keyboardControls) return;
     if (e.which === 37) {
       if (this.props.prev) {
