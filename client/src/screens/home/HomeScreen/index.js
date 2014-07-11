@@ -5,8 +5,9 @@ var NumberInput = require("../../../ui/NumberInput");
 var BezierEditor = require("../../../ui/BezierEditor");
 var Slideshow = require("../../../ui/Slideshow");
 var GLSLio = require("../../../ui/Logo");
-var Button = require("../../../ui/Button");
 var Link = require("../../../ui/Link");
+var Button = require("../../../ui/Button");
+var Pager = require("../../gallery/TransitionsBrowserPager");
 var Fps = require("../../editor/Fps");
 
 var HomeScreen = React.createClass({
@@ -48,6 +49,12 @@ var HomeScreen = React.createClass({
 
   next: function () {
     this.setState({ page: this.state.page + 1 });
+  },
+
+  goToPageFunction: function (i) {
+    return function () {
+      return this.setState({ page: i });
+    }.bind(this);
   },
 
   slideshows: {
@@ -202,6 +209,14 @@ var HomeScreen = React.createClass({
     var page = this.pages[this.state.page];
     var slideshow = this.slideshows[page.slideshow].render.call(this);
     var pageContent = page.render.call(this);
+    var next = this.state.page+1 < this.pages.length ? this.next : null;
+    var prev = this.state.page-1 >= 0 ? this.prev : null;
+
+    var navIcons = this.pages.map(function (page, i) {
+      return <Button className={i===this.state.page ? "current" : ""} title={page.title} f={this.goToPageFunction(i)}>
+        <i className={"fa fa-"+page.icon}></i>
+      </Button>;
+    }, this);
 
     /*
      * TODO very WIP
@@ -213,23 +228,32 @@ var HomeScreen = React.createClass({
      */
 
     return <div className="home-screen">
-      <h2>
-        WebGL Transitions for your images slideshow
-      </h2>
-      <div>
-        This slideshow shows all transitions created by <GLSLio /> contributors!
 
-        {slideshow}
-      </div>
-
-      <div className="paginator">
-        <Button f={this.prev}>Prev</Button> - 
-        <Button f={this.next}>Next</Button>
+      <div className="visual">
+        <h2>
+          WebGL Transitions for your images slideshow
+        </h2>
+        <div>
+          This slideshow shows all transitions created by <GLSLio /> contributors!
+          {slideshow}
+        </div>
       </div>
 
       <div className="page">
-        <header><i className={"fa fa-"+page.icon}></i> {page.title}</header>
-        {pageContent}
+        <nav>
+          {navIcons}
+        </nav>
+        <div className="content">
+          <header><i className={"fa fa-"+page.icon}></i> {page.title}</header>
+          {pageContent}
+        </div>
+        <Pager
+          page={this.state.page}
+          numberOfPages={this.pages.length}
+          next={next}
+          prev={prev}
+          keyboardControls={true}
+        />
       </div>
 
     </div>;

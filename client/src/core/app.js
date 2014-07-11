@@ -24,7 +24,6 @@ function show (screen, args) {
       return s.show(args, app ? app.state.env : initialEnv);
     })
     .then(function (nodes) {
-      window.scrollTo(0, 0);
       var s = {
         inner: nodes,
         name: screen
@@ -38,6 +37,8 @@ function show (screen, args) {
         return d.promise;
       }
       else {
+        console.log("Scroll Top");
+        //window.scrollTo(0, 0);
         return app.setStateQ({
           screen: s
         });

@@ -65,8 +65,9 @@ var GlslContextualHelp = React.createClass({
       {documentationBlock}
 
       <ul className="links">
-        <li><Link href="https://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf" target="_blank"><i className="fa fa-external-link"></i>&nbsp;GLSL Specification</Link></li>
-        <li><Link href="https://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf" target="_blank"><i className="fa fa-external-link"></i>&nbsp;Cheat Sheet</Link></li>
+        <li><Link href="https://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf" target="_blank"><i className="fa fa-book"></i>&nbsp;GLSL Specification</Link></li>
+        <li><Link href="https://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf" target="_blank"><i className="fa fa-file-code-o"></i>&nbsp;Cheat Sheet</Link></li>
+        <li><Link href="https://www.npmjs.org/package/shader-school#readme" target="_blank"><i className="fa fa-graduation-cap"></i>&nbsp;Shader School</Link></li>
       </ul>
     </div>;
   }

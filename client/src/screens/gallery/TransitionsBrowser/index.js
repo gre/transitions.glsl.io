@@ -78,6 +78,8 @@ var TransitionsBrowser = React.createClass({
   render: function () {
     var width = this.props.width;
     var transitions = this.props.getData(this.state.page);
+    var next = this.hasNextPage() ? this.nextPage : null;
+    var prev = this.hasPrevPage() ? this.prevPage : null;
 
     var previews = transitions.map(function (transition, i) {
       return TransitionPreview({
@@ -101,7 +103,10 @@ var TransitionsBrowser = React.createClass({
     return <div className="transitions-browser">
       {this.props.children}
       <div className="previews" style={{width:width}}>{previews}</div>
-      { this.props.paginated ? <TransitionsBrowserPager numberOfPages={this.props.numberOfPages} page={this.state.page} hasPrev={this.hasPrevPage()} hasNext={this.hasNextPage()} onNext={this.nextPage} onPrev={this.prevPage} /> : '' }
+      { this.props.paginated ? <TransitionsBrowserPager
+        numberOfPages={this.props.numberOfPages}
+        page={this.state.page}
+        prev={prev} next={next} /> : '' }
     </div>;
   }
 });

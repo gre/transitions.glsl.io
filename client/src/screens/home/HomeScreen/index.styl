@@ -1,8 +1,8 @@
 .home-screen {
   font-weight: 300;
-  width: 520px;
-  margin: 0 auto;
-  padding: 5px 0px;
+  display: inline-block;
+  margin-bottom: 20px;
+  
   .vignette {
     display: inline-block;
   }
@@ -45,15 +45,47 @@
   h2, h3 {
     clear: both;
   }
+  div.visual {
+    vertical-align: top;
+    display: inline-block;
+    width: 520px;
+    margin: 0 auto;
+    padding: 5px 0px;
+  }
   div.page {
+    text-align: left;
+    vertical-align: top;
+    display: inline-block;
     width: 512px;
-    padding: 6px;
-    margin: 10px 0;
-    header {
-      font-weight: bold;
+    padding: 10px 0 10px 40px;
+    nav {
+      text-align: center;
+      font-size: 32px;
+      padding: 20px 0;
+      a {
+        padding: 0px 8px;
+        border-radius: 4px;
+        &:first-child {
+          margin-left: 0;
+        }
+        color: #aaa;
+        &:hover {
+          color: #666;
+        }
+        &.current {
+          color: #ea5;
+        }
+      }
     }
-    header + div {
-      margin: 4px 0;
+    .content {
+      min-height: 300px;
+      header {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+    }
+    .pager {
+      margin-top: 40px;
     }
   }
 }
