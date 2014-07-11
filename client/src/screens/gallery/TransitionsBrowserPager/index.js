@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 var React = require("react");
-
-var Button = require("../../../ui/button");
+var Button = require("../../../ui/Button");
 
 // FIXME : rename to Pager
 // FIXME: the non presence of "next" can determine both onNext cb + hasNext function

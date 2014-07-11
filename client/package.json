@@ -19,6 +19,7 @@
     "bezier-easing": "^0.4.0",
     "director": "git://github.com/gre/director.git",
     "glsl-transition": "0.6.x",
+    "glsl-transition-core": "0.1.x",
     "glsl-transition-validator": "0.3.x",
     "glsldoc": "0.0.x",
     "glslio-texture-resolver": "0.1.x",
