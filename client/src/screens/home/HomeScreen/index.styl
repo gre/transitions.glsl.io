@@ -79,10 +79,17 @@
     }
     .content {
       min-height: 300px;
-      header {
+      h2 {
         font-weight: bold;
         font-size: 1.6em;
-        margin-bottom: 0.2em;
+        margin: 0 0 0.2em 0;
+        padding: 0;
+      }
+      h3 {
+        font-weight: bold;
+        font-size: 1.2em;
+        margin: 0.2em 0;
+        padding: 0;
       }
       div.highlight {
         margin: 1em 0;
@@ -93,8 +100,15 @@
         color: #ea5;
         font-size: 1.2em;
         a {
-          color: #c83;
+          color: mix(#ea5, #888, 50%);
         }
+        cite {
+          display: block;
+        }
+      }
+      .download {
+        font-weight: bold;
+        text-decoration: none;
       }
       .randomize {
         text-align: center;

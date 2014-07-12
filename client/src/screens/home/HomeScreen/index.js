@@ -64,17 +64,17 @@ var HomeScreen = React.createClass({
     page: React.PropTypes.number
   },
 
-  randomize: function () {
-    this.setState({
-      videoTransition: this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)]
-    });
+  randomize: function (forceUpdate) {
+    this.randomTransition = this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)];
+    if (forceUpdate) {
+      this.forceUpdate();
+    }
   },
 
   getInitialState: function () {
     return {
       page: this.props.page||0,
       fps: null,
-      videoTransition: this.props.transitions[Math.floor(Math.random()*this.props.transitions.length)],
       easing: [0.25, 0.25, 0.75, 0.75],
       duration: 1500,
       flyEyeTransition: {
@@ -131,7 +131,7 @@ var HomeScreen = React.createClass({
     },
     videos: {
       render: function () {
-        return <iframe width={512} height={384} src={"/transition/"+this.state.videoTransition.id+"/embed?video=1&autoplay=1&loop=1"} frameBorder="0" seamless="seamless"></iframe>;
+        return <iframe width={512} height={384} src={"/transition/"+this.randomTransition.id+"/embed?video=1&autoplay=1&loop=1"} frameBorder="0" seamless="seamless"></iframe>;
       }
     },
     flyEyeTransition: {
@@ -151,7 +151,7 @@ var HomeScreen = React.createClass({
     },
     tutos: {
       render: function () {
-        return <iframe width="512" height="384" src="//www.youtube.com/embed/videoseries?list=PLe93qXGkp4Vjfu6TZZ24beMBePTCaMebl" frameborder="0" allowfullscreen="allowfullscreen"></iframe>;
+        return <iframe width="512" height="384" src="//www.youtube.com/embed/videoseries?list=PLe93qXGkp4Vjfu6TZZ24beMBePTCaMebl" frameBorder="0" allowFullScreen="allowfullscreen"></iframe>;
       }
     }
   },
@@ -226,7 +226,7 @@ var HomeScreen = React.createClass({
           </div>
           <br />
           <div className="randomize">
-            <Button f={this.randomize}><i className="fa fa-random"></i>&nbsp;Randomize!</Button>
+            <Button f={_.bind(this.randomize, this, true)}><i className="fa fa-random"></i>&nbsp;Randomize!</Button>
           </div>
           <Blockquote href="https://twitter.com/zeh/status/469854130866245633" author="@zeh">
             <q>
@@ -284,7 +284,6 @@ var HomeScreen = React.createClass({
       slideshow: "cubeTransition",
       icon: "cogs",
       title: "Much more Customisable !",
-      notab: true,
       render: function () {
         var self = this;
         function uniformSetter (u) {
@@ -340,7 +339,6 @@ var HomeScreen = React.createClass({
       slideshow: "flyEyeTransition",
       icon: "cogs",
       title: "Much more Customisable !",
-      notab: true,
       render: function () {
         var self = this;
         function uniformSetter (u) {
@@ -395,8 +393,42 @@ var HomeScreen = React.createClass({
             The <Link href="https://github.com/glslio/glsl-transition">glsl-transition</Link> library make GLSL Transitions very easy to use on your webpages.
           </div>
           <div>
-            TODO: explain soon more details
+            The <Link href="https://github.com/glslio/glsl-transitions">glsl-transitions</Link> package contains a JSON snapshot of all Transitions created on <GLSLio />.
           </div>
+          <div>
+          <em>
+            There is different ways you can integrate GLSL Transitions into your projects:
+          </em>
+          </div>
+          <h3>
+          The NPM way:
+          </h3>
+          <div>
+          <Link href="https://www.npmjs.org/package/glsl-transition">
+            <img src="https://nodei.co/npm/glsl-transition.png" alt="npm install glsl-transition" />
+          </Link>
+          <Link href="https://www.npmjs.org/package/glsl-transitions">
+            <img src="https://nodei.co/npm/glsl-transitions.png" alt="npm install glsl-transitions" />
+          </Link>
+          </div>
+          <h3>
+          The standalone way:
+          </h3>
+          <div>
+          <Link className="download" href="https://raw.githubusercontent.com/glslio/glsl-transition/master/dist/glsl-transition.js" target="_blank" download="glsl-transition.js">
+            <i className="fa fa-download"></i>&nbsp;Download glsl-transition.js
+          </Link>
+          <div>
+          </div>
+          <Link className="download" href="https://raw.githubusercontent.com/glslio/glsl-transitions/master/transitions.json" target="_blank" download="glsl-transitions.json">
+            <i className="fa fa-download"></i>&nbsp;Download glsl-transitions.json
+          </Link>
+          </div>
+
+          <h3>
+            How to use?<br/>
+            <Link href="https://glslio.github.io/glsl-transition-examples">Checkout glsl-transition-examples</Link>
+          </h3>
         </div>;
       }
     },
@@ -418,7 +450,7 @@ var HomeScreen = React.createClass({
           .reverse()
           .object()
           .map(function (count, owner) {
-            return <Link href={"/user/"+owner}>{owner} ({count})</Link>;
+            return <Link key={owner} href={"/user/"+owner}>{owner} ({count})</Link>;
           })
           .value();
 
@@ -427,9 +459,10 @@ var HomeScreen = React.createClass({
             On <GLSLio />,
             GLSL Transitions are created by people, for people.
           </div>
-          <br />
+          <h3>
+          Cheers to our current contributors:
+          </h3>
           <div>
-            Cheers to our current contributors:
             <div className="contributors">{contributors}</div>
           </div>
         </div>;
@@ -499,6 +532,24 @@ var HomeScreen = React.createClass({
     }
   ],
 
+  componentWillReceiveProps: function (nextProps) {
+    if (nextProps.page !== this.state.page) {
+      this.setState({
+        page: nextProps.page
+      });
+    }
+  },
+
+  componentWillMount: function () {
+    this.randomize();
+  },
+
+  componentWillUpdate: function (nextProps, nextState) {
+    if (this.state.page !== nextState.page && this.pages[nextState.page].slideshow === "videos") {
+      this.randomize();
+    }
+  },
+
   render: function () {
     var page = this.pages[this.state.page];
     var slideshow = this.slideshows[page.slideshow].render.call(this);
@@ -506,12 +557,22 @@ var HomeScreen = React.createClass({
     var next = this.state.page+1 < this.pages.length ? this.next : null;
     var prev = this.state.page-1 >= 0 ? this.prev : null;
 
-    var navIcons = this.pages.map(function (p, i) {
-      return p.notab ? '' :
-      <Button className={page.icon===p.icon ? "current" : ""} title={p.title} f={this.goToPageFunction(i)}>
-        <i className={"fa fa-"+p.icon}></i>
-      </Button>;
-    }, this);
+    var navIcons = _.chain(this.pages)
+      .foldl(function (acc, page) {
+        if (!_.any(acc, function (p) { return page.icon === p.icon; })) {
+          return acc.concat([ page ]);
+        }
+        else {
+          return acc;
+        }
+      }, [])
+      .map(function (p) {
+        var i = _.indexOf(this.pages, p);
+        return <Button key={p.icon} className={page.icon===p.icon ? "current" : ""} title={p.title} f={this.goToPageFunction(i)}>
+          <i className={"fa fa-"+p.icon}></i>
+        </Button>;
+      }, this)
+      .value();
 
     return <div className="home-screen">
 
@@ -529,7 +590,7 @@ var HomeScreen = React.createClass({
           {navIcons}
         </nav>
         <div className="content">
-          <header><i className={"fa fa-"+page.icon}></i> {page.title}</header>
+          <h2><i className={"fa fa-"+page.icon}></i> {page.title}</h2>
           {pageContent}
         </div>
         <Pager

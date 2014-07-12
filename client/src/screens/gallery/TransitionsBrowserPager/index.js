@@ -26,7 +26,7 @@ var TransitionsBrowserPager = React.createClass({
         this.props.prev();
       }
     }
-    else if (e.which === 39) {
+    else if (e.which === 39 || e.which === 32) {
       if (this.props.next) {
         e.preventDefault();
         this.props.next();
