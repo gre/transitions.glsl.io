@@ -131,7 +131,10 @@ var HomeScreen = React.createClass({
     },
     videos: {
       render: function () {
-        return <iframe width={512} height={384} src={"/transition/"+this.randomTransition.id+"/embed?video=1&autoplay=1&loop=1"} frameBorder="0" seamless="seamless"></iframe>;
+        return <div>
+          <iframe width={512} height={384} src={"/transition/"+this.randomTransition.id+"/embed?video=1&autoplay=1&loop=1"} frameBorder="0" seamless="seamless"></iframe>
+          This video slideshow performs transitions between clip of <Link href="http://www.sintel.org/" target="_blank">Sintel</Link>.
+        </div>;
       }
     },
     flyEyeTransition: {
@@ -277,6 +280,10 @@ var HomeScreen = React.createClass({
               <BezierEditor value={this.state.easing} onChange={this.setEasing} width={250} height={250} handleRadius={8} padding={[30, 30, 30, 30]} />
             </div>
           </div>
+          
+          <h3>
+          Click Next to see more customizable parameters...
+          </h3>
         </div>;
       }
     },
