@@ -41,11 +41,12 @@ object TransitionsSnapshot {
         },
         result => Some(result)
       ))
-      .map(minifier.apply)
-      .map(_.map(Some(_)).recover { case e =>
-        Logger.warn("Transition fails to minify:", e)
-        None
-      })
+      .map { transition => 
+        minifier.apply(transition).map(Some(_)).recover { case e =>
+          Logger.warn("Transition fails to minify:", e)
+          Some(transition)
+        }
+      }
     Future.sequence(transitionsFutures).map(_.flatten)
   }.map(JsArray(_))
 
