@@ -28,6 +28,8 @@ function show (screen, args) {
         inner: nodes,
         name: screen
       };
+      var titleF = screens[screen].title;
+      document.title = "GLSL.io – "+( titleF ? titleF(args, app?app.state.env:initialEnv) : "Open Collection of GLSL Transitions" );
       if (!app) {
         var d = Q.defer();
         app = React.renderComponent(App({

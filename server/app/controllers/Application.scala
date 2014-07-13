@@ -60,7 +60,7 @@ object Application extends Controller with GithubOAuthController with MongoContr
     }))).getOrElse(JsError("Invalid Gist JSON"))
   }
 
-  def articles = Cached((_:RequestHeader) => "articles", 120) {
+  def articles = Cached((_:RequestHeader) => "articles", 600) {
     Action.async {
         GistWS.get("4c57de495ca405bffd5a")
         .map(_.transform(articlesGistReader))

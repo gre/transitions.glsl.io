@@ -487,7 +487,7 @@ var HomeScreen = React.createClass({
           </div>
           <br />
           <div>
-            The source code of <GLSLio /> itself is also fully available <Link href="https://github.com/">on Github</Link>.
+            The source code of <GLSLio /> itself is also fully available <Link href="https://github.com/glslio/glsl.io">on Github</Link>.
           </div>
         </div>;
       }

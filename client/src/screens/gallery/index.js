@@ -31,6 +31,9 @@ function show (args, env) {
 
 function init () {
   return {
+    title: function () {
+      return "Gallery";
+    },
     show: show
   };
 }
