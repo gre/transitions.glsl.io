@@ -427,8 +427,8 @@ var HomeScreen = React.createClass({
           </Link>
           <div>
           </div>
-          <Link className="download" href="https://raw.githubusercontent.com/glslio/glsl-transitions/master/transitions.json" target="_blank" download="glsl-transitions.json">
-            <i className="fa fa-download"></i>&nbsp;Download glsl-transitions.json
+          <Link className="download" href="https://raw.githubusercontent.com/glslio/glsl-transitions/master/build/glsl-transitions.js" target="_blank" download="glsl-transitions.js">
+            <i className="fa fa-download"></i>&nbsp;Download glsl-transitions.js
           </Link>
           </div>
 
