@@ -41,13 +41,14 @@ object TransitionsSnapshot {
         },
         result => Some(result)
       ))
-      .map { transition => 
-        minifier.apply(transition).map(Some(_)).recover { case e =>
-          Logger.warn("Transition fails to minify:", e)
-          Some(transition)
+      .map { transition =>
+        val glsl = (transition \ "glsl").as[String]
+        minifier(glsl).map { maybeMinifiedGlsl =>
+          val safeGlsl = maybeMinifiedGlsl.getOrElse(glsl)
+          transition + ("glsl" -> JsString(safeGlsl))
         }
       }
-    Future.sequence(transitionsFutures).map(_.flatten)
+    Future.sequence(transitionsFutures)
   }.map(JsArray(_))
 
 }
