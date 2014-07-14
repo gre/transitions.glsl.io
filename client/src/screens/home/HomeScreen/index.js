@@ -167,13 +167,16 @@ var HomeScreen = React.createClass({
       render: function () {
         return <div>
           <div>
-          GLSL is <strong>the</strong> ultimate language to implement Transitions in.
-          There is really no limitation on effects you can perform with.
+          GLSL is <strong>the</strong> ultimate language for implementing Transitions.
+          There is really no limitation on effects you can create with it.
           </div>
-          <div>
+          <h3>
           <Link href="/gallery">
             <img src="/assets/examples.png" style={{width: "500px"}} alt="" />
           </Link>
+          </h3>
+          <div>
+          GLSL is a powerful and easy to learn language, dedicated to image effects.
           </div>
           <Blockquote href="http://badassjs.com/post/72677810093/glsl-transition-iphoto-like-slideshow-transitions" author="@devongovett">
             <q>
@@ -196,9 +199,9 @@ var HomeScreen = React.createClass({
             The current slideshow transition is running at: <Fps fps={this.state.fps} />
           </div>
           <div>
-            The Transitions are implemented in a standard language used by OpenGL / WebGL called
+            Transitions are implemented in a standard language used by OpenGL / WebGL called
             <strong title="OpenGL Shading Language"> GLSL </strong>
-            which directly compiles into the Graphic Card.
+            which directly compiles to the Graphics Card.
           </div>
           <Blockquote href="http://creativejs.com/2014/01/the-last-place-youd-expect-to-see-webgl/" author="@creativejs">
             <q>
@@ -215,7 +218,7 @@ var HomeScreen = React.createClass({
       render: function () {
         return <div>
           <div>
-            GLSL Transitions focus on defining a transition between 2 sources.
+            GLSL Transitions focus on defining a transition between two sources.
           </div>
           <div>
             <strong>
@@ -246,8 +249,8 @@ var HomeScreen = React.createClass({
       render: function () {
         return <div>
           <div>
-            GLSL can be supported both on Browsers and on Native environnment.
-            We are working to make GLSL Transitions working in Video Editors.
+            GLSL is supported both on Browsers and in Native environnments.
+            We are working to make GLSL Transitions work in Video Editors.
           </div>
           <Blockquote href="http://www.geeks3d.com/20140524/glsl-io-a-helpful-collection-of-glsl-transition-effects/" author="@Geeks3D">
             <q>
@@ -290,7 +293,7 @@ var HomeScreen = React.createClass({
     {
       slideshow: "cubeTransition",
       icon: "cogs",
-      title: "Much more Customisable !",
+      title: "Much more Customisable!",
       render: function () {
         var self = this;
         function uniformSetter (u) {
@@ -345,7 +348,7 @@ var HomeScreen = React.createClass({
     {
       slideshow: "flyEyeTransition",
       icon: "cogs",
-      title: "Much more Customisable !",
+      title: "Much more Customisable!",
       render: function () {
         var self = this;
         function uniformSetter (u) {
@@ -404,7 +407,7 @@ var HomeScreen = React.createClass({
           </div>
           <div>
           <em>
-            There is different ways you can integrate GLSL Transitions into your projects:
+            There are several different ways you can integrate GLSL Transitions into your projects:
           </em>
           </div>
           <h3>
@@ -500,7 +503,7 @@ var HomeScreen = React.createClass({
         var rootGistUrl = "https://gist.github.com/"+this.props.env.rootGist;
         return <div>
           <div>
-          No data are kept on our server.
+          No data is kept on our server.
           All transitions are stored in Gists and owned by the community.
           </div>
           <br />
@@ -585,7 +588,7 @@ var HomeScreen = React.createClass({
 
       <div className="visual">
         <h2>
-          WebGL Transitions for your images slideshow
+          WebGL Transitions for your image slideshows
         </h2>
         <div>
           {slideshow}

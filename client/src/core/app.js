@@ -19,6 +19,14 @@ var current;
 function show (screen, args) {
   currentlyShowing = 
     Q.fcall(function(){
+      if (app) {
+        return app.setStateQ({
+          loading: true
+        });
+      }
+    })
+    .delay(1)
+    .then(function(){
       current = screen;
       var s = screens[screen];
       return s.show(args, app ? app.state.env : initialEnv);
@@ -42,7 +50,8 @@ function show (screen, args) {
         console.log("Scroll Top");
         //window.scrollTo(0, 0);
         return app.setStateQ({
-          screen: s
+          screen: s,
+          loading: false
         });
       }
     })

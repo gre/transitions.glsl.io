@@ -9,7 +9,8 @@ var GlslTransition = require("glsl-transition");
 var Header = React.createClass({
   propTypes: {
     user: React.PropTypes.string,
-    screenName: React.PropTypes.string.isRequired
+    screenName: React.PropTypes.string.isRequired,
+    loading: React.PropTypes.bool.isRequired
   },
   render: function () {
     var screenName = this.props.screenName;
@@ -44,6 +45,9 @@ var Header = React.createClass({
     });
 
     return <header className="app-header">
+      <span className={"loader "+(!this.props.loading ? "" : "loading")}>
+        <i className="fa fa-circle-o-notch fa-spin"></i>
+      </span>
       <Logo header={true} />
       <nav>
         {navs}
