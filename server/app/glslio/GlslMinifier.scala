@@ -21,14 +21,22 @@ class GlslMinifier (implicit app: Application) {
       .post(glsl)
       .flatMap { res =>
         if (res.status == 200) {
-          Future(Some(res.body))
+          if (res.body.trim.size > 0)
+            Future(Some(res.body))
+          else {
+            Logger.warn(s"Minification Server returned empty response.")
+            Logger.debug(glsl)
+            Future(None) // Nothing in the body, something was wrong
+          }
         }
         else if (400 <= res.status && res.status < 500) {
-          Logger.warn(s"Can't minify GLSL: $glsl");
+          Logger.warn(s"Minification Server can't minify GLSL.");
+          Logger.debug(glsl)
           Future(None)
         }
         else {
-          Future.failed(new Exception(s"Minification Server failure: ${res.status} ${res.statusText} - ${res.body}"))
+          Logger.error(s"${res.status} ${res.statusText} - ${res.body}");
+          Future.failed(new Exception(s"Minification Server failure: ${res.status} ${res.statusText}"))
         }
       }
 
