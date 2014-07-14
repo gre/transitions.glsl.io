@@ -64,7 +64,7 @@ module.exports = function (grunt) {
       },
       js: {
         files: ['src/**/*.js'],
-        tasks: ['jshint', 'browserify'],
+        tasks: ['jshint', 'browserify', 'uglify'],
       },
       css: {
         files: ['src/**/*.styl'],
