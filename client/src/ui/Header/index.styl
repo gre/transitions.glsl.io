@@ -18,14 +18,20 @@
     }
   }
   .loader {
-    float: left;
-    width: 20px;
-    display: inline-block;
-    opacity: 0;
+    position: absolute;
+    left: 10px;
+    top: 10px;
     transition: none;
+    opacity: 0;
+    i {
+      display: none;
+    }
     &.loading {
       transition: 200ms 200ms;
-      opacity: 1;
+      opacity: 0.5;
+      i {
+        display: block;
+      }
     }
   }
   h1 {
@@ -33,7 +39,7 @@
     padding: 0;
     font-size: 1.4em;
     float: left;
-    margin-left: 20px;
+    margin-left: 40px;
     margin-right: 40px;
   }
   .github {
