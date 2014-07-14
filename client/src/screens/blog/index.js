@@ -12,6 +12,9 @@ function show (data) {
 
 function init () {
   return {
+    title: function (data) {
+      return "Blog"+(data instanceof Array ? '' : ' – '+data.title);
+    },
     show: show
   };
 }

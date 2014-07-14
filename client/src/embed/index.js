@@ -2,6 +2,7 @@ var _ = require("lodash");
 var Q = require("q");
 var React = require("react");
 var Loading = require("./Loading");
+var ErrorView = require("./Error");
 var ImageLinearPlayer = require("./ImageLinearPlayer");
 var VideoLinearPlayer = require("./VideoLinearPlayer");
 var Images = require("../images");
@@ -19,7 +20,7 @@ function getTransition () {
 
 if (url.query.video) {
 
-  var render = function (transition, videos) {
+  var render = function (transition, videos, error) {
     var params = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -31,7 +32,11 @@ if (url.query.video) {
     };
     var comp;
 
-    if (!videos) {
+    if (error) {
+      params.error = error.message || error;
+      comp = ErrorView(params);
+    }
+    else if (!videos) {
       comp = Loading(params);
     }
     else {
@@ -49,6 +54,9 @@ if (url.query.video) {
         // window.addEventListener("resize", draw, false);
         draw();
       });
+    })
+    .fail(function (e) {
+      render(null, null, e);
     })
     .done();
 }

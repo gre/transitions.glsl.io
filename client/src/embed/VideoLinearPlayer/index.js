@@ -7,22 +7,12 @@ var LinearPlayer = require("../LinearPlayer");
 
 function videoAction (action) {
   return function (video) {
-    /*
-    // Smarter way but don't seem to work properly
-    var d = Q.defer();
-    video.addEventListener(action, d.resolve, false);
-    video[action]();
-    d.promise.then(function () {
-      video.removeEventListener(action, d.resolve);
-    });
-    return d.promise;
-    */
     video[action]();
     return Q.delay(20).thenResolve(video);
   };
 }
 
-var load = videoAction("load");
+//var load = videoAction("load");
 var pause = videoAction("pause");
 var play = videoAction("play");
 var setVideo = function (name, value) {
@@ -90,7 +80,7 @@ var VideoLinearPlayer = React.createClass({
       
       if (video.ended || video.paused || video.currentTime >= video.duration) {
         return pause(video)
-          .then(load) // trigger a new load may help
+//          .then(load) // trigger a new load may help
           .then(setVideo("currentTime", 0))
           .then(play);
       }

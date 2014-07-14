@@ -43,6 +43,9 @@ function show (e) {
 
 function init () {
   return {
+    title: function (e) {
+      return "Error – "+e;
+    },
     show: show
   };
 }

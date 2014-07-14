@@ -32,6 +32,9 @@ function show (transition, env) {
 
 function init () {
   return {
+    title: function (transition, env) {
+      return "Editor – "+(transition.id===env.rootGist ? "Template" : transition.name+" by "+transition.owner);
+    },
     show: show
   };
 }
