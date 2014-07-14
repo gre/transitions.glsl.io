@@ -18,7 +18,8 @@ var LinearPlayer = React.createClass({
     height: React.PropTypes.number.isRequired,
     transition: React.PropTypes.object.isRequired,
     running: React.PropTypes.bool.isRequired,
-    start: React.PropTypes.func
+    start: React.PropTypes.func,
+    stop: React.PropTypes.func
   },
   render: function () {
     var transition = this.props.transition;
@@ -27,6 +28,16 @@ var LinearPlayer = React.createClass({
 
     return <div className={"linear-player "+(this.props.running ? "running" : "")+" "+this.props.className} style={{width:width+"px", height:height+"px"}}>
       <header>
+        { this.props.start && !this.props.running ?
+        <div onClick={this.props.start} className="play-pause-button">
+          <i className="fa fa-play"></i>
+        </div>
+        : '' }
+        { this.props.stop && this.props.running ?
+        <div onClick={this.props.stop} className="play-pause-button">
+          <i className="fa fa-pause"></i>
+        </div>
+        : '' }
         <a className="name" href={"/transition/"+transition.id} target="_blank">{ transition.name }</a>
         <span> by </span>
         <a className="owner" href={"/user/"+transition.owner} target="_blank">{ transition.owner }</a>
