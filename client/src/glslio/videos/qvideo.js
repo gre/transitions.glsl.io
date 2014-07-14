@@ -9,7 +9,8 @@ var Qajax = require("qajax");
  *  - "canplaythrough" (default)
  */
 function Qvideo (url, options) {
-  return Qajax(url).then(function(){
+
+  return Qajax(url, { responseType: "blob" }).then(function (xhr) {
     if (typeof options !== "object") options={};
     if (!options.event) options.event = "canplaythrough";
     var d = Q.defer();
@@ -20,10 +21,11 @@ function Qvideo (url, options) {
       video = document.createElement('video');
     }
 
-    video.src = url;
-    video.addEventListener(options.event, function () {
+    video.src = window.URL.createObjectURL(xhr.response);
+    video.addEventListener(options.event, function onLoadEvent () {
+      video.removeEventListener(options.event, onLoadEvent);
       d.resolve(video);
-    }, true);
+    }, false);
     video.onerror = function (e) {
       console.error(e&&e.stack||e);
       d.reject(new Error("Video "+url+" failed to load: "+e));
