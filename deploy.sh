@@ -16,6 +16,7 @@ cd -;
 
 export NODE_ENV="production";
 cd client;
+rm -rf node_modules/;
 npm install || exit 1;
 grunt build || exit 2;
 cd -;
