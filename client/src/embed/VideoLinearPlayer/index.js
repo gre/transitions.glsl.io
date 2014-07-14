@@ -58,6 +58,7 @@ var VideoLinearPlayer = React.createClass({
         height={this.props.height}
         transition={this.props.transition}
         running={this.state.running}
+        stop={this.stop}
         start={this.start}>
 
         <TransitionCanvas ref="transition"
@@ -69,7 +70,6 @@ var VideoLinearPlayer = React.createClass({
           from={from}
           to={to}
         />
-
       </LinearPlayer>
     );
   },
@@ -110,7 +110,7 @@ var VideoLinearPlayer = React.createClass({
       .fin(function () {
         return Q.all(self.props.videos.map(pause));
       })
-      .fin(function(){
+      .then(function(){
         if (self.props.loop) {
           return self.start();
         }

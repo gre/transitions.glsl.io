@@ -2,7 +2,7 @@
   position: relative;
   &.running {
     header {
-      opacity: 0;
+      background: rgba(0,0,0,0.6);
     }
   }
   header {
@@ -11,11 +11,16 @@
     width: 100%;
     top: 0;
     padding: 8px;
-    background: #000;
-    color: #fff;
-    opacity: 0.8;
+    background: rgba(0,0,0,0.8);
+    color: #eee;
     z-index: 2;
-    transition: 0.8s opacity;
+    .play-pause-button {
+      float: right;
+      margin-right: 20px;
+      font-size: 24px;
+      color: #fff;
+      cursor: pointer;
+    }
   }
   .play-button-container {
     cursor: pointer;
