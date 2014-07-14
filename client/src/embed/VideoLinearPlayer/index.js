@@ -110,7 +110,7 @@ var VideoLinearPlayer = React.createClass({
       .fin(function () {
         return Q.all(self.props.videos.map(pause));
       })
-      .fin(function(){
+      .then(function(){
         if (self.props.loop) {
           return self.start();
         }
