@@ -26,7 +26,7 @@ npm install || exit 5
 npm run build || exit 5
 
 echo add files...
-git add transitions.json standalone.js || exit 6
+git add transitions.json build/ || exit 6
 git add package.json || exit 7
 
 echo publish...
