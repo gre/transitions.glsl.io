@@ -14,10 +14,10 @@ cd scripts;
 ./pre-deploy.sh || exit -1;
 cd -;
 
-export NODE_ENV="production";
 cd client;
 rm -rf node_modules/;
 npm install || exit 1;
+export NODE_ENV="production"; # must be after install otherwise there won't be devDependencies to launch grunt
 grunt build || exit 2;
 cd -;
 
