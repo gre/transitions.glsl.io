@@ -17,13 +17,30 @@
       }
     }
   }
+  .loader {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    transition: none;
+    opacity: 0;
+    i {
+      display: none;
+    }
+    &.loading {
+      transition: 200ms 200ms;
+      opacity: 0.5;
+      i {
+        display: block;
+      }
+    }
+  }
   h1 {
     margin: 0;
     padding: 0;
     font-size: 1.4em;
     float: left;
-    margin-left: 60px;
-    margin-right: 60px;
+    margin-left: 40px;
+    margin-right: 40px;
   }
   .github {
     display: inline-block;

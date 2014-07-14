@@ -56,12 +56,20 @@ function show (screen, args) {
 
 
 function init (_screens, _routes, routeNotFound) {
+  var preRoute = function () {
+    if (app)
+      return app.setStateQ({ loading: true });
+  };
+  var postRoute = function () {
+    if (app)
+      return app.setStateQ({ loading: false });
+  };
   screens = _.mapValues(_screens, function (f) {
     return f();
   });
   return Q.all(_.compact(_.pluck(_.values(screens), "ready")))
     .then(function () {
-      return router.init(_routes, routeNotFound);
+      return router.init(_routes, routeNotFound, preRoute, postRoute);
     })
     .fin(function () {
       document.body.className = "";

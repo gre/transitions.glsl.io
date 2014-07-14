@@ -18,7 +18,8 @@ var App = React.createClass({
     return {
       env: this.props.initialEnv,
       screen: this.props.initialScreen,
-      overlay: null
+      overlay: null,
+      loading: false
     };
   },
   onOverlayClose: function () {
@@ -42,7 +43,7 @@ var App = React.createClass({
     var screen = this.state.screen;
     var overlay = this.state.overlay;
     return <div id="wrapper" className={overlay ? "overlayed" : ""}>
-      <Header user={env.user} screenName={screen.name} />
+      <Header user={env.user} screenName={screen.name} loading={this.state.loading} />
       <ScreenContainer name={screen.name}>{screen.inner}</ScreenContainer>
       <Footer version={env.version} />
       <Feedback />
