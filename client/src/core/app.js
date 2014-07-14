@@ -19,14 +19,6 @@ var current;
 function show (screen, args) {
   currentlyShowing = 
     Q.fcall(function(){
-      if (app) {
-        return app.setStateQ({
-          loading: true
-        });
-      }
-    })
-    .delay(1)
-    .then(function(){
       current = screen;
       var s = screens[screen];
       return s.show(args, app ? app.state.env : initialEnv);
@@ -50,8 +42,7 @@ function show (screen, args) {
         console.log("Scroll Top");
         //window.scrollTo(0, 0);
         return app.setStateQ({
-          screen: s,
-          loading: false
+          screen: s
         });
       }
     })
@@ -65,12 +56,20 @@ function show (screen, args) {
 
 
 function init (_screens, _routes, routeNotFound) {
+  var preRoute = function () {
+    if (app)
+      return app.setStateQ({ loading: true });
+  };
+  var postRoute = function () {
+    if (app)
+      return app.setStateQ({ loading: false });
+  };
   screens = _.mapValues(_screens, function (f) {
     return f();
   });
   return Q.all(_.compact(_.pluck(_.values(screens), "ready")))
     .then(function () {
-      return router.init(_routes, routeNotFound);
+      return router.init(_routes, routeNotFound, preRoute, postRoute);
     })
     .fin(function () {
       document.body.className = "";

@@ -10,6 +10,8 @@ var currentPromise;
 var _url;
 var _router;
 var _ignoreNext = false; // FIXME this is for a workaround – to be removed
+var _preRoute;
+var _postRoute;
 
 function routeFunction (r) {
   if (!_ignoreNext && window.onbeforeunload) {
@@ -34,12 +36,24 @@ var route = Qdebounce(function (f, ctx, args, next) {
   if (_ignoreNext) {
     currentPromise = Q();
     _ignoreNext = false;
+    currentPromise.fin(function () {
+      next(false);
+    });
   }
-  else
-    currentPromise = Q.fapply(_.bind(f, ctx), args);
-  currentPromise.fin(function () {
-    next(false);
-  });
+  else {
+    currentPromise = Q.fcall(function () {
+      return _preRoute(ctx);
+    })
+    .then(function () {
+      return Q.fapply(_.bind(f, ctx), args);
+    })
+    .fin(function () {
+      return _postRoute(ctx);
+    })
+    .fin(function () {
+      next(false);
+    });
+  }
   return currentPromise;
 }, 20);
 
@@ -53,7 +67,9 @@ var Qroute = function (f) {
 };
 
 module.exports = {
-  init: function (routes, notFound) {
+  init: function (routes, notFound, preRoute, postRoute) {
+    _preRoute = preRoute || _.noop;
+    _postRoute = postRoute || _.noop;
     _url = computeUrl();
     _router = Router(_.mapValues(routes, Qroute)).configure({
       /*jshint -W106 */
