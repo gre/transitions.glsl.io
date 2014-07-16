@@ -11,9 +11,9 @@ import glslio._
 import models._
 
 object Snapshots extends Controller with MongoController {
-  def all() = Cached((_:RequestHeader) => "snapshots_all", 120) {
+  def all(minified: Boolean) = Cached((_:RequestHeader) => "snapshots_all_"+minified, 120) {
     Action.async { req =>
-    TransitionsSnapshot.snapshot()
+    TransitionsSnapshot.snapshot(minified)
       .map(Ok(_))
     }
   }

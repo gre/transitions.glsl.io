@@ -54,7 +54,7 @@ function show (params, env) {
 function init () {
   return {
     title: function (params) {
-      return params.publicPage ? "Transitions of "+params.user : "My Transitions";
+      return params.publicPage ? params.user+"'s Transitions" : "My Transitions";
     },
     show: show
   };
