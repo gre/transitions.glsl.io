@@ -22,6 +22,6 @@ grunt build || exit 2;
 cd -;
 
 cd server;
-sbt stage || exit 3;
+sbt clean compile stage || exit 3;
 rsync -va target/ $REMOTE_USER@$REMOTE:$REMOTE_APP/target
 ssh $REMOTE -f "service playapp restart"
