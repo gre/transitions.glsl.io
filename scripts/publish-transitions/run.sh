@@ -32,6 +32,9 @@ git add package.json || exit 7
 
 echo publish...
 npm publish || exit 8
-git commit -m"$VERSION" && git push origin master
+git commit -m"$VERSION" && 
+git tag $VERSION &&
+git push origin master &&
+git push origin $VERSION || exit 9
 
 echo done.
