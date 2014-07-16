@@ -85,10 +85,9 @@ var UserScreen = React.createClass({
       <Toolbar>
         <img src={"https://avatars.githubusercontent.com/"+this.props.user+"?s=40"} />
         <h2>
-        Transitions of
         <Link href={"https://gist.github.com/"+this.props.user}>
           <span> { this.props.user }</span>
-        </Link>
+        </Link>'s Transitions
       </h2>
       </Toolbar>
       ;

@@ -102,11 +102,13 @@ var HomeScreen = React.createClass({
   },
 
   prev: function () {
-    this.goToPage(this.state.page-1);
+    if (this.state.page > 0)
+      this.goToPage(this.state.page-1);
   },
 
   next: function () {
-    this.goToPage(this.state.page+1);
+    if (this.state.page < this.pages.length - 1)
+      this.goToPage(this.state.page+1);
   },
 
   goToPage: function (page) {
@@ -283,10 +285,6 @@ var HomeScreen = React.createClass({
               <BezierEditor value={this.state.easing} onChange={this.setEasing} width={250} height={250} handleRadius={8} padding={[30, 30, 30, 30]} />
             </div>
           </div>
-          
-          <h3>
-          Click Next to see more customizable parameters...
-          </h3>
         </div>;
       }
     },
@@ -405,6 +403,9 @@ var HomeScreen = React.createClass({
           <div>
             The <Link href="https://github.com/glslio/glsl-transitions">glsl-transitions</Link> package contains a JSON snapshot of all Transitions created on <GLSLio />.
           </div>
+          <h3>
+            <Link href="https://glslio.github.io/glsl-transition-examples">Checkout glsl-transition-examples</Link>
+          </h3>
           <div>
           <em>
             There are several different ways you can integrate GLSL Transitions into your projects:
@@ -415,10 +416,10 @@ var HomeScreen = React.createClass({
           </h3>
           <div>
           <Link href="https://www.npmjs.org/package/glsl-transition">
-            <img src="https://nodei.co/npm/glsl-transition.png" alt="npm install glsl-transition" />
+            <img src="https://nodei.co/npm/glsl-transition.svg?compact=true" alt="npm install glsl-transition" />
           </Link>
           <Link href="https://www.npmjs.org/package/glsl-transitions">
-            <img src="https://nodei.co/npm/glsl-transitions.png" alt="npm install glsl-transitions" />
+            <img src="https://nodei.co/npm/glsl-transitions.svg?compact=true" alt="npm install glsl-transitions" />
           </Link>
           </div>
           <h3>
@@ -434,11 +435,6 @@ var HomeScreen = React.createClass({
             <i className="fa fa-download"></i>&nbsp;Download glsl-transitions.js
           </Link>
           </div>
-
-          <h3>
-            How to use?<br/>
-            <Link href="https://glslio.github.io/glsl-transition-examples">Checkout glsl-transition-examples</Link>
-          </h3>
         </div>;
       }
     },
@@ -542,6 +538,17 @@ var HomeScreen = React.createClass({
     }
   ],
 
+  onKeydown: function (e) {
+    if (e.which === 37) {
+      e.preventDefault();
+      this.prev();
+    }
+    else if (e.which === 39 || e.which === 32) {
+      e.preventDefault();
+      this.next();
+    }
+  },
+
   componentWillReceiveProps: function (nextProps) {
     if (nextProps.page !== this.state.page) {
       this.setState({
@@ -552,6 +559,12 @@ var HomeScreen = React.createClass({
 
   componentWillMount: function () {
     this.randomize();
+  },
+  componentDidMount: function () {
+    window.addEventListener("keydown", this.onKeydown, false);
+  },
+  componentWillUnmount: function () {
+    window.removeEventListener("keydown", this.onKeydown);
   },
 
   componentWillUpdate: function (nextProps, nextState) {
@@ -564,8 +577,6 @@ var HomeScreen = React.createClass({
     var page = this.pages[this.state.page];
     var slideshow = this.slideshows[page.slideshow].render.call(this);
     var pageContent = page.render.call(this);
-    var next = this.state.page+1 < this.pages.length ? this.next : null;
-    var prev = this.state.page-1 >= 0 ? this.prev : null;
 
     var navIcons = _.chain(this.pages)
       .foldl(function (acc, page) {
@@ -583,6 +594,14 @@ var HomeScreen = React.createClass({
         </Button>;
       }, this)
       .value();
+
+    var pagesForSameIcon = _.filter(this.pages, function (p) {
+      return p.icon === page.icon;
+    });
+    var numberOfPages = pagesForSameIcon.length;
+    var currentPageIndex = _.indexOf(pagesForSameIcon, page);
+    var next = currentPageIndex+1 < numberOfPages ? this.next : null;
+    var prev = currentPageIndex-1 >= 0 ? this.prev : null;
 
     return <div className="home-screen">
 
@@ -603,13 +622,14 @@ var HomeScreen = React.createClass({
           <h2><i className={"fa fa-"+page.icon}></i> {page.title}</h2>
           {pageContent}
         </div>
+        { numberOfPages < 2 ? '' :
         <Pager
-          page={this.state.page}
-          numberOfPages={this.pages.length}
+          page={currentPageIndex}
+          numberOfPages={numberOfPages}
           next={next}
           prev={prev}
-          keyboardControls={true}
         />
+        }
       </div>
 
     </div>;
