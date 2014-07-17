@@ -62,6 +62,23 @@ ROADMAP
 Release Notes
 ---
 
+### Version 1.6 – 17 July 2014
+- **Improve how you can use GLSL Transitions**: 
+  - **Home** : a new Home page explains a bit more what are GLSL Transitions and how to use them.
+  - **Video support**: the /embed is now using videos to demonstrate a bit more the usability of GLSL Transitions.
+  - **glsl-transitions**: is a new package on Github/NPM which is a daily updated snapshot of GLSL.io transitions.
+  - **glsl-transition-examples**: is a bunch of examples to explain how to use `glsl-transition` and `glsl-transitions`.
+- **Editor**:
+  - Share feature: Social networks / link / embed
+- **Galery**:
+  - Some new images is now used.
+- **Misc**
+  - GLSL.io is now hosted on a dedicated server.
+  - Fix the project on case sensitive filesystem.
+  - #85 : Improve SEO.
+  - #84 : Does not disallow user-select for the blog section.
+  - #13 : if WebGL is not supported for the user browser, display a banner warning. '/blog' is also display instead of '/'.
+
 ### Version 1.5 – 29 June 2014
 - **Editor**: improving Developer Experience
   - #10 : Provides **Contextual GLSL Documentation** when clicking on a GLSL word in the editor.
