@@ -50,7 +50,7 @@ object TransitionsSnapshot {
           val glsl = (transition \ "glsl").as[String]
           minifier(glsl).map { maybeMinifiedGlsl =>
             maybeMinifiedGlsl.map { minifiedGlsl =>
-              transition + ("glsl" -> JsString(minifiedGlsl))
+              transition ++ Json.obj("glsl" -> JsString(minifiedGlsl))
             }
           }
         }
