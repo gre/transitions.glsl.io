@@ -32,36 +32,35 @@ object TransitionsSnapshot {
   ).reduce
 
   def snapshot(minified: Boolean): Future[JsValue] = {
-    val all = Transitions.all()
-    val transitions = if (!minified) {
-      all
-    }
-    else {
-      all.flatMap { transitionsRaw =>
-        val transitionsFutures = transitionsRaw
-          .flatMap(transition => transition.validate(transitionTransformer).fold(
-            err => {
-              Logger.warn("failed for transition "+(transition \ "id"))
-              Logger.warn(""+err)
-              None
-            },
-            result => Some(result)
-          ))
-          .map { transition =>
-            val glsl = (transition \ "glsl").as[String]
-            minifier(glsl).map { maybeMinifiedGlsl =>
-              maybeMinifiedGlsl.map { minifiedGlsl =>
-                transition + ("glsl" -> JsString(minifiedGlsl))
-              }
+    val transitions = Transitions.all().flatMap { transitionsRaw =>
+      val transitionsFuture = transitionsRaw
+        .flatMap(transition => transition.validate(transitionTransformer).fold(
+          err => {
+            Logger.warn("failed for transition "+(transition \ "id"))
+            Logger.warn(""+err)
+            None
+          },
+          result => Some(result)
+        ))
+      if (!minified) {
+        Future(transitionsFuture)
+      }
+      else {
+        val minifiedFutures = transitionsFuture.map { transition =>
+          val glsl = (transition \ "glsl").as[String]
+          minifier(glsl).map { maybeMinifiedGlsl =>
+            maybeMinifiedGlsl.map { minifiedGlsl =>
+              transition + ("glsl" -> JsString(minifiedGlsl))
             }
           }
-        Future.sequence(transitionsFutures).map(_.flatten)
-      }.flatMap { transitions =>
-        if (transitions.size == 0)
-          Future.failed(new Exception("No transitions could have been minified."))
-        else
-          Future(transitions)
+        }
+        Future.sequence(minifiedFutures).map(_.flatten)
       }
+    }.flatMap { transitions =>
+      if (transitions.size == 0)
+        Future.failed(new Exception("No transitions could have been minified."))
+      else
+        Future(transitions)
     }
     transitions.map(JsArray(_))
   }
