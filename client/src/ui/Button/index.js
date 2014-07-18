@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require("react");
 var Q = require("q");
-var PromisesMixin = require("../../mixins/Promises");
+var PromisesMixin = require("../../core/mixins/Promises");
 
 var Button = React.createClass({
   mixins: [ PromisesMixin ],
