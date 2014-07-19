@@ -13,21 +13,14 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import play.api._
 
 import org.joda.time._
 
 import services.github.Github.{Gist => GistWS, User => UserWS}
 
-import reactivemongo.api._
-import play.modules.reactivemongo.ReactiveMongoPlugin
-import play.modules.reactivemongo.json.collection.JSONCollection
-
 import glslio._
 
 object Gists {
-  val db = ReactiveMongoPlugin.db
-  def collection: JSONCollection = db.collection[JSONCollection]("gists")
 
   val rootGist = Global.rootGist
   val system = Akka.system
@@ -35,13 +28,6 @@ object Gists {
   val actor = system.actorOf(
     Props(new GistsMirror(rootGist))
   )
-
-  def clean() =
-    collection.drop().map { _ =>
-      Logger.info("Gists Caches collection dropped.");
-    }.recover { case _ =>
-      Logger.error("Can't drop Gists Caches collection.");
-    }
 
   implicit val timeout = Timeout(10.second)
 
@@ -64,38 +50,11 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
   )
 
   val rootGist = context.actorOf(Props(new Gist(rootGistId, null, fetcher)))
-  var gists: Map[String, ActorRef] = Map(
-    rootGistId -> rootGist
-  )
+  var gists: Map[String, ActorRef] = Map(rootGistId -> rootGist)
 
-  var neverRefresh = true
-  
   def receive = {
     case "refresh" =>
-      val firstStep = if (neverRefresh) {
-        log.debug(s"Loading Gist Caches from the database.")
-        neverRefresh = false
-        Gists.collection.find(Json.obj("id" -> Json.obj("$ne" -> rootGistId)))
-          .cursor[JsObject]
-          .collect[Seq]()
-          .map { gistCaches =>
-            gistCaches.map { gistCache =>
-              val id = (gistCache \ "id").as[String]
-              (id, context.actorOf(Props(new Gist(id, gistCache, fetcher))))
-            }.toMap
-          }
-          .map { caches: Map[String, ActorRef] =>
-            log.debug(s"Caches found: $caches")
-            gists = caches ++ gists
-          }
-      }
-      else {
-        Future()
-      }
-
-      firstStep.map { _ =>
-        fetcher ! FetchGist(rootGistId)
-      }
+      fetcher ! FetchGist(rootGistId)
 
     case OnForkCreated (id, pid) =>
       val actor = context.actorOf(Props(new Gist(id, null, fetcher)))
@@ -155,7 +114,7 @@ class Fetcher extends Actor with ActorLogging {
 }
 
 class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with ActorLogging {
-  log.debug(s"Gist($id) created ${if (gist==null) "without" else "with"} initial data.")
+  log.debug(s"Gist($id) created.")
 
   if (gist == null)
     fetcher ! FetchGist(id)
@@ -192,14 +151,8 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
       }
       else
         GistsTransitions.onGistUpdated(id, data)
-      gist = data
-      // This works
-      Gists.collection.remove(Json.obj("id" -> id)).onComplete { case _ =>
-        Gists.collection.insert(gist)
-      }
-      // This is supposed to be equivalent but doesn't work:
-      // Gists.collection.update(Json.obj("id" -> id), gist, upsert = true)
       log.debug(s"Gist($id) received.")
+      gist = data
       fetchWatchers.foreach { watcher =>
         watcher ! gist
       }

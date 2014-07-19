@@ -14,6 +14,7 @@ import play.api.libs.json.Reads._
 
 import reactivemongo.api._
 import play.modules.reactivemongo.ReactiveMongoPlugin
+import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 
 object Transitions {
@@ -49,12 +50,11 @@ object Transitions {
     collection
       .update(Json.obj("id" -> id), transition, upsert = true)
 
-  def clean() = {
+  def clean() =
     collection.drop().map { _ =>
-      Logger.info("Transitions collection dropped.");
-    }.recover { case _ =>
-      Logger.error("Can't drop Transitions collection.");
+      Logger.info("Gists collection dropped.");
+    }.onFailure { case _ =>
+      Logger.error("Can't drop Gists collection.");
     }
-  }
 
 }
