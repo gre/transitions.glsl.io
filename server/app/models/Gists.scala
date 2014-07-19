@@ -170,7 +170,8 @@ class Fetcher extends Actor with ActorLogging {
         // FIXME this also needs to detect deletion of gist
         GistWS.get(id)
         .map { gist =>
-          sender ! GistResult(id, gist)
+          log.debug(s"Github result: ${gist.metadata}")
+          sender ! GistResult(id, gist.data)
         },
         timeout
       )
@@ -178,7 +179,9 @@ class Fetcher extends Actor with ActorLogging {
     case FetchGistStar(id) =>
       Await.ready(
         GistWS.getStarCount(id, timeout)
-        .map { count =>
+        .map { stars =>
+          val (count, stagazers) = stars.data
+          log.info(s"Stargazers: $stagazers")
           sender ! GistStarResult(id, count)
         },
         timeout

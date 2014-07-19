@@ -21,7 +21,7 @@ object GistsTransitions {
   def fork(parentId: String)(implicit token: OAuth2Token): Future[JsValue] = {
     for {
       id <- GistWS.fork(parentId)
-      gist <- Gists.onForkCreated(id, parentId)
+      gist <- Gists.onForkCreated(id.data, parentId)
       transition <- gistToTransition(gist).map(Future(_)).getOrElse(Future.failed(new Error("Can't convert Gist -> Transition")))
     } yield transition
   }

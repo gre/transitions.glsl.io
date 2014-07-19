@@ -19,6 +19,7 @@ import scala.util.matching.Regex
 import concurrent.Future
 
 import org.jsoup._
+import org.jsoup.nodes._
 import scala.collection.JavaConversions._
 
 object Github {
@@ -55,23 +56,22 @@ object Github {
   }
 
   case class GithubError(message: String, status: Int) extends Error(message)
+  case class GithubMetadata(remaining: Option[Int])
+  case class GithubResult[T](data: T, metadata: GithubMetadata)
+
+  def toGithubResult[T](data: T)(implicit res: WS.Response) =
+    GithubResult(data, GithubMetadata(res.header("X-RateLimit-Remaining").map(_.toInt)))
 
   object Gist {
 
     def get(id: String) = {
       fetch(s"/gists/$id")
         .get
-        .map { res =>
-          res.header("X-RateLimit-Remaining").map { remaining =>
-            Logger.debug(s"X-RateLimit-Remaining: $remaining")
-          }
-          res
-        }
         .filter(_.status == 200)
-        .map(_.json)
+        .map { implicit res => toGithubResult(res.json) }
     }
 
-    def getStarCount(id: String, timeout: concurrent.duration.FiniteDuration): Future[Int] = {
+    def getStarCount(id: String, timeout: concurrent.duration.FiniteDuration) = {
       val headers = current.configuration.getString("github.cookie").map(cookie => List("Cookie" -> cookie)).getOrElse {
         Logger.warn("No github.cookie is used. It is needed as a workaround to fix a Github Gist cache issue.")
         Nil
@@ -81,10 +81,15 @@ object Github {
       .withHeaders(headers:_*)
       .withRequestTimeout(timeout.toMillis.toInt)
       .get
-      .flatMap { r =>
+      .flatMap { implicit r =>
         r.status match {
           case 200 =>
-            var body = Jsoup.parse(r.body).body
+            val body = Jsoup.parse(r.body).body
+            val stargazers = body
+              .select(".stargazers li a")
+              .map(_.childNodes.headOption.collect{ case t: TextNode => t })
+              .flatten
+
             val stars = body
               .select(".social-count") // This is a workaround because the Gist Cache issue
               .headOption.orElse {
@@ -94,7 +99,13 @@ object Github {
               }
               .map(_.text.toInt)
               .getOrElse(0)
-            Future.successful(stars)
+
+            if (stargazers.size != stars) {
+              Logger.warn(s"Something is wrong with stars of gist $id : stargazers.size=${stargazers.size} is different of stars=${stars}")
+              Logger.debug(s"stargazers=$stargazers")
+            }
+
+            Future.successful(toGithubResult((stars, stargazers)))
 
           case _ =>
             Future.failed(new Error("Failed WS."))
@@ -105,10 +116,10 @@ object Github {
     def fork(id: String)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$id/forks")
         .post("")
-        .flatMap(result => result.status match {
+        .flatMap(implicit result => result.status match {
           case 201 =>
             (result.json \ "id").asOpt[String].map { id =>
-              Future.successful(id)
+              Future.successful(toGithubResult(id))
             }.getOrElse {
               Logger.warn(s"No id: ${result.body}")
               Future.failed(new Error("no id in the result."))
@@ -122,8 +133,8 @@ object Github {
     def save(id: String, data: JsValue)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$id")
         .patch(data)
-        .flatMap(result => result.status match {
-          case 200 => Future.successful()
+        .flatMap(implicit result => result.status match {
+          case 200 => Future.successful(toGithubResult(()))
           case status =>
             play.Logger.warn(s"Github Error: ${result.body}")
             Future.failed(new GithubError("Can't save on Github", status))
@@ -133,19 +144,19 @@ object Github {
     def starred(gistId: String)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$gistId/star")
         .get()
-        .map(_.status == 204)
+        .map { implicit result => toGithubResult(result.status == 204) }
     }
 
     def star(gistId: String)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$gistId/star")
         .put("")
-        .map(_.status == 204)
+        .map { implicit result => toGithubResult(result.status == 204) }
     }
 
     def unstar(gistId: String)(implicit token: OAuth2Token) = {
       fetchWithToken(s"/gists/$gistId/star")
         .delete()
-        .map(_.status == 204)
+        .map { implicit result => toGithubResult(result.status == 204) }
     }
   }
 }
