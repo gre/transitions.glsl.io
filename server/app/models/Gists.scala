@@ -69,10 +69,8 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
     "fetcher"
   )
 
-  val rootGist = context.actorOf(Props(new Gist(rootGistId, null, fetcher)))
-  var gists: Map[String, ActorRef] = Map(
-    rootGistId -> rootGist
-  )
+  val rootGist = context.actorOf(Props(new Gist(rootGistId, null, fetcher, isRoot = true)))
+  var gists: Map[String, ActorRef] = Map(rootGistId -> rootGist)
 
   var neverRefresh = true
   
@@ -81,6 +79,8 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
       val firstStep = if (neverRefresh) {
         log.debug(s"Loading Gist Caches from the database.")
         neverRefresh = false
+
+        // FIXME shouldn't this code be on each gist ?
         Gists.collection.find(Json.obj("id" -> Json.obj("$ne" -> rootGistId)))
           .cursor[JsObject]
           .collect[Seq]()
@@ -95,6 +95,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
             log.debug(s"Caches found: $caches")
             gists = caches ++ gists
           }
+
       }
       else {
         Future()
@@ -161,8 +162,9 @@ class Fetcher extends Actor with ActorLogging {
   }
 }
 
-class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with ActorLogging {
-  log.debug(s"Gist($id) created ${if (gist==null) "without" else "with"} initial data.")
+class Gist (id: String, var gist: JsValue, fetcher: ActorRef, isRoot: Boolean = false) extends Actor with ActorLogging {
+  val displayName = if (isRoot) "ROOT="+id else id
+  log.debug(s"Gist($displayName) created ${if (gist==null) "without" else "with"} initial data.")
 
   if (gist == null)
     fetcher ! FetchGist(id)
@@ -187,7 +189,7 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
     case GistForkInfo(info) if gist != null =>
       (gist \ "updated_at", info \ "updated_at") match {
         case (JsString(old), JsString(cur)) if old != cur =>
-          log.debug(s"Gist($id) date has changed. $old -> $cur")
+          log.debug(s"Gist($displayName) date has changed. $old -> $cur")
           fetcher ! FetchGist(id)
         case _ =>
       }
@@ -205,7 +207,7 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
           log.error(s"Failure to update the Gist Cache for ${id}", e)
         }
 
-      log.debug(s"Gist($id) received.")
+      log.debug(s"Gist($displayName) received.")
       fetchWatchers.foreach { watcher =>
         watcher ! gist
       }
