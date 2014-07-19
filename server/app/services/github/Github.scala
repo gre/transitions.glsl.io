@@ -71,7 +71,7 @@ object Github {
         .map(_.json)
     }
 
-    def getStarCount(id: String, timeout: concurrent.duration.FiniteDuration) = {
+    def getStarCount(id: String, timeout: concurrent.duration.FiniteDuration): Future[Int] = {
       val headers = current.configuration.getString("github.cookie").map(cookie => List("Cookie" -> cookie)).getOrElse {
         Logger.warn("No github.cookie is used. It is needed as a workaround to fix a Github Gist cache issue.")
         Nil

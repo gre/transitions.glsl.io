@@ -45,9 +45,16 @@ object Transitions {
       .cursor[JsObject]
       .headOption
 
-  def save (id: String, transition: JsValue) =
+  def save (id: String, transition: JsObject) =
+    get(id).flatMap { tOpt =>
+      val stars = tOpt.flatMap(json => (json \ "stars").asOpt[Int]).getOrElse(0)
+      collection
+        .update(Json.obj("id" -> id), transition ++ Json.obj("stars" -> stars), upsert = true)
+    }
+
+  def setGistStarCount (id: String, count: Int) =
     collection
-      .update(Json.obj("id" -> id), transition, upsert = true)
+      .update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("stars" -> count)), upsert = true)
 
   def clean() = {
     collection.drop().map { _ =>

@@ -34,6 +34,20 @@ object GistsTransitions {
     } yield res
   }
 
+  def star (id: String)(implicit token: OAuth2Token) = {
+    for {
+      _ <- GistWS.star(id)
+      _ <- Gists.onStarChange(id)
+    } yield ()
+  }
+
+  def unstar (id: String)(implicit token: OAuth2Token) = {
+    for {
+      _ <- GistWS.unstar(id)
+      _ <- Gists.onStarChange(id)
+    } yield ()
+  }
+
   def onGistCreated(id: String, js: JsValue): Future[Any] = {
     gistToTransition(js).map { transition =>
       Transitions.save(id, transition)
@@ -50,6 +64,11 @@ object GistsTransitions {
     .getOrElse {
       Future.failed(new Error("Can't convert Gist -> Transition"))
     }
+  }
+
+  // FIXME THIS IS TEMPORARY
+  def onGistGotStars(id: String, count: Int): Future[Any] = {
+    Transitions.setGistStarCount(id, count)
   }
 
   def onGistDeleted(id: String): Future[Any] = ???

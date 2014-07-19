@@ -58,7 +58,13 @@ object Gists {
   def onSaved (id: String) = {
     actor.ask(OnSaved(id))
   }
+
+  def onStarChange (id: String) = {
+    actor.ask(OnStarChange(id))
+  }
 }
+
+case class OnStarChange(id: String)
 
 case class OnSaved(id: String)
 case class OnForkCreated (id: String, parentId: String)
@@ -110,6 +116,13 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
       gists = gists + (id -> actor)
       actor.ask("waitFetch")(10.second).pipeTo(sender)
 
+
+    case OnStarChange(id) =>
+      gists.get(id).map { gist =>
+        gist.ask("waitFetchStar")(10.second).pipeTo(sender)
+        gist ! "refreshStar"
+      }
+
     case OnSaved(id) =>
       gists.get(id).map { gist =>
         gist.ask("waitFetch")(10.second).pipeTo(sender)
@@ -146,11 +159,13 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
 case class GistForkInfo(info: JsValue)
 case class FetchGist (id: String)
 case class GistResult (id: String, gist: JsValue)
+case class FetchGistStar (id: String)
+case class GistStarResult (id: String, count: Int)
 
 class Fetcher extends Actor with ActorLogging {
   val timeout = 10 seconds
   def receive = {
-    case msg @ FetchGist(id) =>
+    case FetchGist(id) =>
       Await.ready(
         // FIXME this also needs to detect deletion of gist
         GistWS.get(id)
@@ -159,23 +174,50 @@ class Fetcher extends Actor with ActorLogging {
         },
         timeout
       )
+
+    case FetchGistStar(id) =>
+      Await.ready(
+        GistWS.getStarCount(id, timeout)
+        .map { count =>
+          sender ! GistStarResult(id, count)
+        },
+        timeout
+      )
   }
 }
 
-class Gist (id: String, var gist: JsValue, fetcher: ActorRef, isRoot: Boolean = false) extends Actor with ActorLogging {
+class Gist (
+  id: String,
+  var gist: JsValue,
+  fetcher: ActorRef,
+  isRoot: Boolean = false
+) extends Actor with ActorLogging {
+
   val displayName = if (isRoot) "ROOT="+id else id
   log.debug(s"Gist($displayName) created ${if (gist==null) "without" else "with"} initial data.")
 
-  if (gist == null)
+  def fetchAll() = {
+    fetcher ! FetchGistStar(id)
     fetcher ! FetchGist(id)
+  }
+
+  if (gist == null) fetchAll()
 
   var fetchWatchers = new collection.mutable.Queue[ActorRef]()
+  var fetchStarWatchers = new collection.mutable.Queue[ActorRef]()
+
 
   // FIXME: should use "become()" for being busy when fetching
   def receive = {
     case "refresh" =>
       // TODO, threshold mecanism?
-      fetcher ! FetchGist(id)
+      fetchAll()
+
+    case "refreshStar" =>
+      fetcher ! FetchGistStar(id)
+
+    case "waitFetchStar" =>
+      fetchStarWatchers.enqueue(sender)
 
     case "waitFetch" =>
       fetchWatchers.enqueue(sender)
@@ -194,7 +236,16 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef, isRoot: Boolean = 
         case _ =>
       }
 
-    case msg @ GistResult(_, data) =>
+    case GistStarResult(_, count) =>
+      // FIXME we need to make the gist+star an unique transaction
+      log.debug(s"Gist($displayName) star count received = $count")
+      GistsTransitions.onGistGotStars(id, count)
+      fetchStarWatchers.foreach { watcher =>
+        watcher ! gist
+      }
+      fetchStarWatchers.clear()
+
+    case GistResult(_, data) =>
       // tell parent instead?
       if (gist == null) {
         GistsTransitions.onGistCreated(id, data)

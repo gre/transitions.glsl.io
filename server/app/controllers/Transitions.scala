@@ -70,4 +70,25 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
         }.getOrElse(Future(BadRequest))
       }
   }
+
+  def star (id: String) = Authenticated.async { implicit auth =>
+    GistsTransitions.star(id)
+    .map(_ => Ok)
+    .recover {
+      case e @ GithubError(message, status) =>
+        Logger.warn(s"github error: $e")
+        Status(status)
+    }
+  }
+
+  def unstar (id: String) = Authenticated.async { implicit auth =>
+    GistsTransitions.unstar(id)
+    .map(_ => Ok)
+    .recover {
+      case e @ GithubError(message, status) =>
+        Logger.warn(s"github error: $e")
+        Status(status)
+    }
+  }
+
 }
