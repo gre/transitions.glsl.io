@@ -53,7 +53,7 @@ object Transitions {
     collection.drop().map { _ =>
       Logger.info("Transitions collection dropped.");
     }.recover { case _ =>
-      Logger.error("Can't drop Transitions collection.");
+      Logger.warn("Can't drop Transitions collection.");
     }
   }
 

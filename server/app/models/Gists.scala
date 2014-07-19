@@ -29,6 +29,12 @@ object Gists {
   val db = ReactiveMongoPlugin.db
   def collection: JSONCollection = db.collection[JSONCollection]("gists")
 
+  /**
+   * N.B.: a gists collection item is:
+    - id: String
+    - gist: String, the stringified JSON of the gist. We need to do that because of a MongoDB limitation: http://stackoverflow.com/a/12397225
+   */
+
   val rootGist = Global.rootGist
   val system = Akka.system
 
@@ -40,7 +46,7 @@ object Gists {
     collection.drop().map { _ =>
       Logger.info("Gists Caches collection dropped.");
     }.recover { case _ =>
-      Logger.error("Can't drop Gists Caches collection.");
+      Logger.warn("Can't drop Gists Caches collection.");
     }
 
   implicit val timeout = Timeout(10.second)
@@ -81,7 +87,8 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
           .map { gistCaches =>
             gistCaches.map { gistCache =>
               val id = (gistCache \ "id").as[String]
-              (id, context.actorOf(Props(new Gist(id, gistCache, fetcher))))
+              val gist = Json.parse((gistCache \ "gist").as[String])
+              (id, context.actorOf(Props(new Gist(id, gist, fetcher))))
             }.toMap
           }
           .map { caches: Map[String, ActorRef] =>
@@ -193,12 +200,11 @@ class Gist (id: String, var gist: JsValue, fetcher: ActorRef) extends Actor with
       else
         GistsTransitions.onGistUpdated(id, data)
       gist = data
-      // This works
-      Gists.collection.remove(Json.obj("id" -> id)).onComplete { case _ =>
-        Gists.collection.insert(gist)
-      }
-      // This is supposed to be equivalent but doesn't work:
-      // Gists.collection.update(Json.obj("id" -> id), gist, upsert = true)
+      Gists.collection.update(Json.obj("id" -> id), Json.obj("id" -> id, "gist" -> gist.toString()), upsert = true)
+        .onFailure { case e =>
+          log.error(s"Failure to update the Gist Cache for ${id}", e)
+        }
+
       log.debug(s"Gist($id) received.")
       fetchWatchers.foreach { watcher =>
         watcher ! gist
