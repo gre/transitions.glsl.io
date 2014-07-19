@@ -26,14 +26,18 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     implicit val current = app
 
-    // FIXME: only clean the db if application version has changed
-    if (app.configuration.getBoolean("glslio.cleandb").getOrElse(true)) {
-      Transitions.clean()
-    }
-
+    val cleandb = app.configuration.getBoolean("glslio.cleandb").getOrElse(false)
     val refreshRate = app.configuration.getInt("glslio.refreshRate").getOrElse(30)
-    Logger.info("glslio.refreshRate set to " + refreshRate)
-    Akka.system.scheduler.schedule(0 seconds, refreshRate seconds, Gists.actor, "refresh")
+
+    // FIXME: only clean the db if application version has changed
+    for {
+      _ <- if (cleandb) Transitions.clean() else Future()
+      _ <- if (cleandb) Gists.clean() else Future()
+    }
+    yield {
+      Logger.info("glslio.refreshRate set to " + refreshRate)
+      Akka.system.scheduler.schedule(0 seconds, refreshRate seconds, Gists.actor, "refresh")
+    }
   }
 
 
