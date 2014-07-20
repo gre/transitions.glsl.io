@@ -26,6 +26,11 @@ object Transitions {
   val transitionFilterTransformer =
     (__ \ '_id).json.prune
 
+  val transitionStarsAndStargazers = (
+    (JsPath \ 'stars).read[Int] and
+    (JsPath \ 'stargazers).read[Set[String]]
+  ).tupled
+
   def all(
     maybeUser: Option[String] = None,
     withUnpublished: Boolean = false,
@@ -72,14 +77,17 @@ object Transitions {
   def save (id: String, transition: JsObject) =
     for {
       existingEntryOptions <- _get(id)
-      stars = existingEntryOptions.flatMap(json => (json \ "stars").asOpt[Int]).getOrElse(0)
-      stargazers = existingEntryOptions.flatMap(json => (json \ "stargazers").asOpt[Set[String]]).getOrElse(Set.empty)
+      (stars, stargazers) = existingEntryOptions.flatMap(_.validate(transitionStarsAndStargazers).asOpt).getOrElse((0, Set.empty))
       result <- collection.update(Json.obj("id" -> id), transition ++ Json.obj("stars" -> stars, "stargazers" -> stargazers), upsert = true)
     } yield result
 
   def setGistStarCount (id: String, count: Int, stargazers: Set[String]) =
     collection
       .update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("stars" -> count, "stargazers" -> stargazers)), upsert = true)
+
+  def remove (id: String) =
+    collection
+      .remove(Json.obj("id" -> id))
 
   def clean() = {
     collection.drop().map { _ =>
@@ -88,5 +96,22 @@ object Transitions {
       Logger.warn("Can't drop Transitions collection.");
     }
   }
+
+  def onStarred (id: String, who: String) =
+    for {
+      transitionOption <- get(id)
+      (count, stargazers) <- transitionOption.flatMap(_.validate(transitionStarsAndStargazers).asOpt).map(Future(_)).getOrElse(Future.failed(new Exception("No Transition Found")))
+      newStargazers = stargazers + who
+      result <- setGistStarCount(id, newStargazers.size, newStargazers)
+    } yield result
+
+  def onUnstarred (id: String, who: String) =
+    for {
+      transitionOption <- get(id)
+      (count, stargazers) <- transitionOption.flatMap(_.validate(transitionStarsAndStargazers).asOpt).map(Future(_)).getOrElse(Future.failed(new Exception("No Transition Found")))
+      newStargazers = stargazers - who
+      result <- setGistStarCount(id, newStargazers.size, newStargazers)
+    } yield result
+
 
 }

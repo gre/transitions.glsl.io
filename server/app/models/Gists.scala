@@ -8,6 +8,8 @@ import akka.actor._
 import akka.routing._
 import akka.util.Timeout
 import akka.pattern.{ask, pipe}
+import akka.actor.OneForOneStrategy
+import akka.actor.SupervisorStrategy._
 
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.functional.syntax._
@@ -59,9 +61,11 @@ object Gists {
     actor.ask(OnSaved(id))
   }
 
+  /*
   def onStarChange (id: String) = {
     actor.ask(OnStarChange(id))
   }
+  */
 }
 
 case class OnStarChange(id: String)
@@ -70,6 +74,14 @@ case class OnSaved(id: String)
 case class OnForkCreated (id: String, parentId: String)
 
 class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
+
+  override val supervisorStrategy = OneForOneStrategy() {
+    case _: ActorKilledException => Stop
+    case _: Exception => Restart
+    case _: Throwable => Escalate
+  }
+
+
   val fetcher = context.actorOf(
     Props[Fetcher].withRouter(SmallestMailboxRouter(nrOfInstances = 3)),
     "fetcher"
@@ -112,6 +124,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
       }
 
       firstStep.map { _ =>
+        gists.values.foreach { _ ! "tick" }
         fetcher ! FetchGist(rootGistId)
       }
 
@@ -139,23 +152,37 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
 
       // FIXME we need to improve that:
       // for each fork, we should inform the Gist actor of the fork object
-      (gist \ "forks").asOpt[Seq[JsValue]].map { forks =>
+      (gist \ "forks").asOpt[Seq[JsValue]]
+        .map { forksList =>
+          forksList.flatMap { fork =>
+            (fork \ "id").asOpt[String].map { id =>
+              (id, fork)
+            }
+          }.toMap
+        }
+        .map { forks =>
+          val forkIds = forks.keySet
+          val gistIds = gists.keySet - rootGistId
+          val newIds = forkIds diff gistIds
+          val removeIds = gistIds diff forkIds
+          val existingIds = forkIds intersect gistIds
 
-        forks.map { fork =>
-          val id = (fork \ "id").as[String]
-          if (gists.contains(id)) {
-            gists(id) ! GistForkInfo(fork)
-          }
-          else {
+          newIds.foreach { id =>
+            log.debug(s"new gist: $id")
             gists = gists + (id -> context.actorOf(Props(new Gist(id, null, fetcher, starsFetcher))))
           }
+          removeIds.foreach { id =>
+            log.debug(s"removed gist: $id")
+            gists(id) ! "kill"
+            gists = gists - id
+          }
+          existingIds.foreach { id =>
+            gists(id) ! GistForkInfo(forks(id))
+          }
+
+        }.getOrElse {
+          log.error("Can't extract gist forks.")
         }
-
-        // FIXME also handle deleted gists
-
-      }.getOrElse {
-        log.error("Can't extract gist forks.")
-      }
 
   }
 }
@@ -218,9 +245,18 @@ class Gist (
   var fetchWatchers = new collection.mutable.Queue[ActorRef]()
   var fetchStarWatchers = new collection.mutable.Queue[ActorRef]()
 
-
   // FIXME: should use "become()" for being busy when fetching
   def receive = {
+
+    case "kill" =>
+      println("killing myself !!")
+      Gists.collection.remove(Json.obj("id" -> id))
+      GistsTransitions.onGistDeleted(id)
+      self ! Kill
+
+    case "tick" =>
+      println("tick")
+
     case "refresh" =>
       fetcher ! FetchGist(id)
 

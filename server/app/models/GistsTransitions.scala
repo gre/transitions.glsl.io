@@ -34,17 +34,17 @@ object GistsTransitions {
     } yield res
   }
 
-  def star (id: String)(implicit token: OAuth2Token) = {
+  def star (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
     for {
       _ <- GistWS.star(id)
-      _ <- Gists.onStarChange(id)
+      _ <- Transitions.onStarred(id, request.session.get("login").get)
     } yield ()
   }
 
-  def unstar (id: String)(implicit token: OAuth2Token) = {
+  def unstar (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
     for {
       _ <- GistWS.unstar(id)
-      _ <- Gists.onStarChange(id)
+      _ <- Transitions.onUnstarred(id, request.session.get("login").get)
     } yield ()
   }
 
@@ -76,7 +76,9 @@ object GistsTransitions {
     Transitions.setGistStarCount(id, count, stargazers)
   }
 
-  def onGistDeleted(id: String): Future[Any] = ???
+  def onGistDeleted(id: String): Future[Any] = {
+    Transitions.remove(id)
+  }
 
   protected def gistToTransition (gist: JsValue) =
     gist.validate(gistToTransitionReader).fold(
