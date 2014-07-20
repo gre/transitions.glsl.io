@@ -36,7 +36,7 @@ object Global extends GlobalSettings {
     }
     yield {
       Logger.info("glslio.refreshRate set to " + refreshRate)
-      Akka.system.scheduler.schedule(refreshRate seconds, refreshRate seconds, Gists.actor, "refresh")
+      Akka.system.scheduler.schedule(0 seconds, refreshRate seconds, Gists.actor, "refresh")
     }
   }
 

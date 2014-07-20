@@ -23,6 +23,9 @@ object Transitions {
   val rootGist = glslio.Global.rootGist
   val rootGistFileName = Play.application.configuration.getString("glslio.rootGistFilename").getOrElse("TEMPLATE")
 
+  val transitionFilterTransformer =
+    (__ \ '_id).json.prune.andThen((__ \ 'stargazers).json.prune)
+
   def all(
     maybeUser: Option[String] = None,
     withUnpublished: Boolean = false,
@@ -37,6 +40,17 @@ object Transitions {
       .sort(sort)
       .cursor[JsObject]
       .collect[Seq]()
+      .map { seq =>
+        seq.flatMap { json =>
+          json.transform(transitionFilterTransformer).fold(
+            err => {
+              Logger.error(s"Failed transform with transitionFilterTransformer: $err")
+              None
+            },
+            result => Some(result)
+          )
+        }
+      }
   }
 
   def get (id: String) =
@@ -44,17 +58,29 @@ object Transitions {
       .find(Json.obj("id" -> id))
       .cursor[JsObject]
       .headOption
+      .map { jsonOpt =>
+        jsonOpt.flatMap { json =>
+          json.transform(transitionFilterTransformer).fold(
+            err => {
+              Logger.error(s"Failed transform with transitionFilterTransformer: $err")
+              None
+            },
+            result => Some(result)
+          )
+        }
+      }
 
   def save (id: String, transition: JsObject) =
-    get(id).flatMap { tOpt =>
-      val stars = tOpt.flatMap(json => (json \ "stars").asOpt[Int]).getOrElse(0)
-      collection
-        .update(Json.obj("id" -> id), transition ++ Json.obj("stars" -> stars), upsert = true)
-    }
+    for {
+      existingEntryOptions <- get(id)
+      stars = existingEntryOptions.flatMap(json => (json \ "stars").asOpt[Int]).getOrElse(0)
+      stargazers = existingEntryOptions.flatMap(json => (json \ "stargazers").asOpt[Set[String]]).getOrElse(Set.empty)
+      result <- collection.update(Json.obj("id" -> id), transition ++ Json.obj("stars" -> stars, "stargazers" -> stargazers), upsert = true)
+    } yield result
 
-  def setGistStarCount (id: String, count: Int) =
+  def setGistStarCount (id: String, count: Int, stargazers: Set[String]) =
     collection
-      .update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("stars" -> count)), upsert = true)
+      .update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("stars" -> count, "stargazers" -> stargazers)), upsert = true)
 
   def clean() = {
     collection.drop().map { _ =>

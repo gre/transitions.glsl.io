@@ -67,8 +67,8 @@ object GistsTransitions {
   }
 
   // FIXME THIS IS TEMPORARY
-  def onGistGotStars(id: String, count: Int): Future[Any] = {
-    Transitions.setGistStarCount(id, count)
+  def onGistGotStars(id: String, count: Int, stargazers: Set[String]): Future[Any] = {
+    Transitions.setGistStarCount(id, count, stargazers)
   }
 
   def onGistDeleted(id: String): Future[Any] = ???

@@ -87,8 +87,9 @@ object Github {
             val body = Jsoup.parse(r.body).body
             val stargazers = body
               .select(".stargazers li a")
-              .map(_.childNodes.headOption.collect{ case t: TextNode => t })
+              .map(_.childNodes.headOption.collect{ case t: TextNode => t.toString.trim })
               .flatten
+              .toSet
 
             val stars = body
               .select(".social-count") // This is a workaround because the Gist Cache issue

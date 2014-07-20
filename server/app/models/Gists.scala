@@ -98,7 +98,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
             }.toMap
           }
           .map { caches: Map[String, ActorRef] =>
-            log.debug(s"Caches found: $caches")
+            log.debug(s"Caches found: ${caches.size} entries")
             gists = caches ++ gists
           }
 
@@ -160,7 +160,7 @@ case class GistForkInfo(info: JsValue)
 case class FetchGist (id: String)
 case class GistResult (id: String, gist: JsValue)
 case class FetchGistStar (id: String)
-case class GistStarResult (id: String, count: Int)
+case class GistStarResult (id: String, count: Int, stargazers: Set[String])
 
 class Fetcher extends Actor with ActorLogging {
   val timeout = 10 seconds
@@ -180,9 +180,9 @@ class Fetcher extends Actor with ActorLogging {
       Await.ready(
         GistWS.getStarCount(id, timeout)
         .map { stars =>
-          val (count, stagazers) = stars.data
-          log.info(s"Stargazers: $stagazers")
-          sender ! GistStarResult(id, count)
+          val (count, stargazers) = stars.data
+          log.info(s"Stargazers: $stargazers")
+          sender ! GistStarResult(id, count, stargazers)
         },
         timeout
       )
@@ -239,10 +239,10 @@ class Gist (
         case _ =>
       }
 
-    case GistStarResult(_, count) =>
+    case GistStarResult(_, count, stargazers) =>
       // FIXME we need to make the gist+star an unique transaction
       log.debug(s"Gist($displayName) star count received = $count")
-      GistsTransitions.onGistGotStars(id, count)
+      GistsTransitions.onGistGotStars(id, count, stargazers)
       fetchStarWatchers.foreach { watcher =>
         watcher ! gist
       }
