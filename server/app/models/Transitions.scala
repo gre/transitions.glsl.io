@@ -24,7 +24,7 @@ object Transitions {
   val rootGistFileName = Play.application.configuration.getString("glslio.rootGistFilename").getOrElse("TEMPLATE")
 
   val transitionFilterTransformer =
-    (__ \ '_id).json.prune.andThen((__ \ 'stargazers).json.prune)
+    (__ \ '_id).json.prune
 
   def all(
     maybeUser: Option[String] = None,
@@ -53,26 +53,25 @@ object Transitions {
       }
   }
 
-  def get (id: String) =
+  private def _get (id: String) =
     collection
       .find(Json.obj("id" -> id))
       .cursor[JsObject]
       .headOption
-      .map { jsonOpt =>
-        jsonOpt.flatMap { json =>
-          json.transform(transitionFilterTransformer).fold(
-            err => {
-              Logger.error(s"Failed transform with transitionFilterTransformer: $err")
-              None
-            },
-            result => Some(result)
-          )
-        }
-      }
+
+  def get (id: String) =
+      _get(id)
+      .map(_.flatMap(_.transform(transitionFilterTransformer).fold(
+        err => {
+          Logger.error(s"Failed transform with transitionFilterTransformer: $err")
+          None
+        },
+        result => Some(result)
+      )))
 
   def save (id: String, transition: JsObject) =
     for {
-      existingEntryOptions <- get(id)
+      existingEntryOptions <- _get(id)
       stars = existingEntryOptions.flatMap(json => (json \ "stars").asOpt[Int]).getOrElse(0)
       stargazers = existingEntryOptions.flatMap(json => (json \ "stargazers").asOpt[Set[String]]).getOrElse(Set.empty)
       result <- collection.update(Json.obj("id" -> id), transition ++ Json.obj("stars" -> stars, "stargazers" -> stargazers), upsert = true)

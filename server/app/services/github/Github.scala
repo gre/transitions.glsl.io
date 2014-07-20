@@ -1,26 +1,25 @@
 package services.github
 
+import scala.util.matching.Regex
+import scala.collection.JavaConversions._
+import scala.concurrent._
+import scala.concurrent.duration._
+
+import org.jsoup._
+import org.jsoup.nodes._
+import play.api._
+import play.api.Play.current
 import play.api.libs.ws.WS
 import play.api.libs.ws.WS.WSRequestHolder
-
-import services.auth.OAuth2Token
-
-import play.api._
 import play.api.libs.concurrent.Execution.Implicits._
-
 import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 
-import play.api.Play.current
-import scala.util.matching.Regex
+import services.auth.OAuth2Token
+import glslio.Futures._
 
-import concurrent.Future
-
-import org.jsoup._
-import org.jsoup.nodes._
-import scala.collection.JavaConversions._
 
 object Github {
   lazy val clientId = Play.application.configuration.getString("github.client.id").get
@@ -71,47 +70,93 @@ object Github {
         .map { implicit res => toGithubResult(res.json) }
     }
 
-    def getStarCount(id: String, timeout: concurrent.duration.FiniteDuration) = {
+    /**
+     getStarCount is a workaround to get the star count and stagazers of a gist.
+     ============
+
+     It crawls the /stars page to get those results from the HTML.
+
+     If this was just it. This was easy. However there is other issues:
+
+     - Gist bug: the "real" star count and the stargazers list you see form the HTML page
+     get desyncronized once a star or an unstar is done with the Star API.
+
+     This is why we needs a fake user (using this github.cookie and github.authenticity_token)
+     The current implementation fakes an user "unstar" action like if it was done from the interface.
+     Then we can read again the HTML page and trust this result.
+
+     Current concern:
+     - relying on a static github.authenticity_token may be weak since it may changes recurrently.
+       However weirdly, I couldn't get the authenticity_token returns in the page working programmatically.
+     */
+    def getStarCount(id: String, owner: String, timeout: concurrent.duration.FiniteDuration) = {
       val headers = current.configuration.getString("github.cookie").map(cookie => List("Cookie" -> cookie)).getOrElse {
-        Logger.warn("No github.cookie is used. It is needed as a workaround to fix a Github Gist cache issue.")
+        Logger.warn("No github.cookie has been set. It is needed as a workaround to fix a Github Gist cache issue.")
         Nil
       }
-
-      WS.url(s"https://gist.github.com/$id/stars")
-      .withHeaders(headers:_*)
-      .withRequestTimeout(timeout.toMillis.toInt)
-      .get
-      .flatMap { implicit r =>
-        r.status match {
-          case 200 =>
-            val body = Jsoup.parse(r.body).body
-            val stargazers = body
-              .select(".stargazers li a")
-              .map(_.childNodes.headOption.collect{ case t: TextNode => t.toString.trim })
-              .flatten
-              .toSet
-
-            val stars = body
-              .select(".social-count") // This is a workaround because the Gist Cache issue
-              .headOption.orElse {
-                body.select("li a")
-                .find(a => a.attr("href").endsWith("/stars"))
-                .flatMap(_.select(".counter").headOption)
-              }
-              .map(_.text.toInt)
-              .getOrElse(0)
-
-            if (stargazers.size != stars) {
-              Logger.warn(s"Something is wrong with stars of gist $id : stargazers.size=${stargazers.size} is different of stars=${stars}")
-              Logger.debug(s"stargazers=$stargazers")
-            }
-
-            Future.successful(toGithubResult((stars, stargazers)))
-
-          case _ =>
-            Future.failed(new Error("Failed WS."))
-        }
+      val authenticity_token = current.configuration.getString("github.authenticity_token").getOrElse {
+        Logger.warn("No github.authenticity_token has been set. It is needed as a workaround to fix a Github Gist cache issue.")
+        ""
       }
+
+      def getStarsPage(timeout: Int) = {
+        Logger.debug(s"Gist $id: Getting stars page")
+        WS.url(s"https://gist.github.com/$id/stars")
+        .withHeaders(headers:_*)
+        .withRequestTimeout(timeout)
+        .get
+        .filter(_.status == 200)
+      }
+
+      def flushStars(timeout: Int) = {
+        val body = Map("authenticity_token" -> Seq(authenticity_token))
+        WS.url(s"https://gist.github.com/$owner/$id/unstar")
+        .withFollowRedirects(false)
+        .withHeaders(headers:_*)
+        .withRequestTimeout(timeout)
+        .post(body)
+        .flatMap { response =>
+          if (response.status == 302)
+            Future()
+          else {
+            Logger.error(s"Failed to submit the workaround: ${response.status} : ${response.body}")
+            Future.failed(new Exception("Flush Stars: submission failed."))
+          }
+        }
+     }
+
+      def parseResult (implicit r: WS.Response) = {
+        val body = Jsoup.parse(r.body).body
+        val stargazers = body
+          .select("ul.stargazers > li > a")
+          .map(_.childNodes.headOption.collect{ case t: TextNode => t.toString.trim })
+          .flatten
+          .toSet
+
+        val stars = body
+          .select(".social-count") // This is a workaround because the Gist Cache issue
+          .headOption.orElse {
+            body.select("li a")
+            .find(a => a.attr("href").endsWith("/stars"))
+            .flatMap(_.select(".counter").headOption)
+          }
+          .map(_.text.toInt)
+          .getOrElse(0)
+
+        if (stargazers.size != stars) {
+          Logger.error(s"Something is wrong with stars of gist $id : stargazers.size=${stargazers.size} is different of stars=${stars}")
+          Logger.debug(s"stargazers=$stargazers")
+        }
+
+        toGithubResult((stars, stargazers))
+      }
+
+      Logger.debug(s"Gist getStarCount($id)")
+      for {
+        _ <- flushStars(timeout.toMillis.toInt / 2)
+        _ <- Future().delay(200.millisecond) // I'm not sure if this is required, but we are just going to wait a bit
+        response <- getStarsPage(timeout.toMillis.toInt / 2)
+      } yield parseResult(response)
     }
 
     def fork(id: String)(implicit token: OAuth2Token) = {

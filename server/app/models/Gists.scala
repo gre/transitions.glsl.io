@@ -74,8 +74,12 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
     Props[Fetcher].withRouter(SmallestMailboxRouter(nrOfInstances = 3)),
     "fetcher"
   )
+  val starsFetcher = context.actorOf(
+    Props[Fetcher].withRouter(SmallestMailboxRouter(nrOfInstances = 1)),
+    "stars-fetcher"
+  )
 
-  val rootGist = context.actorOf(Props(new Gist(rootGistId, null, fetcher, isRoot = true)))
+  val rootGist = context.actorOf(Props(new Gist(rootGistId, null, fetcher, starsFetcher, isRoot = true)))
   var gists: Map[String, ActorRef] = Map(rootGistId -> rootGist)
 
   var neverRefresh = true
@@ -94,7 +98,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
             gistCaches.map { gistCache =>
               val id = (gistCache \ "id").as[String]
               val gist = Json.parse((gistCache \ "gist").as[String])
-              (id, context.actorOf(Props(new Gist(id, gist, fetcher))))
+              (id, context.actorOf(Props(new Gist(id, gist, fetcher, starsFetcher))))
             }.toMap
           }
           .map { caches: Map[String, ActorRef] =>
@@ -112,7 +116,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
       }
 
     case OnForkCreated (id, pid) =>
-      val actor = context.actorOf(Props(new Gist(id, null, fetcher)))
+      val actor = context.actorOf(Props(new Gist(id, null, fetcher, starsFetcher)))
       gists = gists + (id -> actor)
       actor.ask("waitFetch")(10.second).pipeTo(sender)
 
@@ -143,7 +147,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
             gists(id) ! GistForkInfo(fork)
           }
           else {
-            gists = gists + (id -> context.actorOf(Props(new Gist(id, null, fetcher))))
+            gists = gists + (id -> context.actorOf(Props(new Gist(id, null, fetcher, starsFetcher))))
           }
         }
 
@@ -159,7 +163,7 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
 case class GistForkInfo(info: JsValue)
 case class FetchGist (id: String)
 case class GistResult (id: String, gist: JsValue)
-case class FetchGistStar (id: String)
+case class FetchGistStar (id: String, owner: String)
 case class GistStarResult (id: String, count: Int, stargazers: Set[String])
 
 class Fetcher extends Actor with ActorLogging {
@@ -172,17 +176,24 @@ class Fetcher extends Actor with ActorLogging {
         .map { gist =>
           log.debug(s"Github result: ${gist.metadata}")
           sender ! GistResult(id, gist.data)
+        }
+        .recover { case failure =>
+          log.error(failure, "Github failure")
+          failure.printStackTrace()
         },
         timeout
       )
 
-    case FetchGistStar(id) =>
+    case FetchGistStar(id, owner) =>
       Await.ready(
-        GistWS.getStarCount(id, timeout)
+        GistWS.getStarCount(id, owner, timeout)
         .map { stars =>
           val (count, stargazers) = stars.data
           log.info(s"Stargazers: $stargazers")
           sender ! GistStarResult(id, count, stargazers)
+        }
+        .recover { case failure =>
+          log.error(failure, "Github failure")
         },
         timeout
       )
@@ -193,18 +204,16 @@ class Gist (
   id: String,
   var gist: JsValue,
   fetcher: ActorRef,
+  starsFetcher: ActorRef,
   isRoot: Boolean = false
 ) extends Actor with ActorLogging {
 
   val displayName = if (isRoot) "ROOT="+id else id
   log.debug(s"Gist($displayName) created ${if (gist==null) "without" else "with"} initial data.")
 
-  def fetchAll() = {
-    fetcher ! FetchGistStar(id)
+  if (gist == null) {
     fetcher ! FetchGist(id)
   }
-
-  if (gist == null) fetchAll()
 
   var fetchWatchers = new collection.mutable.Queue[ActorRef]()
   var fetchStarWatchers = new collection.mutable.Queue[ActorRef]()
@@ -213,11 +222,14 @@ class Gist (
   // FIXME: should use "become()" for being busy when fetching
   def receive = {
     case "refresh" =>
-      // TODO, threshold mecanism?
-      fetchAll()
+      fetcher ! FetchGist(id)
 
-    case "refreshStar" =>
-      fetcher ! FetchGistStar(id)
+    case "refreshStar" if gist != null =>
+      (gist \ "owner" \ "login").asOpt[String].map { owner =>
+        starsFetcher ! FetchGistStar(id, owner)
+      }.getOrElse {
+        log.error(s"refreshStar: can't pick json.owner.login")
+      }
 
     case "waitFetchStar" =>
       fetchStarWatchers.enqueue(sender)
@@ -251,6 +263,7 @@ class Gist (
     case GistResult(_, data) =>
       // tell parent instead?
       if (gist == null) {
+        self ! "refreshStar"
         GistsTransitions.onGistCreated(id, data)
       }
       else

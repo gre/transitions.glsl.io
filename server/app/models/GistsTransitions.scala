@@ -48,6 +48,11 @@ object GistsTransitions {
     } yield ()
   }
 
+  def starred (id: String)(implicit token: OAuth2Token) = {
+    println(token)
+    GistWS.starred(id).map(result => JsBoolean(result.data)) // FIXME: should ask Transitions instead
+  }
+
   def onGistCreated(id: String, js: JsValue): Future[Any] = {
     gistToTransition(js).map { transition =>
       Transitions.save(id, transition)

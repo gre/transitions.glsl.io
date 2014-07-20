@@ -114,4 +114,8 @@ object Application extends Controller with GithubOAuthController with MongoContr
       }.getOrElse(NotFound)
     }
   }
+
+  def catchAllAPI (verb: String, path: String) = Action {
+    NotFound("API Not Found: "+verb+" "+path)
+  }
 }
