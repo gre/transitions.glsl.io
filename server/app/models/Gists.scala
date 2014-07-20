@@ -124,7 +124,6 @@ class GistsMirror(rootGistId: String) extends Actor with ActorLogging {
       }
 
       firstStep.map { _ =>
-        gists.values.foreach { _ ! "tick" }
         fetcher ! FetchGist(rootGistId)
       }
 
@@ -235,6 +234,8 @@ class Gist (
   isRoot: Boolean = false
 ) extends Actor with ActorLogging {
 
+  val refreshStarsRate = current.configuration.getInt("glslio.refreshStarsRate").getOrElse(600)
+
   val displayName = if (isRoot) "ROOT="+id else id
   log.debug(s"Gist($displayName) created ${if (gist==null) "without" else "with"} initial data.")
 
@@ -245,6 +246,13 @@ class Gist (
   var fetchWatchers = new collection.mutable.Queue[ActorRef]()
   var fetchStarWatchers = new collection.mutable.Queue[ActorRef]()
 
+  context.system.scheduler.schedule(
+    (10 + refreshStarsRate*math.random).toInt seconds,
+    refreshStarsRate seconds,
+    self,
+    "refreshStar"
+  )
+
   // FIXME: should use "become()" for being busy when fetching
   def receive = {
 
@@ -253,9 +261,6 @@ class Gist (
       Gists.collection.remove(Json.obj("id" -> id))
       GistsTransitions.onGistDeleted(id)
       self ! Kill
-
-    case "tick" =>
-      println("tick")
 
     case "refresh" =>
       fetcher ! FetchGist(id)
