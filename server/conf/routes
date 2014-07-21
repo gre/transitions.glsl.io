@@ -27,9 +27,6 @@ DELETE  /api/*any                      controllers.Application.catchAllAPI(verb=
 GET     /authenticate                  controllers.Application.authenticate
 GET     /logout                        controllers.Application.logout
 
-# Redirect deprecated urls
-GET     /gallery                       controllers.Application.redirectDeprecated(path="/")
-
 # Web Application urls
 GET     /                              controllers.Application.index(path = "")
 GET     /transition/:id                controllers.Application.transition(id)
