@@ -84,6 +84,9 @@ object Transitions {
   def setGistStarCount (id: String, count: Int, stargazers: Set[String]) =
     collection
       .update(Json.obj("id" -> id), Json.obj("$set" -> Json.obj("stars" -> count, "stargazers" -> stargazers)), upsert = true)
+      .map { _ =>
+        Json.obj("stars" -> count, "stargazers" -> stargazers)
+      }
 
   def remove (id: String) =
     collection

@@ -37,15 +37,15 @@ object GistsTransitions {
   def star (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
     for {
       _ <- GistWS.star(id)
-      _ <- Transitions.onStarred(id, request.session.get("login").get)
-    } yield ()
+      res <- Transitions.onStarred(id, request.session.get("login").get)
+    } yield res
   }
 
   def unstar (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
     for {
       _ <- GistWS.unstar(id)
-      _ <- Transitions.onUnstarred(id, request.session.get("login").get)
-    } yield ()
+      res <- Transitions.onUnstarred(id, request.session.get("login").get)
+    } yield res
   }
 
   def starred (id: String)(implicit token: OAuth2Token) = {

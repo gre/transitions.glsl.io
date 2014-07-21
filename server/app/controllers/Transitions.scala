@@ -73,7 +73,7 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
 
   def star (id: String) = Authenticated.async { implicit auth =>
     GistsTransitions.star(id)
-    .map(_ => Ok)
+    .map(Ok(_))
     .recover {
       case e @ GithubError(message, status) =>
         Logger.warn(s"github error: $e")
@@ -83,7 +83,7 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
 
   def unstar (id: String) = Authenticated.async { implicit auth =>
     GistsTransitions.unstar(id)
-    .map(_ => Ok)
+    .map(Ok(_))
     .recover {
       case e @ GithubError(message, status) =>
         Logger.warn(s"github error: $e")

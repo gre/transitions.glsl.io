@@ -22,13 +22,14 @@ object TransitionsSnapshot {
 
   val transitionTransformer = (
     (__ \ 'id).json.pickBranch(string) and
+    (__ \ 'name).json.pickBranch(string) and
     (__ \ 'owner).json.pickBranch(string) and
+    (__ \ 'glsl).json.pickBranch(string) and
+    (__ \ 'uniforms).json.pickBranch(Reads.of[JsObject]) and
     (__ \ 'html_url).json.pickBranch(string) and
     (__ \ 'created_at).json.pickBranch(string) and
     (__ \ 'updated_at).json.pickBranch(string) and
-    (__ \ 'name).json.pickBranch(string) and
-    (__ \ 'glsl).json.pickBranch(string) and
-    (__ \ 'uniforms).json.pickBranch(Reads.of[JsObject])
+    (__ \ 'stars).json.pickBranch(Reads.of[JsNumber])
   ).reduce
 
   def snapshot(minified: Boolean): Future[JsValue] = {
