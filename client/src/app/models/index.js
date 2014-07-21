@@ -86,6 +86,7 @@ module.exports = {
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON);
   },
+
   saveTransition: function (transition) {
     cache.remove("gallery");
     return Qajax({
@@ -95,5 +96,23 @@ module.exports = {
     })
       .then(Qajax.filterSuccess)
       .thenResolve(undefined);
+  },
+
+  starTransition: function (id) {
+    return Qajax({
+      method: "PUT",
+      url: "/api/transitions/"+id+"/star"
+    })
+      .then(Qajax.filterSuccess)
+      .then(Qajax.toJSON);
+  },
+
+  unstarTransition: function (id) {
+    return Qajax({
+      method: "DELETE",
+      url: "/api/transitions/"+id+"/star"
+    })
+      .then(Qajax.filterSuccess)
+      .then(Qajax.toJSON);
   }
 };

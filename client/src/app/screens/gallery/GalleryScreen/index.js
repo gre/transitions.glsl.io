@@ -4,6 +4,8 @@ var _ = require("lodash");
 var TransitionsBrowser = require("../../../../ui/TransitionsBrowser");
 var Link = require("../../../../ui/Link");
 var Toolbar = require("../../../../ui/Toolbar");
+var TransitionStar = require("../../../../ui/TransitionStar");
+var model = require("../../../../app/models");
 
 function getWidth () {
   return window.innerWidth-20;
@@ -43,6 +45,33 @@ var GalleryScreen = React.createClass({
       });
     }
   },
+
+  // FIXME The current implementation is mutable but it is a quick workaround to not reload everything.
+  starTransition: function (transition) {
+    var self = this;
+    return model.starTransition(transition.id)
+      .get("stars")
+      .then(function (count) {
+        transition.stars = count;
+        self.forceUpdate();
+      });
+  },
+  unstarTransition: function (transition) {
+    var self = this;
+    return model.unstarTransition(transition.id)
+      .get("stars")
+      .then(function (count) {
+        transition.stars = count;
+        self.forceUpdate();
+      });
+  },
+
+  childrenForTransition: function (transition) {
+    var user = this.props.env.user;
+    var star = user ? _.bind(this.starTransition, this, transition) : null;
+    var unstar = user ? _.bind(this.unstarTransition, this, transition) : null;
+    return <TransitionStar count={transition.stars} starred={_.contains(transition.stargazers, user)} star={star} unstar={unstar} />;
+  },
   render: function () {
     var width = this.getThumbnailFullWidth() * this.state.previewsPerLine;
     var createNewTransition = this.props.env.user ?
@@ -67,7 +96,7 @@ var GalleryScreen = React.createClass({
 
     return <div className="gallery-screen">
       {this.transferPropsTo(
-        <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages}>
+        <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages} childrenForTransition={this.childrenForTransition}>
         <Toolbar>
           All published transitions:
           {createNewTransition}

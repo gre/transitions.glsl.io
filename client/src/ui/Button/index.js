@@ -47,7 +47,6 @@ var Button = React.createClass({
     }
   },
   render: function () {
-    console.log(this.isActive());
     var cls = ["button"];
     if (this.props.className)
       cls.push(this.props.className);
