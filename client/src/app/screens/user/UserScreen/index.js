@@ -95,7 +95,7 @@ var UserScreen = React.createClass({
     var index = 0;
 
     if (!_.keys(groups).length) {
-      return <div className="user-screen">
+      return <div className={"user-screen "+(this.props.publicPage ? "public" : "")}>
         { !this.props.publicPage ? 
           <Toolbar>
             You have not created Transitions yet.
@@ -110,7 +110,7 @@ var UserScreen = React.createClass({
       </div>;
     }
 
-    return <div className="user-screen">
+    return <div className={"user-screen "+(this.props.publicPage ? "public" : "")}>
       {!groups.invalid ? '': this.transferPropsTo(
         <TransitionsBrowser key="invalid" width={width} paginated={false} getWidth={getWidth} hasData={invalidHasData} getData={invalidGetData} childrenForTransition={this.childrenForTransition}>
         <Toolbar>

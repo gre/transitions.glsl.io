@@ -24,7 +24,8 @@ function show (args, env) {
       thumbnailWidth: 300,
       thumbnailHeight: 200,
       transitions: args.transitions,
-      page: args.page
+      page: args.page,
+      sort: args.sort
     });
   });
 }

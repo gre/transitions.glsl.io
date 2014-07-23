@@ -24,8 +24,8 @@ function resolveAllTransitions (transitions) {
 
 // TODO rename to 'api'
 
-var getGalleryTransitionsUnresolved = cache.getOrSetAsync("gallery", 30000, function () {
-  return Qajax("/api/transitions")
+var getGalleryTransitionsUnresolved = cache.getOrSetAsync(function (filter) { return "gallery_"+filter; }, 30000, function (filter) {
+  return Qajax("/api/transitions?sort="+filter)
     .then(Qajax.filterSuccess)
     .then(Qajax.toJSON)
     .then(function (transitions) {
@@ -63,8 +63,9 @@ module.exports = {
       .then(resolveAllTransitions);
   },
 
-  getGalleryTransitions: function () {
-    return getGalleryTransitionsUnresolved()
+  getGalleryTransitions: function (filter) {
+    if (!filter) filter = "mix";
+    return getGalleryTransitionsUnresolved(filter)
       .then(resolveAllTransitions);
   },
 
@@ -75,7 +76,7 @@ module.exports = {
   },
 
   createNewTransition: function () {
-    cache.remove("gallery");
+    cache.clear();
     return Qajax({
       method: "POST",
       url: "/api/transitions",
@@ -88,7 +89,7 @@ module.exports = {
   },
 
   saveTransition: function (transition) {
-    cache.remove("gallery");
+    cache.clear();
     return Qajax({
       method: "POST",
       url: "/api/transitions/"+transition.id,
@@ -99,6 +100,7 @@ module.exports = {
   },
 
   starTransition: function (id) {
+    cache.clear();
     return Qajax({
       method: "PUT",
       url: "/api/transitions/"+id+"/star"
@@ -108,6 +110,7 @@ module.exports = {
   },
 
   unstarTransition: function (id) {
+    cache.clear();
     return Qajax({
       method: "DELETE",
       url: "/api/transitions/"+id+"/star"

@@ -94,11 +94,21 @@ var GalleryScreen = React.createClass({
     };
     var nbPages = Math.ceil(transitions.length/pageSize);
 
+    var navs = _.map({
+      "mix": "mix",
+      "new": "new",
+      "star": "popular",
+      "change": "updated"
+    }, function (name, key) {
+      return <Link key={key} href={"/gallery?sort="+key} className={key===this.props.sort ? "selected" : ""}>{name}</Link>;
+    }, this);
+
     return <div className="gallery-screen">
       {this.transferPropsTo(
         <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages} childrenForTransition={this.childrenForTransition}>
         <Toolbar>
-          All published transitions:
+          All published transitions
+          <nav>{navs}</nav>
           {createNewTransition}
         </Toolbar>
         </TransitionsBrowser>

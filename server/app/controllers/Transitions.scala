@@ -30,11 +30,12 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
       .map(Ok(_))
   }
 
-  def all () = Action.async { req =>
-    TransitionsModel.all()
-      .map(JsArray(_))
-      .map(Ok(_))
-  }
+  def all (sort: String) = 
+    Action.async { req =>
+      TransitionsModel.all(sort = sort)
+        .map(JsArray(_))
+        .map(Ok(_))
+    }
 
   def get (id: String) = Action.async {
     TransitionsModel.get(id)

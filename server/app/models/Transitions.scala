@@ -1,20 +1,19 @@
 package models
 
 import scala.concurrent._
+import scala.math.Ordering
 
 import play.api._
 import play.api.libs.concurrent.Execution.Implicits._
-
 import play.api.Play.current
-
 import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
-
-import reactivemongo.api._
 import play.modules.reactivemongo.ReactiveMongoPlugin
 import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api._
+import org.joda.time._
 
 object Transitions {
   val db = ReactiveMongoPlugin.db
@@ -31,18 +30,27 @@ object Transitions {
     (JsPath \ 'stargazers).read[Set[String]]
   ).tupled
 
+  val sortModes = Map(
+    "mix" ->  Json.obj("stars" -> -1, "created_at" -> -1),
+    "star" ->  Json.obj("stars" -> -1, "created_at" -> -1),
+    "new" ->  Json.obj("created_at" -> -1),
+    "change" ->  Json.obj("updated_at" -> -1)
+  );
+
   def all(
     maybeUser: Option[String] = None,
     withUnpublished: Boolean = false,
-    sort: JsObject = Json.obj("created_at" -> -1)
+    sort: String = "new"
   ) = {
+    val sortObject = sortModes.get(sort).getOrElse(sortModes("new"))
     val criteria = Json.obj("id" -> Json.obj("$ne" -> rootGist)) ++
       maybeUser.map { user => Json.obj("owner" -> user) }.getOrElse(Json.obj()) ++
       (if (!withUnpublished) Json.obj("name" -> Json.obj("$ne" -> rootGistFileName)) else Json.obj());
 
-    collection
+    val result =
+      collection
       .find(criteria)
-      .sort(sort)
+      .sort(sortObject)
       .cursor[JsObject]
       .collect[Seq]()
       .map { seq =>
@@ -56,6 +64,11 @@ object Transitions {
           )
         }
       }
+
+    if (sort == "mix")
+      result.map(_.sorted(MixedOrdering))
+    else
+      result
   }
 
   private def _get (id: String) =
@@ -116,5 +129,45 @@ object Transitions {
       result <- setGistStarCount(id, newStargazers.size, newStargazers)
     } yield result
 
+
+  object MixedOrdering extends Ordering[JsObject] {
+    val jodaTime = Reads(_ match {
+      case JsString(str) =>
+        try {
+          JsSuccess(new DateTime(str))
+        } catch { case e: Exception =>
+          JsError("failed to parse: "+e)
+        }
+      case _ =>
+        JsError("only parse string")
+    })
+    val starsAndCreated = (
+      (JsPath \ 'stars).read[Int] and 
+      (JsPath \ 'created_at).read(jodaTime)
+    ).tupled
+
+    def score (stars: Int, created: DateTime) = {
+      val recentRange = (1000*60*60*24*7).toDouble
+      val recentFactor = math.max(0, (recentRange - (DateTime.now().getMillis - created.getMillis)) / recentRange)
+      val s = stars + 2000.0 * math.pow(recentFactor, 6.0)
+      (100.0*s).toInt
+    }
+
+    def greaterThan(astars: Int, acreated: DateTime, bstars: Int, bcreated: DateTime) = {
+      val ascore = score(astars, acreated)
+      val bscore = score(bstars, bcreated)
+      if (ascore == bscore)
+        bcreated.isAfter(acreated)
+      else
+        bscore > ascore
+    }
+
+    def compare(jsa:JsObject, jsb:JsObject) =
+      (jsa.validate(starsAndCreated), jsb.validate(starsAndCreated)) match {
+        case (JsSuccess((astars, acreated), _), JsSuccess((bstars, bcreated), _)) =>
+          if (greaterThan(astars, acreated, bstars, bcreated)) 1 else -1
+        case _ => 0
+      }
+  }
 
 }

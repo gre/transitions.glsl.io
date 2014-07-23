@@ -95,14 +95,16 @@ var run = app.init(screens, {
   },
 
   '/gallery': function gallery () {
+    var sort = this.query.sort || "mix";
     var page = parseInt(this.query.page||0, 10);
     if (isNaN(page)) page = 0;
-    return Q()
+    return Q(sort)
       .then(model.getGalleryTransitions)
       .then(function (transitions) {
         return {
           transitions: transitions,
-          page: page
+          page: page,
+          sort: sort
         };
       })
       .then(_.bind(app.show, app, "gallery"));
