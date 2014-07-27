@@ -1,10 +1,4 @@
 
-starred-color-off = #333
-starred-color-on = #FC6
-starred-color-off-action = #fff
-starred-color-on-action = #fff
-starred-color-loading = mix(starred-color-off, starred-color-on)
-
 .vignette {
   position: relative;
   user-select: none;
@@ -69,30 +63,12 @@ starred-color-loading = mix(starred-color-off, starred-color-on)
     position: absolute;
     top: 0px;
     right: 0px;
-    padding: 1px 6px;
-    border-radius: 2px;
     background: rgba(0,0,0,0);
-    color: starred-color-off;
     z-index: 3;
     cursor: pointer;
 
     i {
       margin-left: 2px;
-    }
-
-    &.starred {
-      color: starred-color-on;
-    }
-    &.active {
-      color: starred-color-loading !important;
-    }
-
-    &:hover {
-      background: rgba(0,0,0,1);
-      color: starred-color-on-action;
-    }
-    &.starred:hover {
-      color: starred-color-off-action;
     }
   }
 

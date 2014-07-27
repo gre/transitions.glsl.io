@@ -33,6 +33,15 @@
         position: absolute;
         right: 256px;
         width: 70px;
+        .transition-star {
+          margin-left: -6px;
+          &:not(.starred):not(.active):not(:hover) {
+            color: #ccc;
+          }
+        }
+        > div {
+          margin: 2px 0;
+        }
       }
       .vignette {
         border: none;

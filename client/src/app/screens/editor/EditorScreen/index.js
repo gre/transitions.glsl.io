@@ -17,6 +17,7 @@ var ValidationIndicator = require("../../../../ui/ValidationIndicator");
 var TransitionInfos = require("../../../../ui/TransitionInfos");
 var TransitionActions = require("../../../../ui/TransitionEditorActions");
 var TransitionComments = require("../../../../ui/TransitionComments");
+var TransitionStar = require("../../../../ui/TransitionStar");
 var TransitionEditor = require("../../../../ui/TransitionEditor");
 var UniformsEditor = require("../../../../ui/UniformsEditor");
 var Toolbar = require("../../../../ui/Toolbar");
@@ -245,6 +246,26 @@ var EditorScreen = React.createClass({
     }
   },
 
+  // FIXME The current implementation is mutable but it is a quick workaround to not reload everything.
+  starTransition: function (transition) {
+    var self = this;
+    return model.starTransition(transition.id)
+      .get("stars")
+      .then(function (count) {
+        transition.stars = count;
+        self.forceUpdate();
+      });
+  },
+  unstarTransition: function (transition) {
+    var self = this;
+    return model.unstarTransition(transition.id)
+      .get("stars")
+      .then(function (count) {
+        transition.stars = count;
+        self.forceUpdate();
+      });
+  },
+
   render: function () {
     var hasUnsavingChanges = this.hasUnsavingChanges();
     var env = this.props.env;
@@ -254,6 +275,8 @@ var EditorScreen = React.createClass({
     var previewHeight = this.props.previewHeight;
     var width = this.state.width;
     var height = this.state.height;
+    var star = env.user ? _.bind(this.starTransition, this, transition) : null;
+    var unstar = env.user ? _.bind(this.unstarTransition, this, transition) : null;
     
     var editorWidth = width - 336;
     var editorHeight = height - 40;
@@ -284,8 +307,15 @@ var EditorScreen = React.createClass({
       <div className="main">
         <div className="view">
           <div className="leftPanel">
-            <TransitionComments count={transition.comments} href={transition.html_url} />
-            <Fps fps={this.state.fps} />
+            <div>
+              <Fps fps={this.state.fps} />
+            </div>
+            <div>
+              <TransitionStar count={transition.stars} starred={_.contains(transition.stargazers, env.user)} star={star} unstar={unstar} />
+            </div>
+            <div>
+              <TransitionComments count={transition.comments} href={transition.html_url} />
+            </div>
           </div>
           <TransitionPreview transition={transition} images={images} width={previewWidth} height={previewHeight} onTransitionPerformed={this.onTransitionPerformed} transitionDelay={this.state.transitionDelay} transitionDuration={this.state.transitionDuration} transitionEasing={this.getEasing()}>
             <ValidationIndicator errors={this.state.validationErrors} />
