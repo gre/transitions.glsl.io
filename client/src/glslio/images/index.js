@@ -12,6 +12,8 @@ module.exports = {
     "embed": 2
   },
   names: [
+    "lUUnN7VGSoWZ3noefeH7_Baker_Beach-12.jpg",
+    "pHyYeNZMRFOIRpYeW7X3_manacloseup.jpg",
     "ic1dX3kBQjGNaPQb8Xel_1920x1280.jpg",
     "wdXqHcTwSTmLuKOGz92L_Landscape.jpg",
     "hBd6EPoQT2C8VQYv65ys_White_Sands.jpg",
