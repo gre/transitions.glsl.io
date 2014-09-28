@@ -20,7 +20,7 @@ function reload () {
 }
 
 function redirect (url) {
-  window.location.href = url;
+  app.router.url = url;
 }
 
 function clearCacheAndReload () {
@@ -97,6 +97,7 @@ var run = app.init(screens, {
   '/gallery': function gallery () {
     var sort = this.query.sort || "mix";
     var page = parseInt(this.query.page||0, 10);
+    var mode = this.query.mode;
     if (isNaN(page)) page = 0;
     return Q(sort)
       .then(model.getGalleryTransitions)
@@ -104,7 +105,8 @@ var run = app.init(screens, {
         return {
           transitions: transitions,
           page: page,
-          sort: sort
+          sort: sort,
+          mode: mode
         };
       })
       .then(_.bind(app.show, app, "gallery"));

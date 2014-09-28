@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require("react");
 var _ = require("lodash");
+var Url = require("url");
 var TransitionPreview = require("../TransitionPreview");
 var TransitionsBrowserPager = require("../TransitionsBrowserPager");
 var SharedCanvas = require("../TransitionCanvasCache/SharedCanvas");
@@ -18,18 +19,27 @@ var TransitionsBrowser = React.createClass({
     numberOfPages: React.PropTypes.number,
     images: React.PropTypes.array.isRequired,
     paginated: React.PropTypes.bool,
-    childrenForTransition: React.PropTypes.func
+    childrenForTransition: React.PropTypes.func,
+    transitionPreviewProps: React.PropTypes.object
   },
   getDefaultProps: function () {
     return {
       page: 0,
-      childrenForTransition: _.noop
+      childrenForTransition: _.noop,
+      transitionPreviewProps: {}
     };
   },
   getInitialState: function() {
     return {
       page: this.props.page
     };
+  },
+  componentWillReceiveProps: function (newProps) {
+    if (newProps.page !== this.state.page) {
+      this.setState({
+        page: newProps.page
+      });
+    }
   },
 
   hasNextPage: function () {
@@ -38,17 +48,22 @@ var TransitionsBrowser = React.createClass({
   hasPrevPage: function () {
     return this.props.hasData(this.state.page - 1);
   },
+  goToPage: function (page) {
+    // FIXME this should just change the URL and we should let React doing the work.
+    var url = {
+      pathname: app.router.url.pathname,
+      query: _.defaults({ page: page }, app.router.url.query)
+    };
+    app.router.overridesUrl(Url.format(url));
+    this.setState({ page: page });
+  },
   nextPage: function () {
     var page = this.state.page + 1;
-    // FIXME this should just change the URL and we should let React doing the work.
-    // This can simplify a lot of code everywhere (state would be a params, coming from the URL)
-    app.router.overridesUrl(app.router.url.pathname+"?page="+page); // FIXME
-    this.setState({ page: page });
+    this.goToPage(page);
   },
   prevPage: function () {
     var page = this.state.page - 1;
-    app.router.overridesUrl(app.router.url.pathname+(page ? "?page="+page : '')); // FIXME
-    this.setState({ page: page });
+    this.goToPage(page);
   },
   componentWillMount: function() {
     this.cache = SharedCanvas.create(this.props.thumbnailWidth, this.props.thumbnailHeight);
@@ -82,7 +97,7 @@ var TransitionsBrowser = React.createClass({
     var prev = this.hasPrevPage() ? this.prevPage : null;
 
     var previews = transitions.map(function (transition, i) {
-      return TransitionPreview({
+      return TransitionPreview(_.extend({}, {
         width: this.props.thumbnailWidth,
         height: this.props.thumbnailHeight,
         images: this.props.images,
@@ -92,13 +107,13 @@ var TransitionsBrowser = React.createClass({
         key: transition.id,
         name: transition.name,
         owner: transition.owner,
-        cache: {
+        cache: this.props.transitionPreviewProps.cache || {
           drawer: this.cache.getTransitionDrawer(transition.id),
           resolution: 64,
           delay: 30 + i * 40
         },
         children: this.props.childrenForTransition(transition)
-      });
+      }, this.props.transitionPreviewProps));
     }, this);
     return <div className="transitions-browser">
       {this.props.children}

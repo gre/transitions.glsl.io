@@ -5,6 +5,7 @@ var TransitionsBrowser = require("../../../../ui/TransitionsBrowser");
 var Link = require("../../../../ui/Link");
 var Toolbar = require("../../../../ui/Toolbar");
 var TransitionStar = require("../../../../ui/TransitionStar");
+var TransitionExpand = require("../../../../ui/TransitionExpand");
 var model = require("../../../../app/models");
 
 function getWidth () {
@@ -30,6 +31,10 @@ var GalleryScreen = React.createClass({
     return {
       previewsPerLine: this.getPreviewsPerLine()
     };
+  },
+  componentWillReceiveProps: function () {
+    // There is likely to be a change in sizings, so better retrigger a resize
+    this.handleResize();
   },
   getThumbnailFullWidth: function () {
     return this.props.thumbnailWidth + 12;
@@ -70,7 +75,11 @@ var GalleryScreen = React.createClass({
     var user = this.props.env.user;
     var star = user ? _.bind(this.starTransition, this, transition) : null;
     var unstar = user ? _.bind(this.unstarTransition, this, transition) : null;
-    return <TransitionStar count={transition.stars} starred={_.contains(transition.stargazers, user)} star={star} unstar={unstar} />;
+    var expand = this.props.expandTransition ? _.bind(this.props.expandTransition, this, transition, this.props) : null;
+    return <div>
+      <TransitionStar count={transition.stars} starred={_.contains(transition.stargazers, user)} star={star} unstar={unstar} />
+      { expand ? <TransitionExpand f={expand} /> : '' }
+    </div>;
   },
   render: function () {
     var width = this.getThumbnailFullWidth() * this.state.previewsPerLine;
@@ -105,7 +114,7 @@ var GalleryScreen = React.createClass({
 
     return <div className="gallery-screen">
       {this.transferPropsTo(
-        <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages} childrenForTransition={this.childrenForTransition}>
+        <TransitionsBrowser page={this.props.page} width={width} paginated={true} getWidth={getWidth} hasData={hasData} getData={getData} numberOfPages={nbPages} childrenForTransition={this.childrenForTransition} transitionPreviewProps={this.props.transitionPreviewProps}>
         <Toolbar>
           All published transitions
           <nav>{navs}</nav>

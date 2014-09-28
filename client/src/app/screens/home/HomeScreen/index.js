@@ -607,7 +607,7 @@ var HomeScreen = React.createClass({
 
       <div className="visual">
         <h2>
-          WebGL Transitions for your image slideshows
+          an Universal Collection of Transitions.
         </h2>
         <div>
           {slideshow}

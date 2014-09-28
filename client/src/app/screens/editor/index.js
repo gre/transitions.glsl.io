@@ -24,7 +24,7 @@ function show (transition, env) {
         initialTransition: transition,
         images: images,
         previewWidth: 256,
-        previewHeight: 256
+        previewHeight: 200
       });
     }, this));
   });

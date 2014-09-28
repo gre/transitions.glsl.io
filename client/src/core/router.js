@@ -94,5 +94,8 @@ module.exports = {
   },
   get url () {
     return _url;
+  },
+  set url (value) {
+    window.location.href = value; // FIXME better way?
   }
 };

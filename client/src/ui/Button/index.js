@@ -14,7 +14,6 @@ var Button = React.createClass({
   },
   getDefaultProps: function() {
     return {
-      f: function () { throw new Error("f is not implemented"); },
       href: "",
       disabled: false,
       activeCls: "active",
