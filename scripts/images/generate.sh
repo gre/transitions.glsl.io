@@ -1,6 +1,6 @@
 #!/bin/bash
 
-formats="768x512 600x400 1024x768"
+formats="512x400 600x400 1024x768"
 
 in="./raw";
 dist="../../server/public/images"
