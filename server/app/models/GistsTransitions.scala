@@ -21,7 +21,7 @@ object GistsTransitions {
   def fork(parentId: String)(implicit token: OAuth2Token): Future[JsValue] = {
     for {
       id <- GistWS.fork(parentId)
-      gist <- Gists.onForkCreated(id, parentId)
+      gist <- Gists.onForkCreated(id.data, parentId)
       transition <- gistToTransition(gist).map(Future(_)).getOrElse(Future.failed(new Error("Can't convert Gist -> Transition")))
     } yield transition
   }
@@ -32,6 +32,25 @@ object GistsTransitions {
       _ <- GistWS.save(id, gistPatch)
       res <- Gists.onSaved(id)
     } yield res
+  }
+
+  def star (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
+    for {
+      _ <- GistWS.star(id)
+      res <- Transitions.onStarred(id, request.session.get("login").get)
+    } yield res
+  }
+
+  def unstar (id: String)(implicit request: play.api.mvc.Request[_], token: OAuth2Token) = {
+    for {
+      _ <- GistWS.unstar(id)
+      res <- Transitions.onUnstarred(id, request.session.get("login").get)
+    } yield res
+  }
+
+  def starred (id: String)(implicit token: OAuth2Token) = {
+    println(token)
+    GistWS.starred(id).map(result => JsBoolean(result.data)) // FIXME: should ask Transitions instead
   }
 
   def onGistCreated(id: String, js: JsValue): Future[Any] = {
@@ -52,7 +71,14 @@ object GistsTransitions {
     }
   }
 
-  def onGistDeleted(id: String): Future[Any] = ???
+  // FIXME THIS IS TEMPORARY
+  def onGistGotStars(id: String, count: Int, stargazers: Set[String]): Future[Any] = {
+    Transitions.setGistStarCount(id, count, stargazers)
+  }
+
+  def onGistDeleted(id: String): Future[Any] = {
+    Transitions.remove(id)
+  }
 
   protected def gistToTransition (gist: JsValue) =
     gist.validate(gistToTransitionReader).fold(

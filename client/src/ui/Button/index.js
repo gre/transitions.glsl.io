@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require("react");
 var Q = require("q");
-var PromisesMixin = require("../../mixins/Promises");
+var PromisesMixin = require("../../core/mixins/Promises");
 
 var Button = React.createClass({
   mixins: [ PromisesMixin ],
@@ -14,7 +14,6 @@ var Button = React.createClass({
   },
   getDefaultProps: function() {
     return {
-      f: function () { throw new Error("f is not implemented"); },
       href: "",
       disabled: false,
       activeCls: "active",
@@ -52,9 +51,8 @@ var Button = React.createClass({
       cls.push(this.props.className);
     if (this.props.disabled) cls.push("disabled");
     if (this.isActive()) cls.push(this.props.activeCls);
-    this.props.className = cls.join(" ");
     return this.transferPropsTo(
-      <a onClick={this.onClick}>{this.props.children}</a>
+      <a className={cls.join(" ")} onClick={this.onClick}>{this.props.children}</a>
     );
   }
 });

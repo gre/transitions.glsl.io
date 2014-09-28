@@ -1,10 +1,4 @@
 
-starred-color-off = #333
-starred-color-on = #FC6
-starred-color-off-action = #fff
-starred-color-on-action = #fff
-starred-color-loading = mix(starred-color-off, starred-color-on)
-
 .vignette {
   position: relative;
   user-select: none;
@@ -65,6 +59,30 @@ starred-color-loading = mix(starred-color-off, starred-color-on)
     z-index: 4;
   }
 
+  &:hover .transition-expand {
+    display: block;
+  }
+  .transition-expand {
+    display: none;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    z-index: 3;
+  }
+
+  .transition-star {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: rgba(0,0,0,0);
+    z-index: 3;
+    cursor: pointer;
+
+    i {
+      margin-left: 2px;
+    }
+  }
+
   .title {
     position: absolute;
     bottom: 2px;
@@ -76,41 +94,6 @@ starred-color-loading = mix(starred-color-off, starred-color-on)
     white-space: nowrap;
   }
 
-  &:hover .stars {
-    background: rgba(0,0,0,1);
-    cursor: pointer;
-  }
-
-  .stars {
-    display: none;
-
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: 1px 6px;
-    border-radius: 2px;
-    background: rgba(0,0,0,0);
-    color: starred-color-off;
-    z-index: 3;
-
-    &:hover {
-      color: starred-color-on-action;
-    }
-
-    .stars-icon {
-      margin-left: 2px;
-    }
-  }
-
-  &.starred .stars {
-    color: starred-color-on;
-    &:hover {
-      color: starred-color-off-action;
-    }
-  }
-  &.starred-loading .stars {
-    color: starred-color-loading !important;
-  }
 }
 
 .vignette:hover .overlay,

@@ -3,28 +3,35 @@
 # ~~~~
 
 # Assets
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-GET     /favicon.ico                controllers.Assets.at(path="/public", file = "favicon.ico")
+GET     /assets/*file                  controllers.Assets.at(path="/public", file)
+GET     /favicon.ico                   controllers.Assets.at(path="/public", file = "favicon.ico")
 
 # API
-GET     /api/blog/articles          controllers.Application.articles
-GET     /api/user/:user/transitions controllers.Transitions.forUser(user)
-GET     /api/transitions            controllers.Transitions.all()
-GET     /api/transitions/:id        controllers.Transitions.get(id)
-POST    /api/transitions            controllers.Transitions.fork()
-POST    /api/transitions/:id        controllers.Transitions.save(id)
-GET     /api/snapshots/transitions  controllers.Snapshots.all(minified: Boolean ?= true)
+GET     /api/blog/articles             controllers.Application.articles
+GET     /api/user/:user/transitions    controllers.Transitions.forUser(user)
+GET     /api/transitions               controllers.Transitions.all(sort: String ?= "mix")
+GET     /api/transitions/:id           controllers.Transitions.get(id)
+POST    /api/transitions               controllers.Transitions.fork()
+POST    /api/transitions/:id           controllers.Transitions.save(id)
+PUT     /api/transitions/:id/star      controllers.Transitions.star(id)
+DELETE  /api/transitions/:id/star      controllers.Transitions.unstar(id)
+GET     /api/snapshots/transitions     controllers.Snapshots.all(minified: Boolean ?= true)
+
+# Catch all API URLs
+GET     /api/*any                      controllers.Application.catchAllAPI(verb="GET", any: String)
+POST    /api/*any                      controllers.Application.catchAllAPI(verb="POST", any: String)
+PUT     /api/*any                      controllers.Application.catchAllAPI(verb="PUT", any: String)
+DELETE  /api/*any                      controllers.Application.catchAllAPI(verb="DELETE", any: String)
 
 # Auth
-GET     /authenticate               controllers.Application.authenticate
-GET     /logout                     controllers.Application.logout
-
-# Redirect deprecated urls
-GET     /gallery                    controllers.Application.redirectDeprecated(path="/")
+GET     /authenticate                  controllers.Application.authenticate
+GET     /logout                        controllers.Application.logout
 
 # Web Application urls
-GET     /                           controllers.Application.index(path = "")
-GET     /transition/:id             controllers.Application.transition(id)
-GET     /transition/:id/preview.jpg controllers.Application.transitionPreview(id)
-GET     /transition/:id/embed       controllers.Application.transitionEmbed(id)
-GET     /*any                       controllers.Application.index(any)
+GET     /                              controllers.Application.index(path = "")
+GET     /transition/:id                controllers.Application.transition(id)
+GET     /transition/:id/preview.jpg    controllers.Application.transitionPreview(id)
+GET     /transition/:id/embed          controllers.Application.transitionEmbed(id)
+
+# Catch all other urls to a valid application path.
+GET     /*any                          controllers.Application.index(any)

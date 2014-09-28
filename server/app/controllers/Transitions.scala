@@ -30,11 +30,12 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
       .map(Ok(_))
   }
 
-  def all () = Action.async { req =>
-    TransitionsModel.all()
-      .map(JsArray(_))
-      .map(Ok(_))
-  }
+  def all (sort: String) = 
+    Action.async { req =>
+      TransitionsModel.all(sort = sort)
+        .map(JsArray(_))
+        .map(Ok(_))
+    }
 
   def get (id: String) = Action.async {
     TransitionsModel.get(id)
@@ -70,4 +71,25 @@ object Transitions extends Controller with MongoController with GithubOAuthContr
         }.getOrElse(Future(BadRequest))
       }
   }
+
+  def star (id: String) = Authenticated.async { implicit auth =>
+    GistsTransitions.star(id)
+    .map(Ok(_))
+    .recover {
+      case e @ GithubError(message, status) =>
+        Logger.warn(s"github error: $e")
+        Status(status)
+    }
+  }
+
+  def unstar (id: String) = Authenticated.async { implicit auth =>
+    GistsTransitions.unstar(id)
+    .map(Ok(_))
+    .recover {
+      case e @ GithubError(message, status) =>
+        Logger.warn(s"github error: $e")
+        Status(status)
+    }
+  }
+
 }

@@ -1,13 +1,13 @@
 var _ = require("lodash");
 var Q = require("q");
 var React = require("react");
-var Loading = require("./Loading");
-var ErrorView = require("./Error");
-var ImageLinearPlayer = require("./ImageLinearPlayer");
-var VideoLinearPlayer = require("./VideoLinearPlayer");
-var Images = require("../images");
+var ErrorView = require("../ui/ErrorPlayer");
+var Loading = require("../ui/LoadingPlayer");
+var ImageLinearPlayer = require("../ui/ImageLinearPlayer");
+var VideoLinearPlayer = require("../ui/VideoLinearPlayer");
 var Videos = require("../glslio/videos");
-var textures = require("../images/textures");
+var Images = require("../glslio/images");
+var textures = require("../glslio/images/textures");
 var Url = require("url");
 var url = Url.parse(window.location.href, true);
 

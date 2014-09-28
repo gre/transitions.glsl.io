@@ -22,9 +22,11 @@ var cache = {
   clear: function () {
     store.clear();
   },
-  getOrSetAsync: function (id, time, fetcher) {
+  getOrSetAsync: function (idOrFunc, time, fetcher) {
     var currentFetchingData = null;
+    var idResultIsFunction = typeof idOrFunc === "function";
     return function () {
+      var id = idResultIsFunction ? idOrFunc.apply(this, arguments) : idOrFunc;
       var maybeItem = cache.get(id);
       if (maybeItem) {
         console.log("From cache("+id+")", maybeItem);
