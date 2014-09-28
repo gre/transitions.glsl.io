@@ -1,0 +1,26 @@
+
+starred-color-off = #333
+starred-color-on = #FC6
+starred-color-off-action = #fff
+starred-color-on-action = #fff
+starred-color-loading = mix(starred-color-off, starred-color-on)
+.transition-star {
+  padding: 1px 6px;
+  border-radius: 2px;
+
+  color: starred-color-off;
+  &.starred {
+    color: starred-color-on;
+  }
+  &.active {
+    color: starred-color-loading !important;
+  }
+
+  &:hover {
+    background: rgba(0,0,0,1);
+    color: starred-color-on-action;
+  }
+  &.starred:hover {
+    color: starred-color-off-action;
+  }
+}

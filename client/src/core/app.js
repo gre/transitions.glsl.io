@@ -6,7 +6,7 @@ var Q = require("q");
 var _ = require("lodash");
 var React = require("react");
 var router = require("./router");
-var App = require("../ui/app");
+var App = require("../app/App");
 
 var app;
 
