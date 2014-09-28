@@ -66,6 +66,21 @@ ROADMAP
 Release Notes
 ---
 
+### Version 1.7 – 28 September 2014
+- **Stars on Transitions** based on gist stars.
+  - add star count in gallery and editor
+- **Gallery**:
+  - **different sort**: mix / new / popular / updated
+  - new images.
+  - Expand feature (experimental)
+- **Editor**:
+  - no more "Square" preview to avoid creating transitions which doesn't preserve the ratio.
+- **Technical**
+  - Introduce Gist Cache to not reload all gists at app reload.
+  - Better support around Gists API (workaround to retrieve and sync with Stars,...).
+  - client folder refactoring
+  - upgrade dependencies (React 0.11.2)
+
 ### Version 1.6 – 17 July 2014
 - **Improve how you can use GLSL Transitions**: 
   - **Home** : a new Home page explains a bit more what are GLSL Transitions and how to use them.
