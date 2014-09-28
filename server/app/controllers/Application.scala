@@ -63,7 +63,7 @@ object Application extends Controller with GithubOAuthController with MongoContr
   def articles = Cached((_:RequestHeader) => "articles", 600) {
     Action.async {
         GistWS.get("4c57de495ca405bffd5a")
-        .map(_.transform(articlesGistReader))
+        .map(_.data.transform(articlesGistReader))
         .map(_.fold(
           err => InternalServerError,
           json => Ok(json)
@@ -113,5 +113,9 @@ object Application extends Controller with GithubOAuthController with MongoContr
         Ok(views.html.embed(version, transition))
       }.getOrElse(NotFound)
     }
+  }
+
+  def catchAllAPI (verb: String, path: String) = Action {
+    NotFound("API Not Found: "+verb+" "+path)
   }
 }

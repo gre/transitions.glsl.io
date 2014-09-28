@@ -25,14 +25,18 @@ npm install && grunt
 Requires: http://www.scala-sbt.org/ installed +  a registered Github application
 
 ```bash
-# in ./server/
+#!/bin/bash
+# to put in a script – in ./server/
+APP_SECRET=...
 GIST_ROOT_ID=...
 GITHUB_CLIENT_ID=...
 GITHUB_CLIENT_SECRET=...
-APP_SECRET=...
-sbt -Dglslio.rootGist="$GIST_ROOT_ID" -Dapplication.secret="$APP_SECRET" -Dgithub.client.id=$GITHUB_CLIENT_ID -Dgithub.client.secret=$GITHUB_CLIENT_SECRET run
+GITHUB_COOKIE=...
+GITHUB_AUTHENTICITY_TOKEN=...
+sbt -Dglslio.rootGist="$GIST_ROOT_ID" -Dapplication.secret="$APP_SECRET" -Dgithub.client.id=$GITHUB_CLIENT_ID -Dgithub.client.secret="$GITHUB_CLIENT_SECRET" -Dgithub.cookie="$GITHUB_COOKIE" -Dgithub.authenticity_token="$GITHUB_AUTHENTICITY_TOKEN" $*
 ```
-(you can save this as a script for convenience)
+
+Then in SBT console, type `run`.
 
 License
 ---
@@ -61,6 +65,21 @@ ROADMAP
 
 Release Notes
 ---
+
+### Version 1.7 – 28 September 2014
+- **Stars on Transitions** based on gist stars.
+  - add star count in gallery and editor
+- **Gallery**:
+  - **different sort**: mix / new / popular / updated
+  - new images.
+  - Expand feature (experimental)
+- **Editor**:
+  - no more "Square" preview to avoid creating transitions which doesn't preserve the ratio.
+- **Technical**
+  - Introduce Gist Cache to not reload all gists at app reload.
+  - Better support around Gists API (workaround to retrieve and sync with Stars,...).
+  - client folder refactoring
+  - upgrade dependencies (React 0.11.2)
 
 ### Version 1.6 – 17 July 2014
 - **Improve how you can use GLSL Transitions**: 
