@@ -1,10 +1,9 @@
 {
-  "name": "glsl-transition-editor",
-  "version": "0.0.0",
-  "description": "An editor for glsl-transition",
-  "private": true,
+  "name": "glsl.io-client",
+  "version": "0.0.1",
+  "description": "GLSL.io client side code.",
   "keywords": [
-    "glsl",
+    "glsl.io",
     "glsl-transition"
   ],
   "homepage": "https://github.com/gre/glsl-transition-editor",
