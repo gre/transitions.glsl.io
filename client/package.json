@@ -1,6 +1,6 @@
 {
   "name": "glsl.io-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "GLSL.io client side code.",
   "keywords": [
     "glsl.io",
