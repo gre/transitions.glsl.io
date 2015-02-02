@@ -1,11 +1,14 @@
 {
   "name": "glsl.io-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "GLSL.io client side code.",
   "keywords": [
     "glsl.io",
     "glsl-transition"
   ],
+  "browserify": {
+    "transform": ["reactify"]
+  },
   "homepage": "https://github.com/gre/glsl-transition-editor",
   "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
   "contributors": [],
