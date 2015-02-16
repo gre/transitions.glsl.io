@@ -7,7 +7,9 @@
     "glsl-transition"
   ],
   "browserify": {
-    "transform": ["reactify"]
+    "transform": [
+      "reactify"
+    ]
   },
   "homepage": "https://github.com/gre/glsl-transition-editor",
   "author": "Gaëtan Renaudeau <renaudeau.gaetan@gmail.com>",
@@ -33,7 +35,6 @@
     "qimage": "1.2.x",
     "qstart": "0.2.0",
     "raf": "2.0.1",
-    "react": "0.11.2",
     "store": "1.3.16"
   },
   "devDependencies": {
@@ -45,6 +46,6 @@
     "grunt-jsxhint": "0.0.2",
     "grunt-browserify": "2.1.3",
     "envify": "1.2.1",
-    "reactify": "0.14.0"
+    "reactify": "^1.0.0"
   }
 }
