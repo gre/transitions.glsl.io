@@ -201,7 +201,7 @@ var Vignette = React.createClass({
   },
   stop: function () {
     this.running = false;
-    this.refs.transition.abort();
+    if (this.refs.transition) this.refs.transition.abort();
   }
 });
 
