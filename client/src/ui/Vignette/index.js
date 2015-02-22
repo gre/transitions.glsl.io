@@ -62,7 +62,7 @@ var Vignette = React.createClass({
     var j = circular(i+1, length);
     var from = this.props.images[i];
     var to = this.props.images[j];
-    var OverlayElement = this.props.href ? Link : React.DOM.div;
+    var OverlayElement = this.props.href ? Link : "div";
 
     var transitionCanvas = (
       this.props.cache ?

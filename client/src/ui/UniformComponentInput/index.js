@@ -38,9 +38,9 @@ var UniformComponentInput = React.createClass({
         props.value = this.props.value || primitive.value;
       props = _.extend({}, this.props, props);
       if (props.type === "number")
-        return NumberInput(props);
+        return <NumberInput {...props} />;
       else
-        return React.DOM.input(props);
+        return <input {...props} />;
     }
   }
 });
