@@ -486,7 +486,7 @@ var HomeScreen = React.createClass({
           </div>
           <br />
           <div>
-            The source code of <GLSLio /> itself is also fully available <Link href="https://github.com/glslio/glsl.io">on Github</Link>.
+            The source code of <GLSLio /> itself is also fully available <Link href="https://github.com/glslio/transitions.glsl.io">on Github</Link>.
           </div>
         </div>;
       }
@@ -530,7 +530,7 @@ var HomeScreen = React.createClass({
           <br />
 
           <div>
-            If you want to learn GLSL more deeply, we recommend that you try the 
+            If you want to learn GLSL more deeply, we recommend that you try the
             <Link href="https://www.npmjs.org/package/shader-school#readme" target="_blank"> <i className="fa fa-graduation-cap"></i>&nbsp;Shader School</Link>.
           </div>
         </div>;
@@ -638,4 +638,3 @@ var HomeScreen = React.createClass({
 });
 
 module.exports = HomeScreen;
-

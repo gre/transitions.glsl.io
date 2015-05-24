@@ -12,7 +12,7 @@ var ErrorScreen = React.createClass({
       msg = e.status+" "+e.statusText;
     }
 
-    var reportBugUrl = "https://github.com/glslio/glsl.io/issues/new?"+
+    var reportBugUrl = "https://github.com/glslio/transitions.glsl.io/issues/new?"+
       "title="+encodeURIComponent("Crash Report: "+msg)+
       "&body="+encodeURIComponent("**URL:**\n```\n"+window.location.href+"\n```\n**Log detail:**\n```\n"+(e && e.stack || (e+"\n"+msg))+"\n```");
 
@@ -27,7 +27,7 @@ var ErrorScreen = React.createClass({
           <i className="fa fa-refresh"></i>&nbsp;Reload
         </Link>
       </p>
-  
+
       <p className="error-report">
         <Link href={reportBugUrl}>
           <i className="fa fa-heart"></i> Report this Bug

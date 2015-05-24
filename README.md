@@ -1,12 +1,12 @@
-# GLSL.io
+# transitions.GLSL.io
 
-Source code of [GLSL.io](http://glsl.io/) , the open platform to build an Open Collection of [GLSL Transitions](http://github.com/gre/glsl-transition).
+Source code of [GLSL.io](http://transitions.glsl.io/) , the open platform to build an Open Collection of [GLSL Transitions](http://github.com/gre/glsl-transition).
 
 Technologies
 ---
 
 - **server**: Scala stack: [Play Framework](http://playframework.org), [Akka](http://akka.io), [ReactiveMongo](http://reactivemongo.org)
-- **client**: JavaScript stack: [Browserify](http://browserify.org) + [React](http://facebook.github.io/react/) + much more [NPM modules](https://github.com/glslio/glsl.io/blob/master/client/package.json#L17)
+- **client**: JavaScript stack: [Browserify](http://browserify.org) + [React](http://facebook.github.io/react/) + much more [NPM modules](https://github.com/glslio/transitions.glsl.io/blob/master/client/package.json#L17)
 
 Build & Run
 ---
@@ -82,7 +82,7 @@ Release Notes
   - upgrade dependencies (React 0.11.2)
 
 ### Version 1.6 – 17 July 2014
-- **Improve how you can use GLSL Transitions**: 
+- **Improve how you can use GLSL Transitions**:
   - **Home** : a new Home page explains a bit more what are GLSL Transitions and how to use them.
   - **Video support**: the /embed is now using videos to demonstrate a bit more the usability of GLSL Transitions.
   - **glsl-transitions**: is a new package on Github/NPM which is a daily updated snapshot of GLSL.io transitions.
